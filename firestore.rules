@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isMember(familyId) {
+      return request.auth != null &&
+        request.auth.uid in get(/databases/$(database)/documents/families/$(familyId)).data.members;
+    }
+
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /families/{familyId} {
+      // Any signed-in user may look up a family by its invite-code document id.
+      allow read: if request.auth != null;
+
+      allow create: if request.auth != null
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.members.keys().hasOnly([request.auth.uid])
+        && request.resource.data.members[request.auth.uid] == true;
+
+      // Existing members can update freely. A non-member may only add their
+      // own uid to `members` (the invite-code join flow) — nothing else.
+      // `members` is a nested map, so the diff must be taken on that map
+      // itself, not on the document's top-level fields.
+      allow update: if request.auth != null && (
+        isMember(familyId) ||
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members']) &&
+          request.resource.data.members.diff(resource.data.members).addedKeys().hasOnly([request.auth.uid]) &&
+          request.resource.data.members.diff(resource.data.members).removedKeys().size() == 0 &&
+          request.resource.data.members.diff(resource.data.members).changedKeys().size() == 0
+        )
+      );
+    }
+
+    match /families/{familyId}/children/{childId} {
+      allow read, write: if isMember(familyId);
+    }
+
+    match /families/{familyId}/children/{childId}/entries/{entryId} {
+      allow read, write: if isMember(familyId);
+    }
+
+    match /families/{familyId}/children/{childId}/medications/{medicationId} {
+      allow read, write: if isMember(familyId);
+    }
+  }
+}

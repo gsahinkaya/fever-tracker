@@ -1,0 +1,25 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+.v-application,
+.v-application button,
+.v-application input,
+.v-application select,
+.v-application textarea {
+  font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif !important;
+}
+
+.v-application .text-h4,
+.v-application .text-h5,
+.v-application .text-h6 {
+  font-weight: 800;
+  letter-spacing: 0;
+}
