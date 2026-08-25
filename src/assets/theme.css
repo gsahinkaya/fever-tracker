@@ -14,7 +14,12 @@ body {
 .v-application input,
 .v-application select,
 .v-application textarea {
-  font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif !important;
+  font-family:
+    'Nunito',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif !important;
 }
 
 .v-application .text-h4,
@@ -22,4 +27,42 @@ body {
 .v-application .text-h6 {
   font-weight: 800;
   letter-spacing: 0;
+}
+
+/* Printing (used for the doctor report's "PDF Oluştur" button, via
+   window.print → Save as PDF): hide app chrome and anything marked
+   .no-print, and force a light, paper-friendly palette regardless of the
+   device's dark mode so the printout stays readable on paper. */
+@media print {
+  .v-app-bar,
+  .no-print {
+    display: none !important;
+  }
+  .v-main {
+    padding: 0 !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  body,
+  .v-application {
+    background: #fff !important;
+    color: #0b0b0b !important;
+  }
+  .viz-root {
+    color-scheme: light !important;
+    --surface-1: #fcfcfb !important;
+    --text-primary: #0b0b0b !important;
+    --text-secondary: #52514e !important;
+    --text-muted: #898781 !important;
+    --gridline: #e1e0d9 !important;
+    --axis: #c3c2b7 !important;
+    --series-1: #256abf !important;
+    --status-serious: #ec835a !important;
+    --status-critical: #d03b3b !important;
+  }
+}
+
+.print-only {
+  display: none;
 }

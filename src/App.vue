@@ -71,7 +71,9 @@ watch(
     if (count > previousCount) bannerDismissed.value = false
   },
 )
-const showBanner = computed(() => !isAuthPage.value && !!incomingBannerText.value && !bannerDismissed.value)
+const showBanner = computed(
+  () => !isAuthPage.value && !!incomingBannerText.value && !bannerDismissed.value,
+)
 
 function acknowledgeIncoming() {
   feverLogStore.acknowledgeIncoming()
@@ -174,7 +176,7 @@ watch(
           density="comfortable"
           icon="mdi-bell-alert"
           closable
-          class="mx-3 mt-2"
+          class="mx-3 mt-2 no-print"
           @click:close="bannerDismissed = true"
         >
           {{ incomingBannerText }}
