@@ -90,7 +90,7 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
         density="comfortable"
         class="mb-6"
       >
-        Doz zamanı geldiğinde hatırlatma alman için bildirimlere izin ver.
+        Doz hatırlatmaları ve eşinin ateş/ilaç/beslenme girişleri için bildirimlere izin ver.
         <template #append>
           <v-btn size="small" variant="text" @click="enableNotifications">İzin ver</v-btn>
         </template>

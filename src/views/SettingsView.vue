@@ -123,7 +123,9 @@ async function logout() {
         <span v-else-if="notifStatus === 'unsupported'" class="text-medium-emphasis">
           Bu tarayıcı bildirimleri desteklemiyor
         </span>
-        <span v-else class="text-medium-emphasis">Doz zamanı geldiğinde hatırlatma alman için izin ver</span>
+        <span v-else class="text-medium-emphasis">
+          Doz hatırlatmaları ve eşinin girişleri için bildirimlere izin ver
+        </span>
       </v-card-text>
       <v-card-actions v-if="notifStatus !== 'granted' && notifStatus !== 'unsupported'">
         <v-spacer />
