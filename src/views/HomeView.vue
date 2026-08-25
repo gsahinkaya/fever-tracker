@@ -8,8 +8,7 @@ import { useDoseReminders } from '@/composables/useDoseReminders'
 import AddReadingDialog from '@/components/AddReadingDialog.vue'
 import AddDoseDialog from '@/components/AddDoseDialog.vue'
 import NextDoseCard from '@/components/NextDoseCard.vue'
-import TimelineList from '@/components/TimelineList.vue'
-import FeedingTimelineList from '@/components/FeedingTimelineList.vue'
+import CombinedTimelineList from '@/components/CombinedTimelineList.vue'
 import InstallPwaBanner from '@/components/InstallPwaBanner.vue'
 import ChildSwitcher from '@/components/ChildSwitcher.vue'
 
@@ -31,8 +30,14 @@ async function enableNotifications() {
   notifStatus.value = await requestPermission()
 }
 
-const recent = computed(() => store.recentEntries(48))
-const recentFeedings = computed(() => feedingLogStore.recentEntries(48))
+// Fever/dose entries and feedings live in separate stores/collections, so
+// merge and re-sort by time to get one true "everything that happened"
+// timeline instead of whichever store's array got concatenated last.
+const recentActivity = computed(() =>
+  [...store.recentEntries(48), ...feedingLogStore.recentEntries(48)].sort(
+    (a, b) => b.takenAt - a.takenAt,
+  ),
+)
 const hasChildren = computed(() => childrenStore.children.length > 0)
 
 // Only medications that have actually been given at least once have a
@@ -61,19 +66,19 @@ const medicationsWithHistory = computed(() =>
     <template v-else>
       <ChildSwitcher />
 
-      <v-row dense class="mb-6">
+      <v-row class="mb-6">
         <v-col cols="4">
           <v-btn
             block
             size="large"
             color="error"
-            variant="tonal"
-            class="py-6"
+            variant="flat"
+            class="py-7"
             @click="showReadingDialog = true"
           >
             <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-thermometer" size="28" class="mb-1" />
-              <span class="text-caption">Ateş</span>
+              <v-icon icon="mdi-thermometer" size="30" class="mb-2" />
+              <span class="text-caption font-weight-medium">Ateş</span>
             </div>
           </v-btn>
         </v-col>
@@ -82,37 +87,37 @@ const medicationsWithHistory = computed(() =>
             block
             size="large"
             color="primary"
-            variant="tonal"
-            class="py-6"
+            variant="flat"
+            class="py-7"
             @click="showDoseDialog = true"
           >
             <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-pill" size="28" class="mb-1" />
-              <span class="text-caption">İlaç</span>
+              <v-icon icon="mdi-pill" size="30" class="mb-2" />
+              <span class="text-caption font-weight-medium">İlaç</span>
             </div>
           </v-btn>
         </v-col>
         <v-col cols="4">
-          <v-btn block size="large" color="secondary" variant="tonal" class="py-6" to="/beslenme">
+          <v-btn block size="large" color="secondary" variant="flat" class="py-7" to="/beslenme">
             <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-baby-bottle-outline" size="28" class="mb-1" />
-              <span class="text-caption">Beslenme</span>
+              <v-icon icon="mdi-baby-bottle-outline" size="30" class="mb-2" />
+              <span class="text-caption font-weight-medium">Beslenme</span>
             </div>
           </v-btn>
         </v-col>
         <v-col cols="6">
-          <v-btn block size="large" color="primary" variant="tonal" class="py-6" to="/ilaclar">
+          <v-btn block size="large" color="primary" variant="flat" class="py-7" to="/ilaclar">
             <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-format-list-bulleted" size="28" class="mb-1" />
-              <span class="text-caption">İlaçlar</span>
+              <v-icon icon="mdi-format-list-bulleted" size="30" class="mb-2" />
+              <span class="text-caption font-weight-medium">İlaçlar</span>
             </div>
           </v-btn>
         </v-col>
         <v-col cols="6">
-          <v-btn block size="large" color="info" variant="tonal" class="py-6" to="/rapor">
+          <v-btn block size="large" color="info" variant="flat" class="py-7" to="/rapor">
             <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-file-chart-outline" size="28" class="mb-1" />
-              <span class="text-caption">Özet Rapor</span>
+              <v-icon icon="mdi-file-chart-outline" size="30" class="mb-2" />
+              <span class="text-caption font-weight-medium">Özet Rapor</span>
             </div>
           </v-btn>
         </v-col>
@@ -158,17 +163,10 @@ const medicationsWithHistory = computed(() =>
       </v-card>
 
       <div class="mb-2">
-        <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saatte Beslenme</span>
-      </div>
-      <v-card variant="outlined" class="mb-6">
-        <FeedingTimelineList :entries="recentFeedings" />
-      </v-card>
-
-      <div class="mb-2">
         <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saat</span>
       </div>
       <v-card variant="outlined">
-        <TimelineList :entries="recent" />
+        <CombinedTimelineList :entries="recentActivity" />
       </v-card>
 
       <AddReadingDialog v-model="showReadingDialog" />

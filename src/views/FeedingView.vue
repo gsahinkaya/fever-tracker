@@ -22,19 +22,19 @@ const recent = computed(() => store.recentEntries(48))
       <span class="text-h6 ml-2">Beslenme</span>
     </div>
 
-    <v-row class="mb-2" dense>
+    <v-row class="mb-2">
       <v-col cols="4">
         <v-btn
           block
           size="large"
           color="secondary"
-          variant="tonal"
-          class="py-6"
+          variant="flat"
+          class="py-7"
           @click="showBreastfeedingDialog = true"
         >
           <div class="d-flex flex-column align-center">
-            <v-icon icon="mdi-mother-nurse" size="28" class="mb-1" />
-            <span class="text-caption">Emzirme</span>
+            <v-icon icon="mdi-mother-nurse" size="30" class="mb-2" />
+            <span class="text-caption font-weight-medium">Emzirme</span>
           </div>
         </v-btn>
       </v-col>
@@ -43,13 +43,13 @@ const recent = computed(() => store.recentEntries(48))
           block
           size="large"
           color="primary"
-          variant="tonal"
-          class="py-6"
+          variant="flat"
+          class="py-7"
           @click="showBottleDialog = true"
         >
           <div class="d-flex flex-column align-center">
-            <v-icon icon="mdi-baby-bottle-outline" size="28" class="mb-1" />
-            <span class="text-caption">Biberon</span>
+            <v-icon icon="mdi-baby-bottle-outline" size="30" class="mb-2" />
+            <span class="text-caption font-weight-medium">Biberon</span>
           </div>
         </v-btn>
       </v-col>
@@ -58,13 +58,13 @@ const recent = computed(() => store.recentEntries(48))
           block
           size="large"
           color="success"
-          variant="tonal"
-          class="py-6"
+          variant="flat"
+          class="py-7"
           @click="showSolidFoodDialog = true"
         >
           <div class="d-flex flex-column align-center">
-            <v-icon icon="mdi-food-apple-outline" size="28" class="mb-1" />
-            <span class="text-caption">Katı Gıda</span>
+            <v-icon icon="mdi-food-apple-outline" size="30" class="mb-2" />
+            <span class="text-caption font-weight-medium">Katı Gıda</span>
           </div>
         </v-btn>
       </v-col>
