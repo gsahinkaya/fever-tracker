@@ -26,45 +26,42 @@ const recent = computed(() => store.recentEntries(48))
       <v-col cols="4">
         <v-btn
           block
-          size="large"
           color="secondary"
           variant="flat"
-          class="py-7"
+          style="aspect-ratio: 1 / 1; height: auto"
           @click="showBreastfeedingDialog = true"
         >
           <div class="d-flex flex-column align-center">
-            <v-icon icon="mdi-mother-nurse" size="30" class="mb-2" />
-            <span class="text-caption font-weight-medium">Emzirme</span>
+            <v-icon icon="mdi-mother-nurse" size="34" class="mb-2" />
+            <span class="text-body-2 font-weight-bold">Emzirme</span>
           </div>
         </v-btn>
       </v-col>
       <v-col cols="4">
         <v-btn
           block
-          size="large"
           color="primary"
           variant="flat"
-          class="py-7"
+          style="aspect-ratio: 1 / 1; height: auto"
           @click="showBottleDialog = true"
         >
           <div class="d-flex flex-column align-center">
-            <v-icon icon="mdi-baby-bottle-outline" size="30" class="mb-2" />
-            <span class="text-caption font-weight-medium">Biberon</span>
+            <v-icon icon="mdi-baby-bottle-outline" size="34" class="mb-2" />
+            <span class="text-body-2 font-weight-bold">Biberon</span>
           </div>
         </v-btn>
       </v-col>
       <v-col cols="4">
         <v-btn
           block
-          size="large"
           color="success"
           variant="flat"
-          class="py-7"
+          style="aspect-ratio: 1 / 1; height: auto"
           @click="showSolidFoodDialog = true"
         >
           <div class="d-flex flex-column align-center">
-            <v-icon icon="mdi-food-apple-outline" size="30" class="mb-2" />
-            <span class="text-caption font-weight-medium">Katı Gıda</span>
+            <v-icon icon="mdi-food-apple-outline" size="34" class="mb-2" />
+            <span class="text-body-2 font-weight-bold">Katı Gıda</span>
           </div>
         </v-btn>
       </v-col>

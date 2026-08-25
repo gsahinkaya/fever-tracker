@@ -66,58 +66,60 @@ const medicationsWithHistory = computed(() =>
     <template v-else>
       <ChildSwitcher />
 
-      <v-row class="mb-6">
+      <v-row class="mb-6" justify="center">
         <v-col cols="4">
           <v-btn
             block
-            size="large"
             color="error"
             variant="flat"
-            class="py-7"
+            style="aspect-ratio: 1 / 1; height: auto"
             @click="showReadingDialog = true"
           >
             <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-thermometer" size="30" class="mb-2" />
-              <span class="text-caption font-weight-medium">Ateş</span>
+              <v-icon icon="mdi-thermometer" size="34" class="mb-2" />
+              <span class="text-body-2 font-weight-bold">Ateş</span>
             </div>
           </v-btn>
         </v-col>
         <v-col cols="4">
           <v-btn
             block
-            size="large"
             color="primary"
             variant="flat"
-            class="py-7"
+            style="aspect-ratio: 1 / 1; height: auto"
             @click="showDoseDialog = true"
           >
             <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-pill" size="30" class="mb-2" />
-              <span class="text-caption font-weight-medium">İlaç</span>
+              <v-icon icon="mdi-pill" size="34" class="mb-2" />
+              <span class="text-body-2 font-weight-bold">İlaç</span>
             </div>
           </v-btn>
         </v-col>
         <v-col cols="4">
-          <v-btn block size="large" color="secondary" variant="flat" class="py-7" to="/beslenme">
+          <v-btn
+            block
+            color="secondary"
+            variant="flat"
+            style="aspect-ratio: 1 / 1; height: auto"
+            to="/beslenme"
+          >
             <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-baby-bottle-outline" size="30" class="mb-2" />
-              <span class="text-caption font-weight-medium">Beslenme</span>
+              <v-icon icon="mdi-baby-bottle-outline" size="34" class="mb-2" />
+              <span class="text-body-2 font-weight-bold">Beslenme</span>
             </div>
           </v-btn>
         </v-col>
-        <v-col cols="6">
-          <v-btn block size="large" color="primary" variant="flat" class="py-7" to="/ilaclar">
+        <v-col cols="4">
+          <v-btn
+            block
+            color="info"
+            variant="flat"
+            style="aspect-ratio: 1 / 1; height: auto"
+            to="/rapor"
+          >
             <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-format-list-bulleted" size="30" class="mb-2" />
-              <span class="text-caption font-weight-medium">İlaçlar</span>
-            </div>
-          </v-btn>
-        </v-col>
-        <v-col cols="6">
-          <v-btn block size="large" color="info" variant="flat" class="py-7" to="/rapor">
-            <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-file-chart-outline" size="30" class="mb-2" />
-              <span class="text-caption font-weight-medium">Özet Rapor</span>
+              <v-icon icon="mdi-file-chart-outline" size="34" class="mb-2" />
+              <span class="text-body-2 font-weight-bold">Özet Rapor</span>
             </div>
           </v-btn>
         </v-col>
