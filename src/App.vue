@@ -151,7 +151,7 @@ watch(
   <v-app>
     <v-app-bar v-if="!isAuthPage" color="primary" elevation="2">
       <template #prepend>
-        <v-icon icon="mdi-thermometer" class="ml-2" />
+        <v-icon icon="mdi-baby-face-outline" class="ml-2" />
       </template>
       <v-app-bar-title>
         <div class="d-flex flex-column" style="line-height: 1.2">
