@@ -12,7 +12,7 @@ const showBreastfeedingDialog = ref(false)
 const showBottleDialog = ref(false)
 const showSolidFoodDialog = ref(false)
 
-const recent = computed(() => store.recentEntries(24))
+const recent = computed(() => store.recentEntries(48))
 </script>
 
 <template>
@@ -71,7 +71,7 @@ const recent = computed(() => store.recentEntries(24))
     </v-row>
 
     <div class="d-flex align-center justify-space-between mb-2 mt-4">
-      <span class="text-subtitle-2 text-medium-emphasis">Son 24 Saat</span>
+      <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saat</span>
     </div>
     <v-card variant="outlined">
       <FeedingTimelineList :entries="recent" />
