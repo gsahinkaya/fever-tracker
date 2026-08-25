@@ -57,7 +57,6 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
         size="x-large"
         color="error"
         class="text-h6 py-8 mb-4"
-        elevation="4"
         @click="showReadingDialog = true"
       >
         <v-icon start icon="mdi-thermometer" size="32" />
@@ -90,7 +89,7 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
         density="comfortable"
         class="mb-6"
       >
-        Doz hatırlatmaları ve eşinin ateş/ilaç/beslenme girişleri için bildirimlere izin ver.
+        Doz ve eşinin girişleri için bildirimlere izin ver.
         <template #append>
           <v-btn size="small" variant="text" @click="enableNotifications">İzin ver</v-btn>
         </template>
