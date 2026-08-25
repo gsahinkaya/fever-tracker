@@ -140,36 +140,25 @@ const medicationsWithHistory = computed(() =>
         </template>
       </v-alert>
 
-      <div class="mb-2">
-        <span class="text-subtitle-2 text-medium-emphasis">Sonraki Güvenli Doz</span>
-      </div>
-      <v-row v-if="medicationsWithHistory.length" class="mb-6">
-        <v-col v-for="med in medicationsWithHistory" :key="med.id" cols="12" sm="6">
-          <NextDoseCard :medication="med" />
-        </v-col>
-      </v-row>
-      <v-card
-        v-else-if="medicationsStore.medications.length"
-        variant="outlined"
-        class="mb-6 pa-4 text-center"
-      >
-        <p class="text-body-2 text-medium-emphasis">
-          Henüz ilaç verilmedi. İlk dozu verdiğinde burada görünecek.
-        </p>
-      </v-card>
-      <v-card v-else variant="outlined" class="mb-6 pa-4 text-center">
-        <p class="text-body-2 text-medium-emphasis mb-3">Henüz ilaç eklenmedi.</p>
-        <v-btn color="primary" variant="tonal" prepend-icon="mdi-plus" to="/ilaclar"
-          >İlaç Ekle</v-btn
-        >
-      </v-card>
+      <template v-if="medicationsWithHistory.length">
+        <div class="mb-2">
+          <span class="text-subtitle-2 text-medium-emphasis">Sonraki Güvenli Doz</span>
+        </div>
+        <v-row class="mb-6">
+          <v-col v-for="med in medicationsWithHistory" :key="med.id" cols="12" sm="6">
+            <NextDoseCard :medication="med" />
+          </v-col>
+        </v-row>
+      </template>
 
-      <div class="mb-2">
-        <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saat</span>
-      </div>
-      <v-card variant="outlined">
-        <CombinedTimelineList :entries="recentActivity" />
-      </v-card>
+      <template v-if="recentActivity.length">
+        <div class="mb-2">
+          <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saat</span>
+        </div>
+        <v-card variant="outlined">
+          <CombinedTimelineList :entries="recentActivity" />
+        </v-card>
+      </template>
 
       <AddReadingDialog v-model="showReadingDialog" />
       <AddDoseDialog v-model="showDoseDialog" />
