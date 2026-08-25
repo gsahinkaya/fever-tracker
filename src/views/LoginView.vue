@@ -27,18 +27,10 @@ async function submit() {
 
 <template>
   <v-container class="py-8" style="max-width: 420px">
-    <div class="text-center mb-6">
+    <div class="text-center mb-8">
       <v-icon icon="mdi-baby-face-outline" size="48" color="primary" />
       <h1 class="text-h5 mt-2">Kido</h1>
     </div>
-
-    <p class="text-body-2 text-medium-emphasis text-center mb-8">
-      Kido, çocuğunun ateş, ilaç ve beslenme takibini ailece paylaşmanı sağlayan bir asistan. Tüm
-      kayıtlar cihazında saklanır, bu yüzden internet olmadan da çalışır ve bağlantı geldiğinde
-      otomatik senkronize olur. Ateş ölçümü, ilaç dozu ve emzirme/biberon/katı gıda girişlerini
-      kaydet, güvenli doz zamanını takip et; eşin ya da diğer aile üyeleri bir şey ekleyince
-      bildirim al ve doktor için özet rapor oluştur.
-    </p>
 
     <v-form @submit.prevent="submit">
       <v-text-field
@@ -70,5 +62,13 @@ async function submit() {
       <span class="text-medium-emphasis">Hesabın yok mu?</span>
       <v-btn variant="text" color="primary" to="/kayit">Kayıt ol</v-btn>
     </div>
+
+    <p class="text-body-2 text-medium-emphasis text-center mt-8">
+      Kido, çocuğunun ateş, ilaç ve beslenme takibini ailece paylaşmanı sağlayan bir asistan. Tüm
+      kayıtlar cihazında saklanır, bu yüzden internet olmadan da çalışır ve bağlantı geldiğinde
+      otomatik senkronize olur. Ateş ölçümü, ilaç dozu ve emzirme/biberon/katı gıda girişlerini
+      kaydet, güvenli doz zamanını takip et; eşin ya da diğer aile üyeleri bir şey ekleyince
+      bildirim al ve doktor için özet rapor oluştur.
+    </p>
   </v-container>
 </template>
