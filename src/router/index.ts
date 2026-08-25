@@ -71,4 +71,21 @@ router.beforeEach(async (to) => {
   }
 })
 
+// Lazy-loaded route chunks are content-hashed, so a tab left open across a
+// deploy can still be holding a reference to a filename the new deploy no
+// longer serves — the fetch then 404s (or gets rewritten to index.html,
+// tripping a MIME-type error). Recover by reloading once to pick up the
+// current build instead of leaving the user on a broken navigation.
+const RELOAD_FLAG = 'ates-olcer:reloaded-after-chunk-error'
+// Clear the guard after any successful navigation so a *later* deploy can
+// still trigger one recovery reload — the guard only needs to stop the
+// current failure from reloading in a tight loop.
+router.afterEach(() => sessionStorage.removeItem(RELOAD_FLAG))
+router.onError((error) => {
+  if (!/dynamically imported module|Importing a module script failed/i.test(error.message)) return
+  if (sessionStorage.getItem(RELOAD_FLAG)) return
+  sessionStorage.setItem(RELOAD_FLAG, '1')
+  window.location.reload()
+})
+
 export default router
