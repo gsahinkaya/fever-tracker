@@ -3,6 +3,10 @@ export interface Medication {
   name: string
   minIntervalHours: number
   note?: string
+  // Who added this medication, so the other parent can be notified. Optional
+  // because medications created before this field existed won't have it.
+  createdBy?: string
+  createdByEmail?: string
 }
 
 export interface FeverReading {

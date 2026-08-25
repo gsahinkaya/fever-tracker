@@ -25,8 +25,10 @@ export const useFeverLogStore = defineStore('feverLog', () => {
   const entries = ref<LogEntry[]>([])
   const activeChildId = ref<string | null>(null)
   // Entries the *other* parent added since we last acknowledged them, for
-  // the in-app banner. Cleared on child switch and on acknowledgeIncoming().
-  const incomingEntries = ref<LogEntry[]>([])
+  // the in-app banner. receivedAt lets the banner merge these with incoming
+  // medications (a separate store) in true arrival order. Cleared on child
+  // switch and on acknowledgeIncoming().
+  const incomingEntries = ref<{ entry: LogEntry; receivedAt: number }[]>([])
   // Fires once per remotely-added entry, for triggering a system notification.
   const lastRemoteEntry = ref<LogEntry | null>(null)
   let unsubscribe: (() => void) | null = null
@@ -71,7 +73,7 @@ export const useFeverLogStore = defineStore('feverLog', () => {
             id: change.doc.id,
             takenAt: (data.takenAt as Timestamp).toMillis(),
           } as LogEntry
-          incomingEntries.value = [...incomingEntries.value, entry]
+          incomingEntries.value = [...incomingEntries.value, { entry, receivedAt: Date.now() }]
           lastRemoteEntry.value = entry
         }
       }

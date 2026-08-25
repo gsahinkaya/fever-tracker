@@ -6,7 +6,7 @@ import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
-import type { LogEntry } from '@/types/health'
+import type { LogEntry, Medication } from '@/types/health'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -27,12 +27,32 @@ function describeIncomingEntry(entry: LogEntry): string {
   return `${who} ${what}`
 }
 
+function describeIncomingMedication(medication: Medication): string {
+  const who = medication.createdByEmail?.split('@')[0] ?? 'Diğer ebeveyn'
+  return `${who} ${medication.name} ilacını ekledi`
+}
+
 const incomingBannerText = computed(() => {
-  const list = feverLogStore.incomingEntries
-  if (!list.length) return ''
-  const latest = describeIncomingEntry(list[list.length - 1]!)
-  return list.length === 1 ? latest : `${latest} (+${list.length - 1} diğer)`
+  // Merge two separately-tracked streams (fever entries and medications) by
+  // actual arrival time so the banner always leads with what really
+  // happened last, not just whichever store's array happens to be listed
+  // second.
+  const items = [
+    ...feverLogStore.incomingEntries.map((i) => ({ receivedAt: i.receivedAt, text: describeIncomingEntry(i.entry) })),
+    ...medicationsStore.incomingMedications.map((i) => ({
+      receivedAt: i.receivedAt,
+      text: describeIncomingMedication(i.medication),
+    })),
+  ].sort((a, b) => a.receivedAt - b.receivedAt)
+  if (!items.length) return ''
+  const latest = items[items.length - 1]!.text
+  return items.length === 1 ? latest : `${latest} (+${items.length - 1} diğer)`
 })
+
+function acknowledgeIncoming() {
+  feverLogStore.acknowledgeIncoming()
+  medicationsStore.acknowledgeIncoming()
+}
 
 const activeChild = computed(
   () => childrenStore.children.find((c) => c.id === feverLogStore.activeChildId) ?? null,
@@ -92,7 +112,7 @@ watch(
         icon="mdi-bell-alert"
         closable
         class="mx-3 mt-2"
-        @click:close="feverLogStore.acknowledgeIncoming()"
+        @click:close="acknowledgeIncoming()"
       >
         {{ incomingBannerText }}
       </v-alert>
