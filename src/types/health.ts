@@ -11,6 +11,10 @@ export interface FeverReading {
   temperature: number
   takenAt: number
   note?: string
+  // Who added this entry, so the other parent can be notified. Optional
+  // because entries created before this field existed won't have it.
+  createdBy?: string
+  createdByEmail?: string
 }
 
 export interface DoseEntry {
@@ -21,6 +25,8 @@ export interface DoseEntry {
   // entries stay meaningful even if the medication is later renamed/deleted.
   medicationName: string
   takenAt: number
+  createdBy?: string
+  createdByEmail?: string
 }
 
 export type LogEntry = FeverReading | DoseEntry

@@ -5,6 +5,8 @@ import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
+import { useEntryNotifications } from '@/composables/useEntryNotifications'
+import type { LogEntry } from '@/types/health'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -12,12 +14,32 @@ const childrenStore = useChildrenStore()
 const feverLogStore = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
 
+useEntryNotifications()
+
 const isAuthPage = computed(() => route.path === '/giris' || route.path === '/kayit')
+
+function describeIncomingEntry(entry: LogEntry): string {
+  const who = entry.createdByEmail?.split('@')[0] ?? 'Diğer ebeveyn'
+  const what =
+    entry.type === 'reading'
+      ? `${entry.temperature}° ölçüm ekledi`
+      : `${entry.medicationName} verdi`
+  return `${who} ${what}`
+}
+
+const incomingBannerText = computed(() => {
+  const list = feverLogStore.incomingEntries
+  if (!list.length) return ''
+  const latest = describeIncomingEntry(list[list.length - 1]!)
+  return list.length === 1 ? latest : `${latest} (+${list.length - 1} diğer)`
+})
 
 const activeChild = computed(
   () => childrenStore.children.find((c) => c.id === feverLogStore.activeChildId) ?? null,
 )
-const title = computed(() => (activeChild.value ? `${activeChild.value.name} · Ateş Ölçer` : 'Ateş Ölçer'))
+const title = computed(() =>
+  activeChild.value ? `${activeChild.value.name} · Ateş Ölçer` : 'Ateş Ölçer',
+)
 
 watch(
   () => authStore.familyId,
@@ -60,6 +82,21 @@ watch(
         <v-btn icon="mdi-cog-outline" variant="text" to="/ayarlar" aria-label="Ayarlar" />
       </template>
     </v-app-bar>
+
+    <v-slide-y-transition>
+      <v-alert
+        v-if="!isAuthPage && incomingBannerText"
+        type="info"
+        variant="tonal"
+        density="comfortable"
+        icon="mdi-bell-alert"
+        closable
+        class="mx-3 mt-2"
+        @click:close="feverLogStore.acknowledgeIncoming()"
+      >
+        {{ incomingBannerText }}
+      </v-alert>
+    </v-slide-y-transition>
 
     <v-main>
       <RouterView />
