@@ -115,9 +115,6 @@ function relativeTime(at: number): string {
 const activeChild = computed(
   () => childrenStore.children.find((c) => c.id === feverLogStore.activeChildId) ?? null,
 )
-const title = computed(() =>
-  activeChild.value ? `${activeChild.value.name} · Ateş Ölçer` : 'Ateş Ölçer',
-)
 
 watch(
   () => authStore.familyId,
@@ -152,11 +149,18 @@ watch(
 
 <template>
   <v-app>
-    <v-app-bar v-if="!isAuthPage" color="surface" class="border-b">
+    <v-app-bar v-if="!isAuthPage" color="primary" elevation="2">
       <template #prepend>
-        <v-icon icon="mdi-thermometer" color="error" class="ml-2" />
+        <v-icon icon="mdi-thermometer" class="ml-2" />
       </template>
-      <v-app-bar-title class="font-weight-bold">{{ title }}</v-app-bar-title>
+      <v-app-bar-title>
+        <div class="d-flex flex-column" style="line-height: 1.2">
+          <span class="text-subtitle-1 font-weight-bold">Kido</span>
+          <span v-if="activeChild" class="text-caption" style="opacity: 0.85">{{
+            activeChild.name
+          }}</span>
+        </div>
+      </v-app-bar-title>
       <template #append>
         <v-menu v-if="incomingItems.length" location="bottom end">
           <template #activator="{ props: menuProps }">

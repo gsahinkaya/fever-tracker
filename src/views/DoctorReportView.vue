@@ -57,7 +57,13 @@ function createPdf() {
 <template>
   <v-container style="max-width: 640px">
     <div class="d-flex align-center mb-2 no-print">
-      <v-btn icon="mdi-arrow-left" variant="tonal" color="primary" to="/" aria-label="Geri" />
+      <v-btn
+        icon="mdi-arrow-left"
+        variant="tonal"
+        color="primary"
+        aria-label="Geri"
+        @click="$router.back()"
+      />
       <span class="text-h6 ml-2">Doktor Özet Raporu</span>
       <v-spacer />
       <v-btn color="primary" variant="tonal" prepend-icon="mdi-file-pdf-box" @click="createPdf">

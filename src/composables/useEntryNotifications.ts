@@ -63,7 +63,7 @@ export function useEntryNotifications() {
     () => feverLogStore.lastRemoteEntry,
     (entry) => {
       if (entry)
-        void showSystemNotification('Ateş Ölçer', describeEntry(entry), `entry-${entry.id}`)
+        void showSystemNotification('Kido', describeEntry(entry), `entry-${entry.id}`)
     },
   )
 
@@ -72,7 +72,7 @@ export function useEntryNotifications() {
     (medication) => {
       if (medication) {
         void showSystemNotification(
-          'Ateş Ölçer',
+          'Kido',
           describeMedication(medication),
           `medication-${medication.id}`,
         )
@@ -84,7 +84,7 @@ export function useEntryNotifications() {
     () => feedingLogStore.lastRemoteEntry,
     (entry) => {
       if (entry)
-        void showSystemNotification('Ateş Ölçer', describeFeeding(entry), `feeding-${entry.id}`)
+        void showSystemNotification('Kido', describeFeeding(entry), `feeding-${entry.id}`)
     },
   )
 }

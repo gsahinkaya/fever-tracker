@@ -32,7 +32,7 @@ export function useDoseReminders() {
       const key = `${med.id}:${last.id}`
       if (safeAt <= current && !notifiedFor.has(key)) {
         notifiedFor.add(key)
-        new Notification('Ateş Ölçer', {
+        new Notification('Kido', {
           body: `${med.name} için güvenli doz zamanı geldi.`,
           icon: '/icon-192.png',
           tag: key,

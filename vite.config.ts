@@ -14,12 +14,12 @@ export default defineConfig({
     vuetify(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico'],
+      includeAssets: ['favicon.png'],
       manifest: {
-        name: 'Ateş Ölçer',
-        short_name: 'Ateş Ölçer',
+        name: 'Kido',
+        short_name: 'Kido',
         description: 'Ebeveynler için offline-first ateş ve ilaç takip asistanı',
-        theme_color: '#d03b3b',
+        theme_color: '#1479a8',
         background_color: '#fcfcfb',
         display: 'standalone',
         orientation: 'portrait',

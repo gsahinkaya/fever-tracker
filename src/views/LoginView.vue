@@ -29,7 +29,7 @@ async function submit() {
   <v-container class="py-8" style="max-width: 420px">
     <div class="text-center mb-8">
       <v-icon icon="mdi-thermometer" size="48" color="error" />
-      <h1 class="text-h5 mt-2">Ateş Ölçer</h1>
+      <h1 class="text-h5 mt-2">Kido</h1>
     </div>
 
     <v-form @submit.prevent="submit">

@@ -49,10 +49,11 @@ async function install() {
     @click:close="showBanner = false"
   >
     <span v-if="isIos">
-      Ana ekrana eklemek için Safari'de paylaş <v-icon icon="mdi-export-variant" size="16" /> düğmesine dokun,
-      ardından "Ana Ekrana Ekle"yi seç.
+      Ana ekrana eklemek için Safari'de paylaş
+      <v-icon icon="mdi-export-variant" size="16" /> düğmesine dokun, ardından "Ana Ekrana Ekle"yi
+      seç.
     </span>
-    <span v-else>Ateş Ölçer'i ana ekranına ekleyip tek dokunuşla açabilirsin.</span>
+    <span v-else>Kido'yu ana ekranına ekleyip tek dokunuşla açabilirsin.</span>
 
     <template #append>
       <v-btn v-if="!isIos" size="small" variant="text" @click="install">Ekle</v-btn>

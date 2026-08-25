@@ -56,7 +56,13 @@ async function logout() {
 <template>
   <v-container style="max-width: 560px">
     <div class="d-flex align-center mb-4">
-      <v-btn icon="mdi-arrow-left" variant="tonal" color="primary" to="/" aria-label="Geri" />
+      <v-btn
+        icon="mdi-arrow-left"
+        variant="tonal"
+        color="primary"
+        aria-label="Geri"
+        @click="$router.back()"
+      />
       <span class="text-h6 ml-2">Ayarlar</span>
     </div>
 
@@ -97,8 +103,9 @@ async function logout() {
       <v-card-title class="text-subtitle-1">Aile Üyesi Davet Et</v-card-title>
       <v-card-text>
         <p class="text-body-2 text-medium-emphasis mb-2">
-          Bu kodu veya linki istediğin kişiyle paylaş — eşin, anne-baban ya da bakıcı olabilir. Kayıt
-          olurken girdiğinde aynı çocukları görüp takip edebilir; istediğin kadar kişi ekleyebilirsin.
+          Bu kodu veya linki istediğin kişiyle paylaş — eşin, anne-baban ya da bakıcı olabilir.
+          Kayıt olurken girdiğinde aynı çocukları görüp takip edebilir; istediğin kadar kişi
+          ekleyebilirsin.
         </p>
         <v-text-field
           :model-value="authStore.familyId"
@@ -107,11 +114,22 @@ async function logout() {
           variant="outlined"
           density="comfortable"
         />
-        <v-text-field :model-value="inviteLink" label="Davet linki" readonly variant="outlined" density="comfortable" />
+        <v-text-field
+          :model-value="inviteLink"
+          label="Davet linki"
+          readonly
+          variant="outlined"
+          density="comfortable"
+        />
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" variant="text" :append-icon="copied ? 'mdi-check' : 'mdi-content-copy'" @click="copyInvite">
+        <v-btn
+          color="primary"
+          variant="text"
+          :append-icon="copied ? 'mdi-check' : 'mdi-content-copy'"
+          @click="copyInvite"
+        >
           {{ copied ? 'Kopyalandı' : 'Linki Kopyala' }}
         </v-btn>
       </v-card-actions>
@@ -137,7 +155,8 @@ async function logout() {
     <v-card v-if="activeChildName" variant="outlined" class="mb-6">
       <v-card-title class="text-subtitle-1 text-error">Tehlikeli Bölge</v-card-title>
       <v-card-text>
-        {{ activeChildName }} için tüm ateş ve ilaç kayıtlarını kalıcı olarak sil. Bu işlem geri alınamaz.
+        {{ activeChildName }} için tüm ateş ve ilaç kayıtlarını kalıcı olarak sil. Bu işlem geri
+        alınamaz.
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -148,7 +167,7 @@ async function logout() {
     </v-card>
 
     <p class="text-caption text-medium-emphasis text-center">
-      Ateş Ölçer, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.
+      Kido, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.
     </p>
 
     <v-dialog v-model="showClearConfirm" max-width="360">

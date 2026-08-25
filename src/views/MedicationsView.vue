@@ -76,12 +76,18 @@ async function confirmDelete() {
 <template>
   <v-container style="max-width: 560px">
     <div class="d-flex align-center mb-2">
-      <v-btn icon="mdi-arrow-left" variant="tonal" color="primary" to="/" aria-label="Geri" />
+      <v-btn
+        icon="mdi-arrow-left"
+        variant="tonal"
+        color="primary"
+        aria-label="Geri"
+        @click="$router.back()"
+      />
       <span class="text-h6 ml-2">İlaçlarım</span>
     </div>
     <p v-if="activeChild" class="text-body-2 text-medium-emphasis mb-4">
-      {{ activeChild.name }} için tanımlı ilaçlar. Her ilacın adını ve iki doz arasında beklenmesi gereken süreyi
-      sen belirlersin.
+      {{ activeChild.name }} için tanımlı ilaçlar. Her ilacın adını ve iki doz arasında beklenmesi
+      gereken süreyi sen belirlersin.
     </p>
 
     <v-list v-if="medicationsStore.medications.length" lines="two" class="mb-4">
@@ -93,7 +99,9 @@ async function confirmDelete() {
         </template>
         <v-list-item-title>{{ med.name }}</v-list-item-title>
         <v-list-item-subtitle>
-          {{ med.minIntervalHours }} saatte bir güvenli<span v-if="med.note"> · {{ med.note }}</span>
+          {{ med.minIntervalHours }} saatte bir güvenli<span v-if="med.note">
+            · {{ med.note }}</span
+          >
         </v-list-item-subtitle>
         <template #append>
           <v-btn
@@ -108,13 +116,22 @@ async function confirmDelete() {
     </v-list>
     <div v-else class="text-center text-medium-emphasis py-8">Henüz ilaç eklenmedi.</div>
 
-    <v-btn block size="large" color="primary" variant="tonal" prepend-icon="mdi-plus" @click="openAdd">
+    <v-btn
+      block
+      size="large"
+      color="primary"
+      variant="tonal"
+      prepend-icon="mdi-plus"
+      @click="openAdd"
+    >
       İlaç Ekle
     </v-btn>
 
     <v-dialog v-model="showDialog" max-width="420">
       <v-card>
-        <v-card-title class="text-h6">{{ editingMedication ? 'İlacı Düzenle' : 'İlaç Ekle' }}</v-card-title>
+        <v-card-title class="text-h6">{{
+          editingMedication ? 'İlacı Düzenle' : 'İlaç Ekle'
+        }}</v-card-title>
         <v-card-text>
           <v-text-field
             v-model="name"
@@ -163,8 +180,8 @@ async function confirmDelete() {
       <v-card v-if="confirmDeleteTarget">
         <v-card-title class="text-h6">İlacı sil</v-card-title>
         <v-card-text>
-          {{ confirmDeleteTarget.name }} silinecek. Geçmiş kayıtlar etkilenmez, sadece yeni doz girişinde bu ilaç
-          artık seçilemez.
+          {{ confirmDeleteTarget.name }} silinecek. Geçmiş kayıtlar etkilenmez, sadece yeni doz
+          girişinde bu ilaç artık seçilemez.
         </v-card-text>
         <v-card-actions>
           <v-spacer />
