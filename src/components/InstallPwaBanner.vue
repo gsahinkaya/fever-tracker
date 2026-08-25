@@ -8,7 +8,6 @@ interface BeforeInstallPromptEvent extends Event {
 
 const deferredPrompt = ref<BeforeInstallPromptEvent | null>(null)
 const showBanner = ref(false)
-const isIos = ref(false)
 
 onMounted(() => {
   const isStandalone =
@@ -16,17 +15,11 @@ onMounted(() => {
     (window.navigator as Navigator & { standalone?: boolean }).standalone === true
   if (isStandalone) return
 
-  isIos.value = /iphone|ipad|ipod/i.test(window.navigator.userAgent)
-
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault()
     deferredPrompt.value = e as BeforeInstallPromptEvent
     showBanner.value = true
   })
-
-  if (isIos.value) {
-    showBanner.value = true
-  }
 })
 
 async function install() {
@@ -48,15 +41,10 @@ async function install() {
     closable
     @click:close="showBanner = false"
   >
-    <span v-if="isIos">
-      Ana ekrana eklemek için Safari'de paylaş
-      <v-icon icon="mdi-export-variant" size="16" /> düğmesine dokun, ardından "Ana Ekrana Ekle"yi
-      seç.
-    </span>
-    <span v-else>Kido'yu ana ekranına ekleyip tek dokunuşla açabilirsin.</span>
+    Kido'yu ana ekranına ekleyip tek dokunuşla açabilirsin.
 
     <template #append>
-      <v-btn v-if="!isIos" size="small" variant="text" @click="install">Ekle</v-btn>
+      <v-btn size="small" variant="text" @click="install">Ekle</v-btn>
     </template>
   </v-alert>
 </template>
