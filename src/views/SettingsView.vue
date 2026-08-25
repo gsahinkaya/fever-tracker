@@ -94,10 +94,11 @@ async function logout() {
     </v-card>
 
     <v-card variant="outlined" class="mb-6">
-      <v-card-title class="text-subtitle-1">Eşini Davet Et</v-card-title>
+      <v-card-title class="text-subtitle-1">Aile Üyesi Davet Et</v-card-title>
       <v-card-text>
         <p class="text-body-2 text-medium-emphasis mb-2">
-          Bu kodu veya linki eşinle paylaş; kayıt olurken girdiğinde aynı çocukları görüp düzenleyebilir.
+          Bu kodu veya linki istediğin kişiyle paylaş — eşin, anne-baban ya da bakıcı olabilir. Kayıt
+          olurken girdiğinde aynı çocukları görüp takip edebilir; istediğin kadar kişi ekleyebilirsin.
         </p>
         <v-text-field
           :model-value="authStore.familyId"
@@ -124,7 +125,7 @@ async function logout() {
           Bu tarayıcı bildirimleri desteklemiyor
         </span>
         <span v-else class="text-medium-emphasis">
-          Doz hatırlatmaları ve eşinin girişleri için bildirimlere izin ver
+          Doz hatırlatmaları ve aile üyelerinin girişleri için bildirimlere izin ver
         </span>
       </v-card-text>
       <v-card-actions v-if="notifStatus !== 'granted' && notifStatus !== 'unsupported'">

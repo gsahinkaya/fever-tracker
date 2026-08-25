@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useChildrenStore } from '@/stores/children'
+import { ageLabel } from '@/lib/age'
 import type { FeverReading } from '@/types/health'
 import TemperatureChart from '@/components/chart/TemperatureChart.vue'
 
@@ -10,9 +11,26 @@ const childrenStore = useChildrenStore()
 
 const recent = computed(() => store.recentEntries(48))
 const readings = computed(() => recent.value.filter((e) => e.type === 'reading') as FeverReading[])
-const activeChildName = computed(
-  () => childrenStore.children.find((c) => c.id === store.activeChildId)?.name ?? '',
+const activeChild = computed(
+  () => childrenStore.children.find((c) => c.id === store.activeChildId) ?? null,
 )
+const activeChildName = computed(() => activeChild.value?.name ?? '')
+
+const genderLabels: Record<string, string> = { female: 'Kız', male: 'Erkek' }
+
+const childSummaryParts = computed(() => {
+  const child = activeChild.value
+  if (!child) return []
+  const parts: string[] = []
+  if (child.gender) parts.push(genderLabels[child.gender] ?? child.gender)
+  if (child.birthDate) {
+    const formatted = new Date(child.birthDate).toLocaleDateString('tr-TR')
+    parts.push(`${formatted} (${ageLabel(child.birthDate)})`)
+  }
+  if (child.heightCm) parts.push(`${child.heightCm} cm`)
+  if (child.weightKg) parts.push(`${child.weightKg} kg`)
+  return parts
+})
 
 function timeLabel(ts: number) {
   return new Date(ts).toLocaleString('tr-TR', {
@@ -51,12 +69,15 @@ function createPdf() {
       Oluştur" ile kaydedip paylaşabilirsin.
     </p>
 
-    <div class="print-only mb-4">
-      <h2 class="text-h6">
-        Doktor Özet Raporu{{ activeChildName ? ` · ${activeChildName}` : '' }}
-      </h2>
-      <p class="text-body-2">Son 48 saat · Oluşturulma: {{ generatedAtLabel }}</p>
-    </div>
+    <v-card variant="outlined" class="mb-4 pa-4">
+      <div class="text-h6">{{ activeChildName || 'Doktor Özet Raporu' }}</div>
+      <div v-if="childSummaryParts.length" class="text-body-2 text-medium-emphasis">
+        {{ childSummaryParts.join(' · ') }}
+      </div>
+      <div class="text-caption text-medium-emphasis mt-1">
+        Son 48 saat · Oluşturulma: {{ generatedAtLabel }}
+      </div>
+    </v-card>
 
     <v-card variant="outlined" class="mb-6 pa-2">
       <TemperatureChart :readings="readings" />

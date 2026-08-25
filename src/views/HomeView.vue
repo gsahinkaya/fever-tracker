@@ -134,7 +134,7 @@ const medicationsWithHistory = computed(() =>
         density="comfortable"
         class="mb-6"
       >
-        Doz ve eşinin girişleri için bildirimlere izin ver.
+        Doz ve aile üyelerinin girişleri için bildirimlere izin ver.
         <template #append>
           <v-btn size="small" variant="text" @click="enableNotifications">İzin ver</v-btn>
         </template>

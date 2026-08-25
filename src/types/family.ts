@@ -2,6 +2,9 @@ export interface Child {
   id: string
   name: string
   birthDate?: string
+  gender?: 'female' | 'male'
+  heightCm?: number
+  weightKg?: number
 }
 
 export interface UserProfile {

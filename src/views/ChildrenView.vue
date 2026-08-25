@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
+import { ageLabel } from '@/lib/age'
 import type { Child } from '@/types/family'
 
 const authStore = useAuthStore()
@@ -11,12 +12,18 @@ const showDialog = ref(false)
 const editingChild = ref<Child | null>(null)
 const name = ref('')
 const birthDate = ref('')
+const gender = ref<Child['gender'] | null>(null)
+const heightCm = ref<number | null>(null)
+const weightKg = ref<number | null>(null)
 const confirmDeleteTarget = ref<Child | null>(null)
 
 function openAdd() {
   editingChild.value = null
   name.value = ''
   birthDate.value = ''
+  gender.value = null
+  heightCm.value = null
+  weightKg.value = null
   showDialog.value = true
 }
 
@@ -24,12 +31,21 @@ function openEdit(child: Child) {
   editingChild.value = child
   name.value = child.name
   birthDate.value = child.birthDate ?? ''
+  gender.value = child.gender ?? null
+  heightCm.value = child.heightCm ?? null
+  weightKg.value = child.weightKg ?? null
   showDialog.value = true
 }
 
 async function save() {
   if (!name.value.trim() || !authStore.familyId) return
-  const data = { name: name.value.trim(), ...(birthDate.value ? { birthDate: birthDate.value } : {}) }
+  const data = {
+    name: name.value.trim(),
+    ...(birthDate.value ? { birthDate: birthDate.value } : {}),
+    ...(gender.value ? { gender: gender.value } : {}),
+    ...(heightCm.value ? { heightCm: heightCm.value } : {}),
+    ...(weightKg.value ? { weightKg: weightKg.value } : {}),
+  }
   if (editingChild.value) {
     await childrenStore.updateChild(authStore.familyId, editingChild.value.id, data)
   } else {
@@ -43,16 +59,6 @@ async function confirmDelete() {
     await childrenStore.removeChild(authStore.familyId, confirmDeleteTarget.value.id)
   }
   confirmDeleteTarget.value = null
-}
-
-function ageLabel(birthDate?: string) {
-  if (!birthDate) return ''
-  const birth = new Date(birthDate)
-  const now = new Date()
-  let months = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth())
-  if (now.getDate() < birth.getDate()) months--
-  if (months < 24) return `${Math.max(months, 0)} aylık`
-  return `${Math.floor(months / 12)} yaşında`
 }
 </script>
 
@@ -71,7 +77,9 @@ function ageLabel(birthDate?: string) {
           </v-avatar>
         </template>
         <v-list-item-title>{{ child.name }}</v-list-item-title>
-        <v-list-item-subtitle v-if="child.birthDate">{{ ageLabel(child.birthDate) }}</v-list-item-subtitle>
+        <v-list-item-subtitle v-if="child.birthDate">{{
+          ageLabel(child.birthDate)
+        }}</v-list-item-subtitle>
         <template #append>
           <v-btn
             icon="mdi-delete-outline"
@@ -85,15 +93,30 @@ function ageLabel(birthDate?: string) {
     </v-list>
     <div v-else class="text-center text-medium-emphasis py-8">Henüz çocuk eklenmedi.</div>
 
-    <v-btn block size="large" color="primary" variant="tonal" prepend-icon="mdi-plus" @click="openAdd">
+    <v-btn
+      block
+      size="large"
+      color="primary"
+      variant="tonal"
+      prepend-icon="mdi-plus"
+      @click="openAdd"
+    >
       Çocuk Ekle
     </v-btn>
 
     <v-dialog v-model="showDialog" max-width="420">
       <v-card>
-        <v-card-title class="text-h6">{{ editingChild ? 'Çocuğu Düzenle' : 'Çocuk Ekle' }}</v-card-title>
+        <v-card-title class="text-h6">{{
+          editingChild ? 'Çocuğu Düzenle' : 'Çocuk Ekle'
+        }}</v-card-title>
         <v-card-text>
-          <v-text-field v-model="name" label="Adı" variant="outlined" density="comfortable" autofocus />
+          <v-text-field
+            v-model="name"
+            label="Adı"
+            variant="outlined"
+            density="comfortable"
+            autofocus
+          />
           <v-text-field
             v-model="birthDate"
             type="date"
@@ -101,11 +124,36 @@ function ageLabel(birthDate?: string) {
             variant="outlined"
             density="comfortable"
           />
+          <v-radio-group v-model="gender" density="comfortable" inline hide-details class="mb-2">
+            <template #label>
+              <span class="text-body-2">Cinsiyet (opsiyonel)</span>
+            </template>
+            <v-radio label="Kız" value="female" />
+            <v-radio label="Erkek" value="male" />
+          </v-radio-group>
+          <div class="d-flex ga-2">
+            <v-text-field
+              v-model.number="heightCm"
+              type="number"
+              label="Boy (cm, opsiyonel)"
+              variant="outlined"
+              density="comfortable"
+            />
+            <v-text-field
+              v-model.number="weightKg"
+              type="number"
+              label="Kilo (kg, opsiyonel)"
+              variant="outlined"
+              density="comfortable"
+            />
+          </div>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn variant="text" @click="showDialog = false">Vazgeç</v-btn>
-          <v-btn color="primary" variant="flat" :disabled="!name.trim()" @click="save">Kaydet</v-btn>
+          <v-btn color="primary" variant="flat" :disabled="!name.trim()" @click="save"
+            >Kaydet</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -118,7 +166,8 @@ function ageLabel(birthDate?: string) {
       <v-card v-if="confirmDeleteTarget">
         <v-card-title class="text-h6">Çocuğu sil</v-card-title>
         <v-card-text>
-          {{ confirmDeleteTarget.name }} ve tüm ateş/ilaç kayıtları kalıcı olarak silinecek. Emin misin?
+          {{ confirmDeleteTarget.name }} ve tüm ateş/ilaç kayıtları kalıcı olarak silinecek. Emin
+          misin?
         </v-card-text>
         <v-card-actions>
           <v-spacer />

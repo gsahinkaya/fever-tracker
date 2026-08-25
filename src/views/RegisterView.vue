@@ -98,7 +98,7 @@ async function submit() {
       <v-text-field
         v-model="inviteCode"
         label="Davet kodu (varsa)"
-        hint="Eşin seni davet ettiyse buraya kodu gir"
+        hint="Bir aile üyesi seni davet ettiyse buraya kodu gir"
         persistent-hint
         variant="outlined"
         density="comfortable"

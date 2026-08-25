@@ -41,9 +41,6 @@ body {
   .v-main {
     padding: 0 !important;
   }
-  .print-only {
-    display: block !important;
-  }
   body,
   .v-application {
     background: #fff !important;
@@ -61,8 +58,4 @@ body {
     --status-serious: #ec835a !important;
     --status-critical: #d03b3b !important;
   }
-}
-
-.print-only {
-  display: none;
 }

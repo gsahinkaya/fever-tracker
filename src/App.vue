@@ -22,7 +22,7 @@ useEntryNotifications()
 const isAuthPage = computed(() => route.path === '/giris' || route.path === '/kayit')
 
 function describeIncomingEntry(entry: LogEntry): string {
-  const who = entry.createdByEmail?.split('@')[0] ?? 'Diğer ebeveyn'
+  const who = entry.createdByEmail?.split('@')[0] ?? 'Bir aile üyesi'
   const what =
     entry.type === 'reading'
       ? `${entry.temperature}° ölçüm ekledi`
@@ -31,7 +31,7 @@ function describeIncomingEntry(entry: LogEntry): string {
 }
 
 function describeIncomingMedication(medication: Medication): string {
-  const who = medication.createdByEmail?.split('@')[0] ?? 'Diğer ebeveyn'
+  const who = medication.createdByEmail?.split('@')[0] ?? 'Bir aile üyesi'
   return `${who} ${medication.name} ilacını ekledi`
 }
 
@@ -42,7 +42,7 @@ const feedingMilkTypeLabels: Record<string, string> = {
 }
 
 function describeIncomingFeeding(entry: FeedingEntry): string {
-  const who = entry.createdByEmail?.split('@')[0] ?? 'Diğer ebeveyn'
+  const who = entry.createdByEmail?.split('@')[0] ?? 'Bir aile üyesi'
   if (entry.type === 'breastfeeding') return `${who} emzirdi`
   if (entry.type === 'bottle')
     return `${who} ${entry.amountMl} ml ${feedingMilkTypeLabels[entry.milkType]} verdi`
