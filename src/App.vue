@@ -34,20 +34,17 @@ function describeIncomingMedication(medication: Medication): string {
 }
 
 // Merge two separately-tracked streams (fever entries and medications) by
-// actual arrival time, oldest first, so both the banner and the bell menu
-// agree on what really happened last — not just whichever store's array
-// happens to be concatenated second.
+// when they actually happened, oldest first, so both the banner and the
+// bell menu agree on what's truly latest — not just whichever store's
+// array happens to be concatenated second.
 const incomingItems = computed(() =>
   [
-    ...feverLogStore.incomingEntries.map((i) => ({
-      receivedAt: i.receivedAt,
-      text: describeIncomingEntry(i.entry),
+    ...feverLogStore.incomingEntries.map((entry) => ({ at: entry.takenAt, text: describeIncomingEntry(entry) })),
+    ...medicationsStore.incomingMedications.map((medication) => ({
+      at: medication.createdAt ?? 0,
+      text: describeIncomingMedication(medication),
     })),
-    ...medicationsStore.incomingMedications.map((i) => ({
-      receivedAt: i.receivedAt,
-      text: describeIncomingMedication(i.medication),
-    })),
-  ].sort((a, b) => a.receivedAt - b.receivedAt),
+  ].sort((a, b) => a.at - b.at),
 )
 
 const incomingBannerText = computed(() => {
@@ -84,8 +81,8 @@ function acknowledgeIncoming() {
 // Bell icon in the app bar: a persistent, always-visible fallback in case a
 // banner was missed or the tab wasn't open when the toast would've shown.
 const now = useNow(60_000)
-function relativeTime(receivedAt: number): string {
-  const minutes = Math.floor((now.value - receivedAt) / 60_000)
+function relativeTime(at: number): string {
+  const minutes = Math.floor((now.value - at) / 60_000)
   if (minutes < 1) return 'az önce'
   if (minutes < 60) return `${minutes} dk önce`
   return `${Math.floor(minutes / 60)} sa önce`
@@ -151,7 +148,7 @@ watch(
             <v-list density="comfortable">
               <v-list-item v-for="(item, i) in [...incomingItems].reverse()" :key="i">
                 <v-list-item-title class="text-body-2">{{ item.text }}</v-list-item-title>
-                <v-list-item-subtitle>{{ relativeTime(item.receivedAt) }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ relativeTime(item.at) }}</v-list-item-subtitle>
               </v-list-item>
             </v-list>
             <v-card-actions>

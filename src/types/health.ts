@@ -3,10 +3,13 @@ export interface Medication {
   name: string
   minIntervalHours: number
   note?: string
-  // Who added this medication, so the other parent can be notified. Optional
-  // because medications created before this field existed won't have it.
+  // Who added this medication and when, so the other parent can be
+  // notified — including catching up after reopening the app, which needs
+  // a timestamp to compare against a "last seen" watermark. Optional
+  // because medications created before these fields existed won't have them.
   createdBy?: string
   createdByEmail?: string
+  createdAt?: number
 }
 
 export interface FeverReading {
