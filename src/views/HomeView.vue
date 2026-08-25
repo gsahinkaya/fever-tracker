@@ -43,7 +43,9 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
         <p class="text-body-2 text-medium-emphasis mb-6">
           Ateş ve ilaç takibi yapabilmek için önce çocuğunun bilgilerini ekle.
         </p>
-        <v-btn color="primary" size="large" prepend-icon="mdi-plus" to="/cocuklar">Çocuk Ekle</v-btn>
+        <v-btn color="primary" size="large" prepend-icon="mdi-plus" to="/cocuklar"
+          >Çocuk Ekle</v-btn
+        >
       </div>
     </template>
 
@@ -62,14 +64,32 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
         Ateş Girişi
       </v-btn>
 
-      <v-btn block size="large" color="primary" variant="tonal" class="mb-6" @click="showDoseDialog = true">
+      <v-btn
+        block
+        size="large"
+        color="primary"
+        variant="tonal"
+        class="mb-4"
+        @click="showDoseDialog = true"
+      >
         <v-icon start icon="mdi-pill" />
         İlaç Verildi
       </v-btn>
 
+      <v-btn block size="large" color="secondary" variant="tonal" class="mb-6" to="/beslenme">
+        <v-icon start icon="mdi-baby-bottle-outline" />
+        Beslenme
+      </v-btn>
+
       <InstallPwaBanner />
 
-      <v-alert v-if="notifStatus !== 'granted'" type="info" variant="tonal" density="comfortable" class="mb-6">
+      <v-alert
+        v-if="notifStatus !== 'granted'"
+        type="info"
+        variant="tonal"
+        density="comfortable"
+        class="mb-6"
+      >
         Doz zamanı geldiğinde hatırlatma alman için bildirimlere izin ver.
         <template #append>
           <v-btn size="small" variant="text" @click="enableNotifications">İzin ver</v-btn>
@@ -78,7 +98,9 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
 
       <div class="d-flex align-center justify-space-between mb-2">
         <span class="text-subtitle-2 text-medium-emphasis">Sonraki Güvenli Doz</span>
-        <v-btn variant="text" size="small" append-icon="mdi-arrow-right" to="/ilaclar">İlaçlarım</v-btn>
+        <v-btn variant="text" size="small" append-icon="mdi-arrow-right" to="/ilaclar"
+          >İlaçlarım</v-btn
+        >
       </div>
       <v-row v-if="medicationsStore.medications.length" class="mb-6">
         <v-col v-for="med in medicationsStore.medications" :key="med.id" cols="12" sm="6">
@@ -87,12 +109,19 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
       </v-row>
       <v-card v-else variant="outlined" class="mb-6 pa-4 text-center">
         <p class="text-body-2 text-medium-emphasis mb-3">Henüz ilaç eklenmedi.</p>
-        <v-btn color="primary" variant="tonal" prepend-icon="mdi-plus" to="/ilaclar">İlaç Ekle</v-btn>
+        <v-btn color="primary" variant="tonal" prepend-icon="mdi-plus" to="/ilaclar"
+          >İlaç Ekle</v-btn
+        >
       </v-card>
 
       <div class="d-flex align-center justify-space-between mb-2">
         <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saat</span>
-        <v-btn variant="text" size="small" append-icon="mdi-arrow-right" @click="router.push('/rapor')">
+        <v-btn
+          variant="text"
+          size="small"
+          append-icon="mdi-arrow-right"
+          @click="router.push('/rapor')"
+        >
           Doktor Özet Raporu
         </v-btn>
       </div>

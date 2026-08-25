@@ -5,15 +5,17 @@ import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
+import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
-import type { LogEntry, Medication } from '@/types/health'
+import type { FeedingEntry, LogEntry, Medication } from '@/types/health'
 
 const route = useRoute()
 const authStore = useAuthStore()
 const childrenStore = useChildrenStore()
 const feverLogStore = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
+const feedingLogStore = useFeedingLogStore()
 
 useEntryNotifications()
 
@@ -33,16 +35,37 @@ function describeIncomingMedication(medication: Medication): string {
   return `${who} ${medication.name} ilacını ekledi`
 }
 
-// Merge two separately-tracked streams (fever entries and medications) by
+const feedingMilkTypeLabels: Record<string, string> = {
+  formula: 'mama',
+  'breast-milk': 'anne sütü',
+  mixed: 'karışık',
+}
+
+function describeIncomingFeeding(entry: FeedingEntry): string {
+  const who = entry.createdByEmail?.split('@')[0] ?? 'Diğer ebeveyn'
+  if (entry.type === 'breastfeeding') return `${who} emzirdi`
+  if (entry.type === 'bottle')
+    return `${who} ${entry.amountMl} ml ${feedingMilkTypeLabels[entry.milkType]} verdi`
+  return `${who} katı gıda verdi`
+}
+
+// Merge separately-tracked streams (fever entries, medications, feedings) by
 // when they actually happened, oldest first, so both the banner and the
 // bell menu agree on what's truly latest — not just whichever store's
-// array happens to be concatenated second.
+// array happens to be concatenated last.
 const incomingItems = computed(() =>
   [
-    ...feverLogStore.incomingEntries.map((entry) => ({ at: entry.takenAt, text: describeIncomingEntry(entry) })),
+    ...feverLogStore.incomingEntries.map((entry) => ({
+      at: entry.takenAt,
+      text: describeIncomingEntry(entry),
+    })),
     ...medicationsStore.incomingMedications.map((medication) => ({
       at: medication.createdAt ?? 0,
       text: describeIncomingMedication(medication),
+    })),
+    ...feedingLogStore.incomingEntries.map((entry) => ({
+      at: entry.takenAt,
+      text: describeIncomingFeeding(entry),
     })),
   ].sort((a, b) => a.at - b.at),
 )
@@ -75,6 +98,7 @@ const showBanner = computed(
 function acknowledgeIncoming() {
   feverLogStore.acknowledgeIncoming()
   medicationsStore.acknowledgeIncoming()
+  feedingLogStore.acknowledgeIncoming()
   bannerDismissed.value = false
 }
 
@@ -118,6 +142,7 @@ watch(
   () => feverLogStore.activeChildId,
   (childId) => {
     medicationsStore.watchChild(authStore.familyId, childId)
+    feedingLogStore.watchChild(childId)
     if (childId && authStore.familyId) {
       localStorage.setItem(`ates-olcer:active-child:${authStore.familyId}`, childId)
     }

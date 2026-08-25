@@ -1,6 +1,14 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { addDoc, collection, doc, getDocs, onSnapshot, updateDoc, writeBatch } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  onSnapshot,
+  updateDoc,
+  writeBatch,
+} from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Child } from '@/types/family'
 
@@ -31,13 +39,20 @@ export const useChildrenStore = defineStore('children', () => {
 
   async function removeChild(familyId: string, childId: string) {
     // Firestore doesn't cascade-delete subcollections, so clear the child's
-    // entries and medications first to avoid leaving orphaned data behind.
+    // entries, medications, and feedings first to avoid leaving orphaned
+    // data behind.
     const entriesRef = collection(db, 'families', familyId, 'children', childId, 'entries')
     const medicationsRef = collection(db, 'families', familyId, 'children', childId, 'medications')
-    const [entriesSnap, medicationsSnap] = await Promise.all([getDocs(entriesRef), getDocs(medicationsRef)])
+    const feedingsRef = collection(db, 'families', familyId, 'children', childId, 'feedings')
+    const [entriesSnap, medicationsSnap, feedingsSnap] = await Promise.all([
+      getDocs(entriesRef),
+      getDocs(medicationsRef),
+      getDocs(feedingsRef),
+    ])
     const batch = writeBatch(db)
     entriesSnap.docs.forEach((d) => batch.delete(d.ref))
     medicationsSnap.docs.forEach((d) => batch.delete(d.ref))
+    feedingsSnap.docs.forEach((d) => batch.delete(d.ref))
     batch.delete(doc(db, 'families', familyId, 'children', childId))
     await batch.commit()
   }

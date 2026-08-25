@@ -37,3 +37,34 @@ export interface DoseEntry {
 }
 
 export type LogEntry = FeverReading | DoseEntry
+
+export interface BreastfeedingEntry {
+  id: string
+  type: 'breastfeeding'
+  takenAt: number
+  durationMinutes?: number
+  side?: 'left' | 'right' | 'both'
+  createdBy?: string
+  createdByEmail?: string
+}
+
+export interface BottleEntry {
+  id: string
+  type: 'bottle'
+  takenAt: number
+  amountMl: number
+  milkType: 'breast-milk' | 'formula' | 'mixed'
+  createdBy?: string
+  createdByEmail?: string
+}
+
+export interface SolidFoodEntry {
+  id: string
+  type: 'solid'
+  takenAt: number
+  note?: string
+  createdBy?: string
+  createdByEmail?: string
+}
+
+export type FeedingEntry = BreastfeedingEntry | BottleEntry | SolidFoodEntry
