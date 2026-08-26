@@ -1,16 +1,21 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { cert, getApps, initializeApp } from 'firebase-admin/app'
-import { getAuth } from 'firebase-admin/auth'
+import { createRemoteJWKSet, jwtVerify } from 'jose'
 
-// Lazily initialized so a cold start that never receives a request never pays
-// for it, and so repeated invocations in the same warm instance reuse it.
-function getFirebaseAuth() {
-  if (getApps().length === 0) {
-    const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-    if (!raw) throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY is not set')
-    initializeApp({ credential: cert(JSON.parse(raw)) })
-  }
-  return getAuth()
+// Verifying a Firebase ID token doesn't require the Admin SDK (and its heavy,
+// serverless-bundler-unfriendly dependency tree) — it's a standard RS256 JWT
+// signed with Google's rotating public keys. Verifying it directly with a
+// lightweight JOSE library needs no service-account secret at all.
+const JWKS = createRemoteJWKSet(
+  new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'),
+)
+
+async function verifyFirebaseToken(idToken: string) {
+  const projectId = process.env.VITE_FIREBASE_PROJECT_ID
+  if (!projectId) throw new Error('VITE_FIREBASE_PROJECT_ID is not set')
+  await jwtVerify(idToken, JWKS, {
+    issuer: `https://securetoken.google.com/${projectId}`,
+    audience: projectId,
+  })
 }
 
 const SYSTEM_PROMPT = `Sen Kido adında, bebek/çocuk sahibi ebeveynlere yardımcı olan bir asistansın.
@@ -34,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    await getFirebaseAuth().verifyIdToken(idToken)
+    await verifyFirebaseToken(idToken)
   } catch {
     res.status(401).json({ error: 'Oturum geçersiz, tekrar giriş yap.' })
     return
