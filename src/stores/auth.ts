@@ -71,6 +71,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function register(opts: {
     email: string
     password: string
+    name?: string
     phone?: string
     birthDate?: string
     inviteCode?: string
@@ -78,11 +79,14 @@ export const useAuthStore = defineStore('auth', () => {
     const cred = await createUserWithEmailAndPassword(auth, opts.email, opts.password)
     const uid = cred.user.uid
 
-    const familyIdToUse = opts.inviteCode ? await joinFamily(opts.inviteCode, uid) : await createFamily(uid)
+    const familyIdToUse = opts.inviteCode
+      ? await joinFamily(opts.inviteCode, uid)
+      : await createFamily(uid)
 
     const userProfile: UserProfile = {
       email: opts.email,
       familyId: familyIdToUse,
+      ...(opts.name ? { name: opts.name } : {}),
       ...(opts.phone ? { phone: opts.phone } : {}),
       ...(opts.birthDate ? { birthDate: opts.birthDate } : {}),
     }

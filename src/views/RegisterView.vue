@@ -8,6 +8,7 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 
+const name = ref('')
 const email = ref('')
 const phone = ref('')
 const password = ref('')
@@ -45,6 +46,7 @@ async function submit() {
     await authStore.register({
       email: email.value,
       password: password.value,
+      name: name.value || undefined,
       phone: phone.value || undefined,
       birthDate: birthDate.value || undefined,
       inviteCode: inviteCode.value || undefined,
@@ -67,12 +69,19 @@ async function submit() {
 
     <v-form @submit.prevent="submit">
       <v-text-field
+        v-model="name"
+        label="Ad Soyad"
+        variant="outlined"
+        density="comfortable"
+        autofocus
+        required
+      />
+      <v-text-field
         v-model="email"
         label="E-posta"
         type="email"
         variant="outlined"
         density="comfortable"
-        autofocus
         required
       />
       <v-text-field

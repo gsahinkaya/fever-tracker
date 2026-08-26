@@ -59,7 +59,10 @@ async function logout() {
     <v-card variant="outlined" class="mb-6">
       <v-card-title class="text-subtitle-1">Hesap</v-card-title>
       <v-card-text>
-        <div class="text-body-2">{{ authStore.profile?.email }}</div>
+        <div v-if="authStore.profile?.name" class="text-body-2 font-weight-bold">
+          {{ authStore.profile.name }}
+        </div>
+        <div class="text-body-2 text-medium-emphasis">{{ authStore.profile?.email }}</div>
       </v-card-text>
       <v-card-actions>
         <v-spacer />

@@ -10,6 +10,7 @@ export interface Child {
 export interface UserProfile {
   email: string
   familyId: string
+  name?: string
   phone?: string
   birthDate?: string
 }
