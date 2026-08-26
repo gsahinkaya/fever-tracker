@@ -76,12 +76,14 @@ const recent = computed(() => store.recentEntries(48))
       </v-col>
     </v-row>
 
-    <div class="d-flex align-center justify-space-between mb-2 mt-4">
-      <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saat</span>
-    </div>
-    <v-card variant="outlined">
-      <FeedingTimelineList :entries="recent" />
-    </v-card>
+    <template v-if="recent.length">
+      <div class="d-flex align-center justify-space-between mb-2 mt-4">
+        <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saat</span>
+      </div>
+      <v-card variant="outlined">
+        <FeedingTimelineList :entries="recent" />
+      </v-card>
+    </template>
 
     <AddBreastfeedingDialog v-model="showBreastfeedingDialog" />
     <AddBottleDialog v-model="showBottleDialog" />
