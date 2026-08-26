@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import KidoLogo from '@/components/KidoLogo.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -23,11 +24,14 @@ onMounted(() => {
 
 function friendlyError(err: unknown): string {
   const code = (err as { code?: string })?.code ?? ''
-  if (code === 'auth/email-already-in-use') return 'Bu e-posta ile zaten bir hesap var. Giriş yapmayı dene.'
+  if (code === 'auth/email-already-in-use')
+    return 'Bu e-posta ile zaten bir hesap var. Giriş yapmayı dene.'
   if (code === 'auth/weak-password') return 'Şifre en az 6 karakter olmalı.'
   if (code === 'auth/invalid-email') return 'Geçerli bir e-posta gir.'
   const message = (err as Error)?.message
-  return message && !message.startsWith('Firebase:') ? message : 'Kayıt sırasında bir sorun oluştu, tekrar dene.'
+  return message && !message.startsWith('Firebase:')
+    ? message
+    : 'Kayıt sırasında bir sorun oluştu, tekrar dene.'
 }
 
 async function submit() {
@@ -57,8 +61,8 @@ async function submit() {
 <template>
   <v-container class="py-8" style="max-width: 420px">
     <div class="text-center mb-8">
-      <v-icon icon="mdi-baby-face-outline" size="48" color="primary" />
-      <h1 class="text-h5 mt-2">Hesap Oluştur</h1>
+      <h1><KidoLogo :height="40" /></h1>
+      <p class="text-subtitle-1 mt-3 mb-0">Hesap Oluştur</p>
     </div>
 
     <v-form @submit.prevent="submit">
@@ -71,7 +75,13 @@ async function submit() {
         autofocus
         required
       />
-      <v-text-field v-model="phone" label="Telefon (opsiyonel)" type="tel" variant="outlined" density="comfortable" />
+      <v-text-field
+        v-model="phone"
+        label="Telefon (opsiyonel)"
+        type="tel"
+        variant="outlined"
+        density="comfortable"
+      />
       <v-text-field
         v-model="password"
         label="Şifre"
@@ -109,7 +119,9 @@ async function submit() {
         {{ errorMessage }}
       </v-alert>
 
-      <v-btn type="submit" block size="large" color="primary" :loading="loading" class="mt-2">Kayıt Ol</v-btn>
+      <v-btn type="submit" block size="large" color="primary" :loading="loading" class="mt-2"
+        >Kayıt Ol</v-btn
+      >
     </v-form>
 
     <div class="text-center mt-6">

@@ -85,7 +85,7 @@ const medicationsWithHistory = computed(() =>
         <v-col cols="4">
           <v-btn
             block
-            color="primary"
+            color="medication"
             variant="flat"
             style="aspect-ratio: 1 / 1; height: auto"
             rounded="lg"

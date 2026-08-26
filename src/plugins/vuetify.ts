@@ -22,6 +22,10 @@ export default createVuetify({
           // purple + semantic states), kept as this app's own accent for
           // that category so the home/feeding tiles stay color-coded.
           secondary: '#d15f28',
+          // Medication tile/actions — kept distinct from primary so the
+          // home-screen "İlaç" tile doesn't read as the same color as the
+          // (now purple) app header.
+          medication: '#0e7490',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',
