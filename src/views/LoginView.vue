@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import KidoWordmark from '@/components/KidoWordmark.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -29,7 +30,9 @@ async function submit() {
   <v-container class="py-8" style="max-width: 420px">
     <div class="text-center mb-8">
       <v-icon icon="mdi-baby-face-outline" size="48" color="primary" />
-      <h1 class="text-h5 mt-2">Kido</h1>
+      <h1 class="mt-2">
+        <KidoWordmark :height="34" style="color: rgb(var(--v-theme-primary))" />
+      </h1>
     </div>
 
     <v-form @submit.prevent="submit">

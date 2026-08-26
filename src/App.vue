@@ -8,6 +8,7 @@ import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
+import KidoWordmark from '@/components/KidoWordmark.vue'
 import type { FeedingEntry, LogEntry, Medication } from '@/types/health'
 
 const route = useRoute()
@@ -155,7 +156,7 @@ watch(
       </template>
       <v-app-bar-title>
         <div class="d-flex flex-column" style="line-height: 1.2">
-          <span class="text-subtitle-1 font-weight-bold">Kido</span>
+          <KidoWordmark :height="20" style="color: #fff" />
           <span v-if="activeChild" class="text-caption" style="opacity: 0.85">{{
             activeChild.name
           }}</span>
