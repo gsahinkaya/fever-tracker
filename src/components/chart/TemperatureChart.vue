@@ -21,14 +21,52 @@ function xFor(ts: number) {
 }
 function yFor(temp: number) {
   const span = tempMax.value - tempMin.value || 1
-  return height - padding.bottom - ((temp - tempMin.value) / span) * (height - padding.top - padding.bottom)
+  return (
+    height -
+    padding.bottom -
+    ((temp - tempMin.value) / span) * (height - padding.top - padding.bottom)
+  )
 }
 
 const linePath = computed(() =>
   sorted.value
-    .map((r, i) => `${i === 0 ? 'M' : 'L'} ${xFor(r.takenAt).toFixed(1)} ${yFor(r.temperature).toFixed(1)}`)
+    .map(
+      (r, i) =>
+        `${i === 0 ? 'M' : 'L'} ${xFor(r.takenAt).toFixed(1)} ${yFor(r.temperature).toFixed(1)}`,
+    )
     .join(' '),
 )
+
+// A soft wash under the line — a hint of weight without turning the chart
+// into a filled block. Closes the line path down to the baseline.
+const areaPath = computed(() => {
+  if (!sorted.value.length) return ''
+  const base = height - padding.bottom
+  const first = sorted.value[0]!
+  const last = sorted.value[sorted.value.length - 1]!
+  return `${linePath.value} L ${xFor(last.takenAt).toFixed(1)} ${base} L ${xFor(first.takenAt).toFixed(1)} ${base} Z`
+})
+
+const lastPoint = computed(() => sorted.value[sorted.value.length - 1] ?? null)
+
+// When readings cluster together (as few as one point always sits at the
+// left edge, since xFor falls back to a 0-span layout), the end-label can
+// run past the plot bounds — flip its anchor/offset near either edge
+// instead of always hanging it to the upper-left of the point.
+const endLabelX = computed(() => {
+  if (!lastPoint.value) return 0
+  const x = xFor(lastPoint.value.takenAt)
+  return x - padding.left < 28 ? x + 8 : x - 8
+})
+const endLabelAnchor = computed(() => {
+  if (!lastPoint.value) return 'end'
+  return xFor(lastPoint.value.takenAt) - padding.left < 28 ? 'start' : 'end'
+})
+const endLabelY = computed(() => {
+  if (!lastPoint.value) return 0
+  const y = yFor(lastPoint.value.temperature)
+  return y - padding.top < 16 ? y + 18 : y - 10
+})
 
 const hoverIndex = ref<number | null>(null)
 
@@ -67,11 +105,44 @@ function timeLabel(ts: number) {
       @pointermove="onMove"
       @pointerleave="hoverIndex = null"
     >
-      <line :x1="padding.left" :x2="width - padding.right" :y1="yFor(38)" :y2="yFor(38)" class="ref-line ref-serious" />
-      <text :x="width - padding.right" :y="yFor(38) - 4" class="ref-label ref-serious" text-anchor="end">38°C</text>
+      <defs>
+        <linearGradient id="temp-area-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--series-1)" stop-opacity="0.16" />
+          <stop offset="100%" stop-color="var(--series-1)" stop-opacity="0" />
+        </linearGradient>
+      </defs>
 
-      <line :x1="padding.left" :x2="width - padding.right" :y1="yFor(39)" :y2="yFor(39)" class="ref-line ref-critical" />
-      <text :x="width - padding.right" :y="yFor(39) - 4" class="ref-label ref-critical" text-anchor="end">39°C</text>
+      <line
+        :x1="padding.left"
+        :x2="width - padding.right"
+        :y1="yFor(38)"
+        :y2="yFor(38)"
+        class="ref-line ref-serious"
+      />
+      <text
+        :x="width - padding.right"
+        :y="yFor(38) - 4"
+        class="ref-label ref-serious"
+        text-anchor="end"
+      >
+        38°C
+      </text>
+
+      <line
+        :x1="padding.left"
+        :x2="width - padding.right"
+        :y1="yFor(39)"
+        :y2="yFor(39)"
+        class="ref-line ref-critical"
+      />
+      <text
+        :x="width - padding.right"
+        :y="yFor(39) - 4"
+        class="ref-label ref-critical"
+        text-anchor="end"
+      >
+        39°C
+      </text>
 
       <line
         :x1="padding.left"
@@ -81,6 +152,7 @@ function timeLabel(ts: number) {
         class="axis-line"
       />
 
+      <path :d="areaPath" fill="url(#temp-area-fill)" />
       <path :d="linePath" class="data-line" fill="none" />
 
       <circle
@@ -100,6 +172,18 @@ function timeLabel(ts: number) {
         :y2="height - padding.bottom"
         class="crosshair"
       />
+
+      <!-- Direct label on the latest reading — the one point in the story
+           that matters at a glance. A stroked "halo" pass behind the fill
+           keeps it legible wherever it lands, without measuring a chip. -->
+      <template v-if="lastPoint && hoverIndex === null">
+        <text :x="endLabelX" :y="endLabelY" :text-anchor="endLabelAnchor" class="end-label halo">
+          {{ lastPoint.temperature.toFixed(1) }}°
+        </text>
+        <text :x="endLabelX" :y="endLabelY" :text-anchor="endLabelAnchor" class="end-label">
+          {{ lastPoint.temperature.toFixed(1) }}°
+        </text>
+      </template>
     </svg>
 
     <div v-else class="empty-state">Son 48 saatte ölçüm kaydı yok.</div>
@@ -193,14 +277,26 @@ svg {
   stroke-linejoin: round;
 }
 .data-marker {
-  fill: var(--surface-1);
-  stroke: var(--series-1);
+  fill: var(--series-1);
+  stroke: var(--surface-1);
   stroke-width: 2;
 }
 .crosshair {
   stroke: var(--text-muted);
   stroke-width: 1;
   stroke-dasharray: 2 2;
+}
+
+.end-label {
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--text-primary);
+}
+.end-label.halo {
+  stroke: var(--surface-1);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  fill: var(--surface-1);
 }
 
 .empty-state {
