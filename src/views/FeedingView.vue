@@ -35,6 +35,7 @@ const recent = computed(() => store.recentEntries(48))
           color="secondary"
           variant="flat"
           style="aspect-ratio: 1 / 1; height: auto"
+          rounded="lg"
           @click="showBreastfeedingDialog = true"
         >
           <div class="d-flex flex-column align-center">
@@ -49,6 +50,7 @@ const recent = computed(() => store.recentEntries(48))
           color="primary"
           variant="flat"
           style="aspect-ratio: 1 / 1; height: auto"
+          rounded="lg"
           @click="showBottleDialog = true"
         >
           <div class="d-flex flex-column align-center">
@@ -63,6 +65,7 @@ const recent = computed(() => store.recentEntries(48))
           color="success"
           variant="flat"
           style="aspect-ratio: 1 / 1; height: auto"
+          rounded="lg"
           @click="showSolidFoodDialog = true"
         >
           <div class="d-flex flex-column align-center">

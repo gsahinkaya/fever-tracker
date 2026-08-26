@@ -13,32 +13,37 @@ export default createVuetify({
     themes: {
       light: {
         colors: {
-          // Vivid, saturated accents against a plain white canvas — the
-          // color lives in the buttons, not the background.
-          primary: '#1479a8',
+          // Brand palette (Primary/500) — the color lives in the buttons
+          // and header, not the background.
+          primary: '#5F07EF',
           // Feeding actions (breastfeeding/bottle) — vivid terracotta,
-          // distinct from the primary blue and the error red.
+          // distinct from the primary purple and the error red. Not part
+          // of the design-system export (which only defines a brand
+          // purple + semantic states), kept as this app's own accent for
+          // that category so the home/feeding tiles stay color-coded.
           secondary: '#d15f28',
-          error: '#d03b3b',
+          error: '#F04438',
           // Solid food / "safe now" confirmations.
-          success: '#2fa35c',
+          success: '#12B76A',
           // "Too early for next dose" and similar caution states.
-          warning: '#e0a415',
+          warning: '#F79009',
           // Informational banners (bell activity, install-PWA prompt).
-          info: '#2aa0d8',
-          background: '#ffffff',
-          surface: '#ffffff',
+          info: '#2E90FA',
+          background: '#FCFCFC',
+          surface: '#FFFFFF',
+          'on-background': '#18181B',
+          'on-surface': '#18181B',
         },
       },
     },
   },
   defaults: {
     VCard: { rounded: 'lg', elevation: 1 },
-    VBtn: { rounded: 'lg', variant: 'flat' },
+    VBtn: { rounded: 'pill', variant: 'flat' },
     VTextField: { rounded: 'lg' },
     VDialog: { VCard: { rounded: 'xl' } },
     VAlert: { rounded: 'lg' },
-    VChip: { rounded: 'lg' },
+    VChip: { rounded: 'pill' },
     VAppBar: { elevation: 0 },
   },
 })

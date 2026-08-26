@@ -73,6 +73,7 @@ const medicationsWithHistory = computed(() =>
             color="error"
             variant="flat"
             style="aspect-ratio: 1 / 1; height: auto"
+            rounded="lg"
             @click="showReadingDialog = true"
           >
             <div class="d-flex flex-column align-center">
@@ -87,6 +88,7 @@ const medicationsWithHistory = computed(() =>
             color="primary"
             variant="flat"
             style="aspect-ratio: 1 / 1; height: auto"
+            rounded="lg"
             @click="showDoseDialog = true"
           >
             <div class="d-flex flex-column align-center">
@@ -101,6 +103,7 @@ const medicationsWithHistory = computed(() =>
             color="secondary"
             variant="flat"
             style="aspect-ratio: 1 / 1; height: auto"
+            rounded="lg"
             to="/beslenme"
           >
             <div class="d-flex flex-column align-center">
@@ -115,6 +118,7 @@ const medicationsWithHistory = computed(() =>
             color="info"
             variant="flat"
             style="aspect-ratio: 1 / 1; height: auto"
+            rounded="lg"
             to="/rapor"
           >
             <div class="d-flex flex-column align-center">
@@ -129,6 +133,7 @@ const medicationsWithHistory = computed(() =>
             color="success"
             variant="flat"
             style="aspect-ratio: 1 / 1; height: auto"
+            rounded="lg"
             to="/sor"
           >
             <div class="d-flex flex-column align-center">
