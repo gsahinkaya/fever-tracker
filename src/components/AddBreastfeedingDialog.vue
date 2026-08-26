@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { currentTimeString, todayAt } from '@/lib/time'
 import type { BreastfeedingEntry } from '@/types/health'
 
 const model = defineModel<boolean>({ default: false })
@@ -8,16 +9,22 @@ const store = useFeedingLogStore()
 
 const durationMinutes = ref<number | null>(null)
 const side = ref<BreastfeedingEntry['side'] | null>(null)
+const time = ref('')
 
 watch(model, (open) => {
   if (open) {
     durationMinutes.value = null
     side.value = null
+    time.value = currentTimeString()
   }
 })
 
 function save() {
-  store.addBreastfeeding(durationMinutes.value ?? undefined, side.value ?? undefined)
+  store.addBreastfeeding(
+    durationMinutes.value ?? undefined,
+    side.value ?? undefined,
+    todayAt(time.value),
+  )
   model.value = false
 }
 </script>
@@ -44,6 +51,16 @@ function save() {
           <v-radio label="Sağ" value="right" />
           <v-radio label="İkisi" value="both" />
         </v-radio-group>
+        <v-text-field
+          v-model="time"
+          type="time"
+          label="Saat"
+          hint="Önceden emzirdiysen saati değiştirebilirsin"
+          persistent-hint
+          variant="outlined"
+          density="comfortable"
+          class="mt-2"
+        />
       </v-card-text>
       <v-card-actions>
         <v-spacer />

@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { currentTimeString, todayAt } from '@/lib/time'
 
 const model = defineModel<boolean>({ default: false })
 const store = useFeedingLogStore()
 
 const note = ref('')
+const time = ref('')
 
 watch(model, (open) => {
-  if (open) note.value = ''
+  if (open) {
+    note.value = ''
+    time.value = currentTimeString()
+  }
 })
 
 function save() {
-  store.addSolidFood(note.value.trim() || undefined)
+  store.addSolidFood(note.value.trim() || undefined, todayAt(time.value))
   model.value = false
 }
 </script>
@@ -29,6 +34,16 @@ function save() {
           autofocus
           variant="outlined"
           density="comfortable"
+        />
+        <v-text-field
+          v-model="time"
+          type="time"
+          label="Saat"
+          hint="Önceden verildiyse saati değiştirebilirsin"
+          persistent-hint
+          variant="outlined"
+          density="comfortable"
+          class="mt-2"
         />
       </v-card-text>
       <v-card-actions>

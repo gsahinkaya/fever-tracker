@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useNow } from '@/composables/useNow'
+import { currentTimeString, todayAt } from '@/lib/time'
 
 const model = defineModel<boolean>({ default: false })
 const store = useFeverLogStore()
@@ -10,9 +11,13 @@ const medicationsStore = useMedicationsStore()
 const now = useNow()
 
 const medicationId = ref<string | null>(null)
+const time = ref('')
 
 watch(model, (open) => {
-  if (open) medicationId.value = medicationsStore.medications[0]?.id ?? null
+  if (open) {
+    medicationId.value = medicationsStore.medications[0]?.id ?? null
+    time.value = currentTimeString()
+  }
 })
 
 const selectedMedication = computed(
@@ -36,7 +41,7 @@ const remainingLabel = computed(() => {
 
 function confirm() {
   if (!selectedMedication.value) return
-  store.addDose(selectedMedication.value.id, selectedMedication.value.name)
+  store.addDose(selectedMedication.value.id, selectedMedication.value.name, todayAt(time.value))
   model.value = false
 }
 </script>
@@ -55,15 +60,36 @@ function confirm() {
           />
         </v-radio-group>
 
-        <v-alert v-if="isTooEarly" type="warning" variant="tonal" density="comfortable">
-          Son dozdan bu yana yeterli süre geçmedi. Güvenli zamana {{ remainingLabel }} kaldı. Yine de kaydedebilirsin,
-          ama doktor/eczacına danış.
+        <v-alert
+          v-if="isTooEarly"
+          type="warning"
+          variant="tonal"
+          density="comfortable"
+          class="mb-4"
+        >
+          Son dozdan bu yana yeterli süre geçmedi. Güvenli zamana {{ remainingLabel }} kaldı. Yine
+          de kaydedebilirsin, ama doktor/eczacına danış.
         </v-alert>
+
+        <v-text-field
+          v-model="time"
+          type="time"
+          label="Saat"
+          hint="Önceden verildiyse saati değiştirebilirsin"
+          persistent-hint
+          variant="outlined"
+          density="comfortable"
+        />
       </v-card-text>
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" @click="model = false">Vazgeç</v-btn>
-        <v-btn :color="isTooEarly ? 'warning' : 'primary'" variant="flat" size="large" @click="confirm">
+        <v-btn
+          :color="isTooEarly ? 'warning' : 'primary'"
+          variant="flat"
+          size="large"
+          @click="confirm"
+        >
           Kaydet
         </v-btn>
       </v-card-actions>

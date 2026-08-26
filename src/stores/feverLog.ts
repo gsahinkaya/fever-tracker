@@ -121,25 +121,25 @@ export const useFeverLogStore = defineStore('feverLog', () => {
     }
   }
 
-  async function addReading(temperature: number, note?: string) {
+  async function addReading(temperature: number, note?: string, takenAt?: Date) {
     const { familyId, childId } = requireContext()
     const payload: Omit<FeverReading, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
       type: 'reading',
       temperature,
-      takenAt: Timestamp.now(),
+      takenAt: takenAt ? Timestamp.fromDate(takenAt) : Timestamp.now(),
       ...(note ? { note } : {}),
       ...creatorFields(),
     }
     await addDoc(entriesCollection(familyId, childId), payload)
   }
 
-  async function addDose(medicationId: string, medicationName: string) {
+  async function addDose(medicationId: string, medicationName: string, takenAt?: Date) {
     const { familyId, childId } = requireContext()
     const payload: Omit<DoseEntry, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
       type: 'dose',
       medicationId,
       medicationName,
-      takenAt: Timestamp.now(),
+      takenAt: takenAt ? Timestamp.fromDate(takenAt) : Timestamp.now(),
       ...creatorFields(),
     }
     await addDoc(entriesCollection(familyId, childId), payload)

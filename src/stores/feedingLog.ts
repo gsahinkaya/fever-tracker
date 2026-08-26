@@ -120,11 +120,15 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
     }
   }
 
-  async function addBreastfeeding(durationMinutes?: number, side?: BreastfeedingEntry['side']) {
+  async function addBreastfeeding(
+    durationMinutes?: number,
+    side?: BreastfeedingEntry['side'],
+    takenAt?: Date,
+  ) {
     const { familyId, childId } = requireContext()
     const payload: Omit<BreastfeedingEntry, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
       type: 'breastfeeding',
-      takenAt: Timestamp.now(),
+      takenAt: takenAt ? Timestamp.fromDate(takenAt) : Timestamp.now(),
       ...(durationMinutes ? { durationMinutes } : {}),
       ...(side ? { side } : {}),
       ...creatorFields(),
@@ -132,11 +136,11 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
     await addDoc(feedingsCollection(familyId, childId), payload)
   }
 
-  async function addBottle(amountMl: number, milkType: BottleEntry['milkType']) {
+  async function addBottle(amountMl: number, milkType: BottleEntry['milkType'], takenAt?: Date) {
     const { familyId, childId } = requireContext()
     const payload: Omit<BottleEntry, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
       type: 'bottle',
-      takenAt: Timestamp.now(),
+      takenAt: takenAt ? Timestamp.fromDate(takenAt) : Timestamp.now(),
       amountMl,
       milkType,
       ...creatorFields(),
@@ -144,11 +148,11 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
     await addDoc(feedingsCollection(familyId, childId), payload)
   }
 
-  async function addSolidFood(note?: string) {
+  async function addSolidFood(note?: string, takenAt?: Date) {
     const { familyId, childId } = requireContext()
     const payload: Omit<SolidFoodEntry, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
       type: 'solid',
-      takenAt: Timestamp.now(),
+      takenAt: takenAt ? Timestamp.fromDate(takenAt) : Timestamp.now(),
       ...(note ? { note } : {}),
       ...creatorFields(),
     }

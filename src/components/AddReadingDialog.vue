@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
+import { currentTimeString, todayAt } from '@/lib/time'
 
 const model = defineModel<boolean>({ default: false })
 const store = useFeverLogStore()
@@ -9,6 +10,7 @@ const medicationsStore = useMedicationsStore()
 
 const temperature = ref<number | null>(null)
 const note = ref('')
+const time = ref('')
 const alsoGaveMedication = ref(false)
 const medicationId = ref<string | null>(null)
 
@@ -16,6 +18,7 @@ watch(model, (open) => {
   if (open) {
     temperature.value = null
     note.value = ''
+    time.value = currentTimeString()
     alsoGaveMedication.value = false
     medicationId.value = medicationsStore.medications[0]?.id ?? null
   }
@@ -23,10 +26,11 @@ watch(model, (open) => {
 
 function save() {
   if (temperature.value == null || temperature.value <= 0) return
-  store.addReading(temperature.value, note.value || undefined)
+  const takenAt = todayAt(time.value)
+  store.addReading(temperature.value, note.value || undefined, takenAt)
   if (alsoGaveMedication.value && medicationId.value) {
     const medication = medicationsStore.medications.find((m) => m.id === medicationId.value)
-    if (medication) store.addDose(medication.id, medication.name)
+    if (medication) store.addDose(medication.id, medication.name, takenAt)
   }
   model.value = false
 }
@@ -47,7 +51,21 @@ function save() {
           variant="outlined"
           density="comfortable"
         />
-        <v-text-field v-model="note" label="Not (opsiyonel)" variant="outlined" density="comfortable" />
+        <v-text-field
+          v-model="note"
+          label="Not (opsiyonel)"
+          variant="outlined"
+          density="comfortable"
+        />
+        <v-text-field
+          v-model="time"
+          type="time"
+          label="Saat"
+          hint="Önceden ölçtüysen saati değiştirebilirsin"
+          persistent-hint
+          variant="outlined"
+          density="comfortable"
+        />
 
         <template v-if="medicationsStore.medications.length">
           <v-checkbox
@@ -57,7 +75,12 @@ function save() {
             hide-details
           />
 
-          <v-radio-group v-if="alsoGaveMedication" v-model="medicationId" density="comfortable" class="mt-2">
+          <v-radio-group
+            v-if="alsoGaveMedication"
+            v-model="medicationId"
+            density="comfortable"
+            class="mt-2"
+          >
             <v-radio
               v-for="med in medicationsStore.medications"
               :key="med.id"
@@ -67,13 +90,16 @@ function save() {
           </v-radio-group>
         </template>
         <p v-else class="text-caption text-medium-emphasis mt-2">
-          İlaç da kaydetmek istersen önce <RouterLink to="/ilaclar">İlaçlarım</RouterLink>'dan bir ilaç ekle.
+          İlaç da kaydetmek istersen önce <RouterLink to="/ilaclar">İlaçlarım</RouterLink>'dan bir
+          ilaç ekle.
         </p>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" @click="model = false">Vazgeç</v-btn>
-        <v-btn color="error" variant="flat" size="large" :disabled="!temperature" @click="save">Kaydet</v-btn>
+        <v-btn color="error" variant="flat" size="large" :disabled="!temperature" @click="save"
+          >Kaydet</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
