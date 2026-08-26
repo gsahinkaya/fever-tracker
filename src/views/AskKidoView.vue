@@ -23,8 +23,11 @@ async function ask() {
   if (!q) return
   question.value = ''
 
-  const exchange: Exchange = { question: q, answer: null, error: null, loading: true }
-  exchanges.value.push(exchange)
+  // Index into the reactive array for every later mutation — holding onto
+  // the plain object literal instead and mutating that directly bypasses
+  // Vue's reactivity proxy, so the loading/answer/error updates below would
+  // silently never re-render (the spinner would spin forever).
+  const idx = exchanges.value.push({ question: q, answer: null, error: null, loading: true }) - 1
   await scrollToBottom()
 
   try {
@@ -36,11 +39,11 @@ async function ask() {
     })
     const data = await response.json()
     if (!response.ok) throw new Error(data.error || 'Yanıt alınamadı, tekrar dene.')
-    exchange.answer = data.answer
+    exchanges.value[idx]!.answer = data.answer
   } catch (err) {
-    exchange.error = err instanceof Error ? err.message : 'Yanıt alınamadı, tekrar dene.'
+    exchanges.value[idx]!.error = err instanceof Error ? err.message : 'Yanıt alınamadı, tekrar dene.'
   } finally {
-    exchange.loading = false
+    exchanges.value[idx]!.loading = false
     await scrollToBottom()
   }
 }
