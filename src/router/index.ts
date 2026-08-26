@@ -37,6 +37,11 @@ const router = createRouter({
       component: () => import('../views/FeedingView.vue'),
     },
     {
+      path: '/sor',
+      name: 'ask-kido',
+      component: () => import('../views/AskKidoView.vue'),
+    },
+    {
       path: '/giris',
       name: 'login',
       component: () => import('../views/LoginView.vue'),

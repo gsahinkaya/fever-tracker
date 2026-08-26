@@ -123,6 +123,20 @@ const medicationsWithHistory = computed(() =>
             </div>
           </v-btn>
         </v-col>
+        <v-col cols="4">
+          <v-btn
+            block
+            color="success"
+            variant="flat"
+            style="aspect-ratio: 1 / 1; height: auto"
+            to="/sor"
+          >
+            <div class="d-flex flex-column align-center">
+              <v-icon icon="mdi-chat-question-outline" size="34" class="mb-2" />
+              <span class="text-body-2 font-weight-bold">Kido'ya Sor</span>
+            </div>
+          </v-btn>
+        </v-col>
       </v-row>
 
       <InstallPwaBanner />
