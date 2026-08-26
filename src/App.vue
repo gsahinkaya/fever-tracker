@@ -138,7 +138,7 @@ watch(
 watch(
   () => feverLogStore.activeChildId,
   (childId) => {
-    medicationsStore.watchChild(authStore.familyId, childId)
+    medicationsStore.watchChild(childId)
     feedingLogStore.watchChild(childId)
     if (childId && authStore.familyId) {
       localStorage.setItem(`ates-olcer:active-child:${authStore.familyId}`, childId)
