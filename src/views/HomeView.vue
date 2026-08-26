@@ -20,15 +20,15 @@ const { requestPermission } = useDoseReminders()
 
 const showReadingDialog = ref(false)
 const showDoseDialog = ref(false)
-const notifStatus = ref<NotificationPermission | 'unsupported'>('default')
 
+// Ask once automatically instead of nagging the user with an in-app
+// banner — the browser's own native prompt is enough, and after this
+// the choice is remembered so it never asks again.
 onMounted(() => {
-  notifStatus.value = 'Notification' in window ? Notification.permission : 'unsupported'
+  if ('Notification' in window && Notification.permission === 'default') {
+    requestPermission()
+  }
 })
-
-async function enableNotifications() {
-  notifStatus.value = await requestPermission()
-}
 
 // Fever/dose entries and feedings live in separate stores/collections, so
 // merge and re-sort by time to get one true "everything that happened"
@@ -145,19 +145,6 @@ const medicationsWithHistory = computed(() =>
       </v-row>
 
       <InstallPwaBanner />
-
-      <v-alert
-        v-if="notifStatus !== 'granted'"
-        type="info"
-        variant="tonal"
-        density="comfortable"
-        class="mb-6"
-      >
-        Doz ve aile üyelerinin girişleri için bildirimlere izin ver.
-        <template #append>
-          <v-btn size="small" variant="text" @click="enableNotifications">İzin ver</v-btn>
-        </template>
-      </v-alert>
 
       <template v-if="medicationsWithHistory.length">
         <div class="mb-2">

@@ -5,14 +5,12 @@ import { useAuthStore } from '@/stores/auth'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
-import { useDoseReminders } from '@/composables/useDoseReminders'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const feverLogStore = useFeverLogStore()
 const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
-const { requestPermission } = useDoseReminders()
 
 const inviteLink = computed(() =>
   authStore.familyId ? `${window.location.origin}/kayit?kod=${authStore.familyId}` : '',
@@ -27,14 +25,6 @@ async function copyInvite() {
   } catch {
     // Clipboard API can be unavailable (e.g. insecure context); the code/link is still visible to copy manually.
   }
-}
-
-const notifStatus = ref<NotificationPermission | 'unsupported'>(
-  'Notification' in window ? Notification.permission : 'unsupported',
-)
-
-async function enableNotifications() {
-  notifStatus.value = await requestPermission()
 }
 
 const activeChildName = computed(
@@ -132,23 +122,6 @@ async function logout() {
         >
           {{ copied ? 'Kopyalandı' : 'Linki Kopyala' }}
         </v-btn>
-      </v-card-actions>
-    </v-card>
-
-    <v-card variant="outlined" class="mb-6">
-      <v-card-title class="text-subtitle-1">Bildirimler</v-card-title>
-      <v-card-text>
-        <span v-if="notifStatus === 'granted'" class="text-success">Bildirimler açık</span>
-        <span v-else-if="notifStatus === 'unsupported'" class="text-medium-emphasis">
-          Bu tarayıcı bildirimleri desteklemiyor
-        </span>
-        <span v-else class="text-medium-emphasis">
-          Doz hatırlatmaları ve aile üyelerinin girişleri için bildirimlere izin ver
-        </span>
-      </v-card-text>
-      <v-card-actions v-if="notifStatus !== 'granted' && notifStatus !== 'unsupported'">
-        <v-spacer />
-        <v-btn color="primary" variant="text" @click="enableNotifications">İzin ver</v-btn>
       </v-card-actions>
     </v-card>
 
