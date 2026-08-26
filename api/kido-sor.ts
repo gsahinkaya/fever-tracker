@@ -63,7 +63,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,6 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     )
 
     if (!geminiResponse.ok) {
+      console.error('Gemini API error', geminiResponse.status, await geminiResponse.text())
       res.status(502).json({ error: 'Yanıt alınamadı, tekrar dene.' })
       return
     }
@@ -82,12 +83,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const data = await geminiResponse.json()
     const answer = data.candidates?.[0]?.content?.parts?.[0]?.text
     if (typeof answer !== 'string') {
+      console.error('Unexpected Gemini response shape', JSON.stringify(data))
       res.status(502).json({ error: 'Yanıt alınamadı, tekrar dene.' })
       return
     }
 
     res.status(200).json({ answer })
-  } catch {
+  } catch (err) {
+    console.error('kido-sor request failed', err)
     res.status(502).json({ error: 'Yanıt alınamadı, tekrar dene.' })
   }
 }
