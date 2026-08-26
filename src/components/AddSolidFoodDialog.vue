@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useFeedingLogStore } from '@/stores/feedingLog'
-import { currentTimeString, todayAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAt } from '@/lib/time'
 
 const model = defineModel<boolean>({ default: false })
 const store = useFeedingLogStore()
@@ -17,7 +17,7 @@ watch(model, (open) => {
 })
 
 function save() {
-  store.addSolidFood(note.value.trim() || undefined, todayAt(time.value))
+  store.addSolidFood(note.value.trim() || undefined, resolveTakenAt(time.value))
   model.value = false
 }
 </script>

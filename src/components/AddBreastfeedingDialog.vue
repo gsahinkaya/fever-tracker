@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useFeedingLogStore } from '@/stores/feedingLog'
-import { currentTimeString, todayAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAt } from '@/lib/time'
 import type { BreastfeedingEntry } from '@/types/health'
 
 const model = defineModel<boolean>({ default: false })
@@ -23,7 +23,7 @@ function save() {
   store.addBreastfeeding(
     durationMinutes.value ?? undefined,
     side.value ?? undefined,
-    todayAt(time.value),
+    resolveTakenAt(time.value),
   )
   model.value = false
 }

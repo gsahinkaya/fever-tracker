@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
-import { currentTimeString, todayAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAt } from '@/lib/time'
 
 const model = defineModel<boolean>({ default: false })
 const store = useFeverLogStore()
@@ -26,7 +26,7 @@ watch(model, (open) => {
 
 function save() {
   if (temperature.value == null || temperature.value <= 0) return
-  const takenAt = todayAt(time.value)
+  const takenAt = resolveTakenAt(time.value)
   store.addReading(temperature.value, note.value || undefined, takenAt)
   if (alsoGaveMedication.value && medicationId.value) {
     const medication = medicationsStore.medications.find((m) => m.id === medicationId.value)

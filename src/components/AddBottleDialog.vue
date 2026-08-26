@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useFeedingLogStore } from '@/stores/feedingLog'
-import { currentTimeString, todayAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAt } from '@/lib/time'
 import type { BottleEntry } from '@/types/health'
 
 const model = defineModel<boolean>({ default: false })
@@ -21,7 +21,7 @@ watch(model, (open) => {
 
 function save() {
   if (amountMl.value == null || amountMl.value <= 0) return
-  store.addBottle(amountMl.value, milkType.value, todayAt(time.value))
+  store.addBottle(amountMl.value, milkType.value, resolveTakenAt(time.value))
   model.value = false
 }
 </script>

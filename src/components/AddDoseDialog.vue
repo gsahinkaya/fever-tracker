@@ -3,7 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useNow } from '@/composables/useNow'
-import { currentTimeString, todayAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAt } from '@/lib/time'
 
 const model = defineModel<boolean>({ default: false })
 const store = useFeverLogStore()
@@ -41,7 +41,11 @@ const remainingLabel = computed(() => {
 
 function confirm() {
   if (!selectedMedication.value) return
-  store.addDose(selectedMedication.value.id, selectedMedication.value.name, todayAt(time.value))
+  store.addDose(
+    selectedMedication.value.id,
+    selectedMedication.value.name,
+    resolveTakenAt(time.value),
+  )
   model.value = false
 }
 </script>
