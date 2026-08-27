@@ -41,8 +41,8 @@ const lastDoseLabel = computed(() => {
 
 <template>
   <v-card
-    :color="status === 'ready' ? 'error' : undefined"
-    :variant="status === 'ready' ? 'tonal' : 'outlined'"
+    :color="status === 'ready' ? 'error' : status === 'waiting' ? 'medication' : undefined"
+    :variant="status === 'none' ? 'outlined' : 'tonal'"
   >
     <v-card-item>
       <v-card-title class="text-subtitle-1">{{ medication.name }}</v-card-title>
