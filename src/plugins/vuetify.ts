@@ -42,9 +42,10 @@ export default createVuetify({
           medication: '#0e7490',
           // Growth tile/actions — kept distinct from every other tile color.
           growth: '#be185d',
-          // Duty-pharmacy tile/actions — distinct emerald so it doesn't
-          // read as the same "safe/success" green used elsewhere.
-          pharmacy: '#059669',
+          // Duty-pharmacy tile/actions — indigo, kept far from "success"
+          // green (Kido'ya Sor sits right above it on Home) so the two
+          // tiles read as different colors, not two shades of green.
+          pharmacy: '#4338CA',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',
@@ -67,7 +68,7 @@ export default createVuetify({
           secondary: '#e07840',
           medication: '#22a6c2',
           growth: '#e0468a',
-          pharmacy: '#10b981',
+          pharmacy: '#818CF8',
           error: '#F97066',
           success: '#32D583',
           warning: '#FDB022',
