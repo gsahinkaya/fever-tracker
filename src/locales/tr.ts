@@ -186,6 +186,7 @@ export default {
       male: 'Erkek',
       heightLabel: 'Boy (cm, opsiyonel)',
       weightLabel: 'Kilo (kg, opsiyonel)',
+      headCircumferenceLabel: 'Baş çevresi (cm, opsiyonel)',
     },
     deleteConfirm: {
       title: 'Çocuğu sil',

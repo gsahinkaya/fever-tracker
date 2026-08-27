@@ -17,6 +17,7 @@ const birthDate = ref('')
 const gender = ref<Child['gender'] | null>(null)
 const heightCm = ref<number | null>(null)
 const weightKg = ref<number | null>(null)
+const headCircumferenceCm = ref<number | null>(null)
 const confirmDeleteTarget = ref<Child | null>(null)
 
 function openAdd() {
@@ -26,6 +27,7 @@ function openAdd() {
   gender.value = null
   heightCm.value = null
   weightKg.value = null
+  headCircumferenceCm.value = null
   showDialog.value = true
 }
 
@@ -36,6 +38,7 @@ function openEdit(child: Child) {
   gender.value = child.gender ?? null
   heightCm.value = child.heightCm ?? null
   weightKg.value = child.weightKg ?? null
+  headCircumferenceCm.value = child.headCircumferenceCm ?? null
   showDialog.value = true
 }
 
@@ -47,6 +50,7 @@ async function save() {
     ...(gender.value ? { gender: gender.value } : {}),
     ...(heightCm.value ? { heightCm: heightCm.value } : {}),
     ...(weightKg.value ? { weightKg: weightKg.value } : {}),
+    ...(headCircumferenceCm.value ? { headCircumferenceCm: headCircumferenceCm.value } : {}),
   }
   if (editingChild.value) {
     await childrenStore.updateChild(authStore.familyId, editingChild.value.id, data)
@@ -158,6 +162,13 @@ async function confirmDelete() {
               density="comfortable"
             />
           </div>
+          <v-text-field
+            v-model.number="headCircumferenceCm"
+            type="number"
+            :label="t('children.dialog.headCircumferenceLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
