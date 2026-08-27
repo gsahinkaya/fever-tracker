@@ -52,6 +52,29 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     await deleteDoc(doc(growthCollection(familyId, childId), id))
   }
 
+  // Used only when a brand-new child is created with height/weight/head
+  // circumference already filled in on the profile form — seeds a first
+  // Growth reading so the charts have a starting point without the parent
+  // re-entering the same numbers there. Takes familyId/childId directly
+  // (not requireContext/activeChildId) since a just-created child isn't
+  // necessarily the active one yet.
+  async function seedInitialEntry(
+    familyId: string,
+    childId: string,
+    heightCm?: number,
+    weightKg?: number,
+    headCircumferenceCm?: number,
+  ) {
+    const payload: Omit<GrowthEntry, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
+      takenAt: Timestamp.now(),
+      ...(heightCm ? { heightCm } : {}),
+      ...(weightKg ? { weightKg } : {}),
+      ...(headCircumferenceCm ? { headCircumferenceCm } : {}),
+      ...creatorFields(),
+    }
+    await addDoc(growthCollection(familyId, childId), payload)
+  }
+
   return {
     entries,
     activeChildId,
@@ -61,5 +84,6 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     acknowledgeIncoming,
     addGrowthEntry,
     removeEntry,
+    seedInitialEntry,
   }
 })

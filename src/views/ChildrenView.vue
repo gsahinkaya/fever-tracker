@@ -3,12 +3,14 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
+import { useGrowthLogStore } from '@/stores/growthLog'
 import { ageLabel } from '@/lib/age'
 import type { Child } from '@/types/family'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const childrenStore = useChildrenStore()
+const growthLogStore = useGrowthLogStore()
 
 const showDialog = ref(false)
 const editingChild = ref<Child | null>(null)
@@ -55,7 +57,20 @@ async function save() {
   if (editingChild.value) {
     await childrenStore.updateChild(authStore.familyId, editingChild.value.id, data)
   } else {
-    await childrenStore.addChild(authStore.familyId, data)
+    const childId = await childrenStore.addChild(authStore.familyId, data)
+    // A brand-new child has no growth history yet — seed one from
+    // whatever height/weight/head circumference was entered here so
+    // Büyüme has a starting point instead of the parent re-entering the
+    // same numbers a second time.
+    if (heightCm.value || weightKg.value || headCircumferenceCm.value) {
+      await growthLogStore.seedInitialEntry(
+        authStore.familyId,
+        childId,
+        heightCm.value ?? undefined,
+        weightKg.value ?? undefined,
+        headCircumferenceCm.value ?? undefined,
+      )
+    }
   }
   showDialog.value = false
 }

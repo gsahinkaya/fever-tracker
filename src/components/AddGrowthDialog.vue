@@ -2,11 +2,15 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useGrowthLogStore } from '@/stores/growthLog'
+import { useAuthStore } from '@/stores/auth'
+import { useChildrenStore } from '@/stores/children'
 import { currentTimeString, resolveTakenAt } from '@/lib/time'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
 const store = useGrowthLogStore()
+const authStore = useAuthStore()
+const childrenStore = useChildrenStore()
 
 const heightCm = ref<number | null>(null)
 const weightKg = ref<number | null>(null)
@@ -30,6 +34,19 @@ function save() {
     resolveTakenAt(time.value),
     headCircumferenceCm.value ?? undefined,
   )
+  // Growth entries are always dated today (see resolveTakenAt), so a newly
+  // added reading is the latest one — keep the child profile's own
+  // height/weight/head-circumference fields in sync with it instead of
+  // leaving them stuck at whatever was entered when the child was created.
+  if (authStore.familyId && store.activeChildId) {
+    const update: Record<string, number> = {}
+    if (heightCm.value) update.heightCm = heightCm.value
+    if (weightKg.value) update.weightKg = weightKg.value
+    if (headCircumferenceCm.value) update.headCircumferenceCm = headCircumferenceCm.value
+    if (Object.keys(update).length) {
+      childrenStore.updateChild(authStore.familyId, store.activeChildId, update)
+    }
+  }
   model.value = false
 }
 </script>

@@ -13,7 +13,6 @@ import AddReadingDialog from '@/components/AddReadingDialog.vue'
 import AddDoseDialog from '@/components/AddDoseDialog.vue'
 import NextDoseCard from '@/components/NextDoseCard.vue'
 import CombinedTimelineList from '@/components/CombinedTimelineList.vue'
-import InstallPwaBanner from '@/components/InstallPwaBanner.vue'
 import OnboardingWizard from '@/components/OnboardingWizard.vue'
 
 const { t } = useI18n()
@@ -156,8 +155,6 @@ const medicationsWithHistory = computed(() =>
           </div>
         </v-btn>
       </div>
-
-      <InstallPwaBanner />
 
       <template v-if="medicationsWithHistory.length">
         <div class="mb-2">

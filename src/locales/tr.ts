@@ -364,10 +364,6 @@ export default {
       both: 'İkisi',
     },
   },
-  installBanner: {
-    text: "Kido'yu ana ekranına ekleyip tek dokunuşla açabilirsin.",
-    addButton: 'Ekle',
-  },
   nextDoseCard: {
     noRecord: 'Henüz kayıt yok',
     readyNow: 'Şimdi verilebilir',
