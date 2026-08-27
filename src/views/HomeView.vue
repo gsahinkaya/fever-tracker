@@ -66,83 +66,52 @@ const medicationsWithHistory = computed(() =>
     <template v-else>
       <ChildSwitcher />
 
-      <v-row class="mb-6" justify="center">
-        <v-col cols="4">
-          <v-btn
-            block
-            color="error"
-            variant="flat"
-            style="aspect-ratio: 1 / 1; height: auto"
-            rounded="lg"
-            @click="showReadingDialog = true"
-          >
-            <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-thermometer" size="34" class="mb-2" />
-              <span class="text-body-2 font-weight-bold">Ateş</span>
-            </div>
-          </v-btn>
-        </v-col>
-        <v-col cols="4">
-          <v-btn
-            block
-            color="medication"
-            variant="flat"
-            style="aspect-ratio: 1 / 1; height: auto"
-            rounded="lg"
-            @click="showDoseDialog = true"
-          >
-            <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-pill" size="34" class="mb-2" />
-              <span class="text-body-2 font-weight-bold">İlaç</span>
-            </div>
-          </v-btn>
-        </v-col>
-        <v-col cols="4">
-          <v-btn
-            block
-            color="secondary"
-            variant="flat"
-            style="aspect-ratio: 1 / 1; height: auto"
-            rounded="lg"
-            to="/beslenme"
-          >
-            <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-baby-bottle-outline" size="34" class="mb-2" />
-              <span class="text-body-2 font-weight-bold">Beslenme</span>
-            </div>
-          </v-btn>
-        </v-col>
-        <v-col cols="4">
-          <v-btn
-            block
-            color="info"
-            variant="flat"
-            style="aspect-ratio: 1 / 1; height: auto"
-            rounded="lg"
-            to="/rapor"
-          >
-            <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-file-chart-outline" size="34" class="mb-2" />
-              <span class="text-body-2 font-weight-bold">Özet Rapor</span>
-            </div>
-          </v-btn>
-        </v-col>
-        <v-col cols="4">
-          <v-btn
-            block
-            color="success"
-            variant="flat"
-            style="aspect-ratio: 1 / 1; height: auto"
-            rounded="lg"
-            to="/sor"
-          >
-            <div class="d-flex flex-column align-center">
-              <v-icon icon="mdi-chat-question-outline" size="34" class="mb-2" />
-              <span class="text-body-2 font-weight-bold">Kido'ya Sor</span>
-            </div>
-          </v-btn>
-        </v-col>
-      </v-row>
+      <div class="d-flex flex-column mb-6" style="gap: 12px">
+        <v-btn
+          block
+          height="64"
+          color="error"
+          variant="flat"
+          rounded="lg"
+          @click="showReadingDialog = true"
+        >
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-thermometer" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">Ateş</span>
+          </div>
+        </v-btn>
+        <v-btn
+          block
+          height="64"
+          color="medication"
+          variant="flat"
+          rounded="lg"
+          @click="showDoseDialog = true"
+        >
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-pill" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">İlaç</span>
+          </div>
+        </v-btn>
+        <v-btn block height="64" color="secondary" variant="flat" rounded="lg" to="/beslenme">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-baby-bottle-outline" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">Beslenme</span>
+          </div>
+        </v-btn>
+        <v-btn block height="64" color="info" variant="flat" rounded="lg" to="/rapor">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-file-chart-outline" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">Özet Rapor</span>
+          </div>
+        </v-btn>
+        <v-btn block height="64" color="success" variant="flat" rounded="lg" to="/sor">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-chat-question-outline" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">Kido'ya Sor</span>
+          </div>
+        </v-btn>
+      </div>
 
       <InstallPwaBanner />
 

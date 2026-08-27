@@ -212,33 +212,6 @@ function timeLabel(ts: number) {
   border-radius: 8px;
   padding: 8px;
 }
-@media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme='light'])) .viz-root {
-    color-scheme: dark;
-    --surface-1: #1a1a19;
-    --text-primary: #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted: #898781;
-    --gridline: #2c2c2a;
-    --axis: #383835;
-    --series-1: #3987e5;
-    --status-serious: #ec835a;
-    --status-critical: #e66767;
-  }
-}
-:root[data-theme='dark'] .viz-root {
-  color-scheme: dark;
-  --surface-1: #1a1a19;
-  --text-primary: #ffffff;
-  --text-secondary: #c3c2b7;
-  --text-muted: #898781;
-  --gridline: #2c2c2a;
-  --axis: #383835;
-  --series-1: #3987e5;
-  --status-serious: #ec835a;
-  --status-critical: #e66767;
-}
-
 svg {
   width: 100%;
   height: auto;

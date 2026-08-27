@@ -10,6 +10,12 @@ import { createVuetify } from 'vuetify'
 
 export default createVuetify({
   theme: {
+    // Without this, Vuetify falls back to auto-detecting the OS color
+    // scheme and switches to its own built-in dark theme — which knows
+    // nothing about our custom "medication" color (renders transparent)
+    // and turns the whole app background black on a phone in dark mode.
+    // The app only ever defines/wants the one light theme below.
+    defaultTheme: 'light',
     themes: {
       light: {
         colors: {
