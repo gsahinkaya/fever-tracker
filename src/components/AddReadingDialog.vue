@@ -1,20 +1,45 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
+import { useNow } from '@/composables/useNow'
 import { currentTimeString, resolveTakenAt } from '@/lib/time'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
 const store = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
+const now = useNow()
 
 const temperature = ref<number | null>(null)
 const note = ref('')
 const time = ref('')
 const alsoGaveMedication = ref(false)
 const medicationId = ref<string | null>(null)
+
+const selectedMedication = computed(
+  () => medicationsStore.medications.find((m) => m.id === medicationId.value) ?? null,
+)
+const safeAt = computed(() =>
+  selectedMedication.value
+    ? store.nextSafeDoseAt(selectedMedication.value.id, selectedMedication.value.minIntervalHours)
+    : null,
+)
+const isTooEarly = computed(
+  () => alsoGaveMedication.value && !!safeAt.value && safeAt.value > now.value,
+)
+const remainingLabel = computed(() => {
+  if (!safeAt.value) return ''
+  const diff = safeAt.value - now.value
+  if (diff <= 0) return ''
+  const h = Math.floor(diff / 3_600_000)
+  const m = Math.floor((diff % 3_600_000) / 60_000)
+  return `${h} sa ${m} dk`
+})
+const tooEarlyMessage = computed(() =>
+  t('dialogs.addDose.tooEarly', { remaining: remainingLabel.value }),
+)
 
 watch(model, (open) => {
   if (open) {
@@ -90,6 +115,16 @@ function save() {
               :label="med.note ? `${med.name} (${med.note})` : med.name"
             />
           </v-radio-group>
+
+          <v-alert
+            v-if="isTooEarly"
+            type="warning"
+            variant="tonal"
+            density="comfortable"
+            class="mt-2"
+          >
+            {{ tooEarlyMessage }}
+          </v-alert>
         </template>
         <p v-else class="text-caption text-medium-emphasis mt-2">
           {{ t('dialogs.addReading.addMedicationHintPrefix') }}
