@@ -183,7 +183,6 @@ watch(
             </v-card-actions>
           </v-card>
         </v-menu>
-        <v-btn v-else icon="mdi-bell-outline" variant="text" disabled aria-label="Bildirim yok" />
         <v-btn icon="mdi-cog-outline" variant="text" to="/ayarlar" aria-label="Ayarlar" />
       </template>
     </v-app-bar>

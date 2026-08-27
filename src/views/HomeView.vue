@@ -5,6 +5,7 @@ import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useDoseReminders } from '@/composables/useDoseReminders'
+import { useNow } from '@/composables/useNow'
 import AddReadingDialog from '@/components/AddReadingDialog.vue'
 import AddDoseDialog from '@/components/AddDoseDialog.vue'
 import NextDoseCard from '@/components/NextDoseCard.vue'
@@ -17,6 +18,7 @@ const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
 const feedingLogStore = useFeedingLogStore()
 const { requestPermission } = useDoseReminders()
+const now = useNow()
 
 const showReadingDialog = ref(false)
 const showDoseDialog = ref(false)
@@ -40,11 +42,16 @@ const recentActivity = computed(() =>
 )
 const hasChildren = computed(() => childrenStore.children.length > 0)
 
-// Only medications that have actually been given at least once have a
-// meaningful "next safe dose" to forecast — a freshly-added medication with
-// no history yet would just show a confusing "no record" card here.
+// Only medications that (a) have actually been given at least once, so
+// there's a meaningful "next safe dose" to forecast, and (b) are still
+// within their waiting window — once it's already safe to give again,
+// the card has nothing left to tell the parent, so it drops off the list
+// instead of lingering with a "safe now" message no one needs anymore.
 const medicationsWithHistory = computed(() =>
-  medicationsStore.medications.filter((med) => store.lastDose(med.id)),
+  medicationsStore.medications.filter((med) => {
+    const safeAt = store.nextSafeDoseAt(med.id, med.minIntervalHours)
+    return safeAt != null && safeAt > now.value
+  }),
 )
 </script>
 
