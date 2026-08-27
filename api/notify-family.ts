@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { bearerToken, verifyFirebaseToken } from './_lib/verifyToken'
-import { getGoogleAccessToken, getServiceAccountProjectId } from './_lib/googleAuth'
-import { getDeviceTokens, getFamilyMemberUids } from './_lib/firestoreRest'
+import { bearerToken, verifyFirebaseToken } from '../server/verifyToken'
+import { getGoogleAccessToken, getServiceAccountProjectId } from '../server/googleAuth'
+import { getDeviceTokens, getFamilyMemberUids } from '../server/firestoreRest'
 
 const SCOPES = [
   'https://www.googleapis.com/auth/datastore',

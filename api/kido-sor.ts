@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { bearerToken, verifyFirebaseToken } from './_lib/verifyToken'
+import { bearerToken, verifyFirebaseToken } from '../server/verifyToken'
 
 const SYSTEM_PROMPT = `Sen Kido adında, bebek/çocuk sahibi ebeveynlere yardımcı olan bir asistansın.
 Kido uygulaması ateş, ilaç ve beslenme (emzirme/biberon/katı gıda) takibi yapan bir aile uygulamasıdır.
