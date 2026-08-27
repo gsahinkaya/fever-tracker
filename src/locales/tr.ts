@@ -105,6 +105,7 @@ export default {
       growth: 'Büyüme',
       report: 'Özet Rapor',
       askKido: "Kido'ya Sor",
+      dutyPharmacy: 'Nöbetçi Eczane',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
     last48h: 'Son 48 Saat',
@@ -112,6 +113,21 @@ export default {
   },
   history: {
     title: 'Tüm Geçmiş',
+  },
+  dutyPharmacy: {
+    title: 'Nöbetçi Eczane',
+    loading: 'Konumun bulunuyor...',
+    nearLabel: '{location} yakınındaki nöbetçi eczaneler',
+    empty: 'Bu bölgede nöbetçi eczane bulunamadı.',
+    retry: 'Tekrar Dene',
+    callAria: 'Eczaneyi ara',
+    mapAria: 'Haritada göster',
+    errors: {
+      permission: 'Nöbetçi eczaneleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
+      location: 'Konumun alınamadı. Konum servislerinin açık olduğundan emin ol.',
+      geocode: 'Bulunduğun il/ilçe belirlenemedi.',
+      fetch: 'Eczane bilgisi alınamadı, tekrar dene.',
+    },
   },
   settings: {
     title: 'Ayarlar',

@@ -143,6 +143,12 @@ const medicationsWithHistory = computed(() =>
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.askKido') }}</span>
           </div>
         </v-btn>
+        <v-btn block height="64" color="pharmacy" variant="flat" rounded="lg" to="/nobetci-eczane">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-mortar-pestle" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.dutyPharmacy') }}</span>
+          </div>
+        </v-btn>
       </div>
 
       <InstallPwaBanner />

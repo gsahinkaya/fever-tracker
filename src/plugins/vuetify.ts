@@ -34,6 +34,9 @@ export default createVuetify({
           medication: '#0e7490',
           // Growth tile/actions — kept distinct from every other tile color.
           growth: '#be185d',
+          // Duty-pharmacy tile/actions — distinct emerald so it doesn't
+          // read as the same "safe/success" green used elsewhere.
+          pharmacy: '#059669',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',

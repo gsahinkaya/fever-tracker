@@ -22,6 +22,11 @@ const router = createRouter({
       component: () => import('../views/HistoryView.vue'),
     },
     {
+      path: '/nobetci-eczane',
+      name: 'duty-pharmacy',
+      component: () => import('../views/DutyPharmacyView.vue'),
+    },
+    {
       path: '/ayarlar',
       name: 'settings',
       component: () => import('../views/SettingsView.vue'),
