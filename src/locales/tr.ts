@@ -279,8 +279,13 @@ export default {
     title: 'Doktor Özet Raporu',
     createPdf: 'PDF Oluştur',
     description:
-      'Son 48 saatin ateş ve ilaç kayıtları. Bu ekranı doğrudan doktora gösterebilir ya da "PDF Oluştur" ile indirip paylaşabilirsin.',
-    generatedAt: 'Son 48 saat · Oluşturulma: {date}',
+      'Son 7 günün ateş, ilaç ve beslenme kayıtları, güncel büyüme/aşı durumu. Bu ekranı doğrudan doktora gösterebilir ya da "PDF Oluştur" ile indirip paylaşabilirsin.',
+    generatedAt: 'Son 7 gün · Oluşturulma: {date}',
+    healthSummaryTitle: 'Büyüme ve Aşı Durumu',
+    growthSummaryLabel: 'Son ölçüm ({date})',
+    vaccineSummaryLabel: '{done}/{total} aşı yapıldı',
+    vaccineOverdueLabel: '{overdue} tanesi gecikmiş',
+    medicationsTitle: 'Tanımlı İlaçlar',
     columns: {
       time: 'Saat',
       type: 'Tür',
@@ -288,7 +293,8 @@ export default {
     },
     typeFever: 'Ateş',
     typeMedication: 'İlaç',
-    noRecords: 'Son 48 saatte kayıt yok',
+    typeFeeding: 'Beslenme',
+    noRecords: 'Son 7 günde kayıt yok',
     gender: {
       female: 'Kız',
       male: 'Erkek',
