@@ -1,5 +1,5 @@
 import { t } from '@/i18n'
-import type { FeedingEntry, LogEntry, Medication } from '@/types/health'
+import type { FeedingEntry, GrowthEntry, LogEntry, Medication } from '@/types/health'
 
 // Turns a fever/medication/feeding entry into a human sentence — shared by
 // the in-app bell/banner (App.vue) and the OS system notification
@@ -28,4 +28,12 @@ export function describeFeeding(entry: FeedingEntry): string {
     })
   }
   return t('notifications.gaveSolidFood', { who })
+}
+
+export function describeGrowth(entry: GrowthEntry): string {
+  const who = entry.createdByEmail?.split('@')[0] ?? t('notifications.someone')
+  const parts: string[] = []
+  if (entry.heightCm) parts.push(`${entry.heightCm} cm`)
+  if (entry.weightKg) parts.push(`${entry.weightKg} kg`)
+  return t('notifications.addedGrowth', { who, parts: parts.join(' · ') })
 }

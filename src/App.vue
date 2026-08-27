@@ -7,9 +7,15 @@ import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { useGrowthLogStore } from '@/stores/growthLog'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
-import { describeEntry, describeFeeding, describeMedication } from '@/lib/describeActivity'
+import {
+  describeEntry,
+  describeFeeding,
+  describeGrowth,
+  describeMedication,
+} from '@/lib/describeActivity'
 import KidoMark from '@/components/KidoMark.vue'
 
 const { t } = useI18n()
@@ -19,6 +25,7 @@ const childrenStore = useChildrenStore()
 const feverLogStore = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
 const feedingLogStore = useFeedingLogStore()
+const growthLogStore = useGrowthLogStore()
 
 useEntryNotifications()
 
@@ -41,6 +48,10 @@ const incomingItems = computed(() =>
     ...feedingLogStore.incomingEntries.map((entry) => ({
       at: entry.takenAt,
       text: describeFeeding(entry),
+    })),
+    ...growthLogStore.incomingEntries.map((entry) => ({
+      at: entry.takenAt,
+      text: describeGrowth(entry),
     })),
   ].sort((a, b) => a.at - b.at),
 )
@@ -76,6 +87,7 @@ function acknowledgeIncoming() {
   feverLogStore.acknowledgeIncoming()
   medicationsStore.acknowledgeIncoming()
   feedingLogStore.acknowledgeIncoming()
+  growthLogStore.acknowledgeIncoming()
   bannerDismissed.value = false
 }
 
@@ -118,6 +130,7 @@ watch(
   (childId) => {
     medicationsStore.watchChild(childId)
     feedingLogStore.watchChild(childId)
+    growthLogStore.watchChild(childId)
     if (childId && authStore.familyId) {
       localStorage.setItem(`ates-olcer:active-child:${authStore.familyId}`, childId)
     }

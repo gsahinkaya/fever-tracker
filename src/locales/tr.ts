@@ -40,6 +40,10 @@ export default {
         body: 'Emzirme, biberon ve katı gıda girişlerini bu ekrandan kaydedebilirsin.',
       },
       {
+        title: 'Büyüme',
+        body: 'Boy ve kilo ölçümlerini kaydet, zaman içindeki gelişimini grafikte takip et.',
+      },
+      {
         title: 'Özet Rapor',
         body: 'Son 48 saatin ateş ve ilaç kayıtlarını tek dokunuşla PDF olarak indirip doktorla paylaşabilirsin.',
       },
@@ -98,6 +102,7 @@ export default {
       fever: 'Ateş',
       medication: 'İlaç',
       feeding: 'Beslenme',
+      growth: 'Büyüme',
       report: 'Özet Rapor',
       askKido: "Kido'ya Sor",
     },
@@ -186,6 +191,26 @@ export default {
   temperatureChart: {
     ariaLabel: 'Son 48 saat ateş grafiği',
     empty: 'Son 48 saatte ölçüm kaydı yok.',
+  },
+  growth: {
+    title: 'Büyüme',
+    addButton: 'Ölçüm Ekle',
+    heightChartTitle: 'Boy',
+    weightChartTitle: 'Kilo',
+    history: 'Geçmiş',
+    empty: 'Henüz ölçüm eklenmedi.',
+    emptyChart: 'Henüz ölçüm kaydı yok.',
+    deleteAria: 'Ölçümü sil',
+    deleteConfirmTitle: 'Ölçümü sil',
+    deleteConfirmBody: '{title} · {time} ölçümü silinsin mi?',
+    dialog: {
+      title: 'Ölçüm Ekle',
+      heightLabel: 'Boy (cm)',
+      weightLabel: 'Kilo (kg)',
+      timeLabel: 'Saat',
+      timeHint: 'Önceden ölçtüysen saati değiştirebilirsin',
+      hint: 'En az birini gir.',
+    },
   },
   doctorReport: {
     title: 'Doktor Özet Raporu',
@@ -304,6 +329,7 @@ export default {
     breastfed: '{who} emzirdi',
     gaveBottle: '{who} {amount} ml {milkType} verdi',
     gaveSolidFood: '{who} katı gıda verdi',
+    addedGrowth: '{who} yeni bir ölçüm ekledi ({parts})',
     milkTypes: {
       formula: 'mama',
       'breast-milk': 'anne sütü',

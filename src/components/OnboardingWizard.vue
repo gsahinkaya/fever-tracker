@@ -14,6 +14,7 @@ const stepMeta = [
   { icon: 'mdi-thermometer', color: 'error' },
   { icon: 'mdi-pill', color: 'medication' },
   { icon: 'mdi-baby-bottle-outline', color: 'secondary' },
+  { icon: 'mdi-human-male-height', color: 'growth' },
   { icon: 'mdi-file-chart-outline', color: 'info' },
   { icon: 'mdi-chat-question-outline', color: 'success' },
   { icon: 'mdi-bell-alert', color: 'primary' },

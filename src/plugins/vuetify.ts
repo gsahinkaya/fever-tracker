@@ -32,6 +32,8 @@ export default createVuetify({
           // home-screen "İlaç" tile doesn't read as the same color as the
           // (now purple) app header.
           medication: '#0e7490',
+          // Growth tile/actions — kept distinct from every other tile color.
+          growth: '#be185d',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',

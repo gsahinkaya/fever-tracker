@@ -2,8 +2,14 @@ import { watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { useGrowthLogStore } from '@/stores/growthLog'
 import { t } from '@/i18n'
-import { describeEntry, describeFeeding, describeMedication } from '@/lib/describeActivity'
+import {
+  describeEntry,
+  describeFeeding,
+  describeGrowth,
+  describeMedication,
+} from '@/lib/describeActivity'
 
 // Android Chrome throws on `new Notification()` and requires going through a
 // service worker; desktop browsers support both. Prefer the SW registration
@@ -31,6 +37,7 @@ export function useEntryNotifications() {
   const feverLogStore = useFeverLogStore()
   const medicationsStore = useMedicationsStore()
   const feedingLogStore = useFeedingLogStore()
+  const growthLogStore = useGrowthLogStore()
 
   watch(
     () => feverLogStore.lastRemoteEntry,
@@ -61,6 +68,18 @@ export function useEntryNotifications() {
           t('common.appName'),
           describeFeeding(entry),
           `feeding-${entry.id}`,
+        )
+    },
+  )
+
+  watch(
+    () => growthLogStore.lastRemoteEntry,
+    (entry) => {
+      if (entry)
+        void showSystemNotification(
+          t('common.appName'),
+          describeGrowth(entry),
+          `growth-${entry.id}`,
         )
     },
   )

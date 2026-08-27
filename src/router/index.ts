@@ -42,6 +42,11 @@ const router = createRouter({
       component: () => import('../views/AskKidoView.vue'),
     },
     {
+      path: '/buyume',
+      name: 'growth',
+      component: () => import('../views/GrowthView.vue'),
+    },
+    {
       path: '/giris',
       name: 'login',
       component: () => import('../views/LoginView.vue'),
