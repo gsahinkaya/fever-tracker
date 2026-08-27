@@ -46,6 +46,9 @@ export default createVuetify({
           // green (Kido'ya Sor sits right above it on Home) so the two
           // tiles read as different colors, not two shades of green.
           pharmacy: '#4338CA',
+          // Vaccination tile/actions — warm amber-brown, distinct from the
+          // orange "warning" state and every other tile hue.
+          vaccine: '#B45309',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',
@@ -69,6 +72,7 @@ export default createVuetify({
           medication: '#22a6c2',
           growth: '#e0468a',
           pharmacy: '#818CF8',
+          vaccine: '#D97706',
           error: '#F97066',
           success: '#32D583',
           warning: '#FDB022',

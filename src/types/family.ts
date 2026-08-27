@@ -5,6 +5,8 @@ export interface Child {
   gender?: 'female' | 'male'
   heightCm?: number
   weightKg?: number
+  // IDs from vaccinationSchedule.ts that have been marked as given.
+  completedVaccineIds?: string[]
 }
 
 export interface UserProfile {

@@ -106,6 +106,7 @@ export default {
       report: 'Özet Rapor',
       askKido: "Kido'ya Sor",
       dutyPharmacy: 'Nöbetçi Eczane',
+      vaccinations: 'Aşılar',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
     last48h: 'Son 48 Saat',
@@ -127,6 +128,18 @@ export default {
       location: 'Konumun alınamadı. Konum servislerinin açık olduğundan emin ol.',
       geocode: 'Bulunduğun il/ilçe belirlenemedi.',
       fetch: 'Eczane bilgisi alınamadı, tekrar dene.',
+    },
+  },
+  vaccinations: {
+    title: 'Aşı Takvimi',
+    disclaimer:
+      'T.C. Sağlık Bakanlığı ulusal aşı takvimine göre genel bir rehberdir; çocuğunun doktoru/aile hekimiyle birlikte takip et.',
+    needsBirthDate: 'Aşı takvimini hesaplayabilmek için önce çocuğunun doğum tarihini ekle.',
+    goToChildren: 'Çocuk Bilgilerine Git',
+    status: {
+      done: 'Yapıldı · {date}',
+      overdue: 'Gecikti · {date} tarihinde yapılmalıydı',
+      upcoming: '{date} tarihinde yapılmalı',
     },
   },
   settings: {
