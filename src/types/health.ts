@@ -3,6 +3,13 @@ export interface Medication {
   name: string
   minIntervalHours: number
   note?: string
+  // Inventory tracking, all optional — a syrup opened on this date is only
+  // good for shelfLifeDaysAfterOpening more days (defaults to 90 if unset,
+  // a common pharmacist rule of thumb), separate from the printed expiry
+  // date on the box itself.
+  openedAt?: number
+  expiryDate?: string
+  shelfLifeDaysAfterOpening?: number
   // Who added this medication and when, so the other parent can be
   // notified — including catching up after reopening the app, which needs
   // a timestamp to compare against a "last seen" watermark. Optional

@@ -22,13 +22,21 @@ const editingMedication = ref<Medication | null>(null)
 const name = ref('')
 const minIntervalHours = ref<number | null>(null)
 const note = ref('')
+const openedAt = ref('')
+const expiryDate = ref('')
+const shelfLifeDaysAfterOpening = ref<number | null>(null)
 const confirmDeleteTarget = ref<Medication | null>(null)
+
+const DEFAULT_SHELF_LIFE_DAYS = 90
 
 function openAdd() {
   editingMedication.value = null
   name.value = ''
   minIntervalHours.value = null
   note.value = ''
+  openedAt.value = ''
+  expiryDate.value = ''
+  shelfLifeDaysAfterOpening.value = null
   showDialog.value = true
 }
 
@@ -37,6 +45,11 @@ function openEdit(medication: Medication) {
   name.value = medication.name
   minIntervalHours.value = medication.minIntervalHours
   note.value = medication.note ?? ''
+  openedAt.value = medication.openedAt
+    ? new Date(medication.openedAt).toISOString().slice(0, 10)
+    : ''
+  expiryDate.value = medication.expiryDate ?? ''
+  shelfLifeDaysAfterOpening.value = medication.shelfLifeDaysAfterOpening ?? null
   showDialog.value = true
 }
 
@@ -48,6 +61,9 @@ async function save() {
     name: name.value.trim(),
     minIntervalHours: minIntervalHours.value,
     ...(note.value.trim() ? { note: note.value.trim() } : {}),
+    ...(openedAt.value ? { openedAt: new Date(openedAt.value).getTime() } : {}),
+    ...(expiryDate.value ? { expiryDate: expiryDate.value } : {}),
+    ...(shelfLifeDaysAfterOpening.value ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value } : {}),
   }
 
   if (editingMedication.value) {
@@ -61,6 +77,27 @@ async function save() {
     await medicationsStore.addMedication(authStore.familyId, feverLogStore.activeChildId, data)
   }
   showDialog.value = false
+}
+
+// Two independent expiry signals: the box's own printed expiry date, and a
+// syrup's much shorter shelf life once opened (typically far sooner than
+// the printed date — a pharmacist rule of thumb, defaulted to 90 days when
+// the parent hasn't entered the box's specific value).
+function inventoryWarning(med: Medication): string | null {
+  const now = Date.now()
+  if (med.expiryDate && new Date(med.expiryDate).getTime() < now) {
+    return t('medications.warnings.expired', {
+      date: new Date(med.expiryDate).toLocaleDateString('tr-TR'),
+    })
+  }
+  if (med.openedAt) {
+    const shelfLifeDays = med.shelfLifeDaysAfterOpening ?? DEFAULT_SHELF_LIFE_DAYS
+    const openSinceDays = Math.floor((now - med.openedAt) / 86_400_000)
+    if (openSinceDays >= shelfLifeDays) {
+      return t('medications.warnings.openedTooLong', { months: Math.floor(openSinceDays / 30) })
+    }
+  }
+  return null
 }
 
 async function confirmDelete() {
@@ -102,6 +139,9 @@ async function confirmDelete() {
         <v-list-item-subtitle>
           {{ t('medications.perSafe', { hours: med.minIntervalHours })
           }}<span v-if="med.note"> · {{ med.note }}</span>
+          <div v-if="inventoryWarning(med)" class="text-warning font-weight-medium mt-1">
+            {{ inventoryWarning(med) }}
+          </div>
         </v-list-item-subtitle>
         <template #append>
           <v-btn
@@ -156,6 +196,34 @@ async function confirmDelete() {
             variant="outlined"
             density="comfortable"
           />
+          <v-divider class="mb-4" />
+          <p class="text-caption text-medium-emphasis mb-2">
+            {{ t('medications.dialog.inventorySectionHint') }}
+          </p>
+          <v-text-field
+            v-model="openedAt"
+            type="date"
+            :label="t('medications.dialog.openedAtLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+          <div class="d-flex ga-2">
+            <v-text-field
+              v-model="expiryDate"
+              type="date"
+              :label="t('medications.dialog.expiryDateLabel')"
+              variant="outlined"
+              density="comfortable"
+            />
+            <v-text-field
+              v-model.number="shelfLifeDaysAfterOpening"
+              type="number"
+              :label="t('medications.dialog.shelfLifeLabel')"
+              :placeholder="String(DEFAULT_SHELF_LIFE_DAYS)"
+              variant="outlined"
+              density="comfortable"
+            />
+          </div>
         </v-card-text>
         <v-card-actions>
           <v-spacer />

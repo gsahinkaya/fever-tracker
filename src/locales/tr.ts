@@ -209,6 +209,15 @@ export default {
       intervalPlaceholder: 'Örn. 4',
       noteLabel: 'Not (opsiyonel)',
       notePlaceholder: 'Örn. 5 ml, yemekten sonra',
+      inventorySectionHint:
+        'Şurupların açıldıktan sonra kısa bir raf ömrü olur — takip etmek istersen doldur (hepsi opsiyonel).',
+      openedAtLabel: 'Açılış tarihi (opsiyonel)',
+      expiryDateLabel: 'Son kullanma tarihi (opsiyonel)',
+      shelfLifeLabel: 'Açıldıktan sonra kaç gün? (vars. 90)',
+    },
+    warnings: {
+      expired: 'Son kullanma tarihi geçti ({date}). Yenisini almalısın.',
+      openedTooLong: 'Açalı {months} ay oldu, yenisini almalısın.',
     },
     deleteConfirm: {
       title: 'İlacı sil',
