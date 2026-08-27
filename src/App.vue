@@ -91,6 +91,7 @@ function relativeTime(at: number): string {
 const activeChild = computed(
   () => childrenStore.children.find((c) => c.id === feverLogStore.activeChildId) ?? null,
 )
+const hasMultipleChildren = computed(() => childrenStore.children.length > 1)
 
 watch(
   () => authStore.familyId,
@@ -127,10 +128,32 @@ watch(
   <v-app>
     <v-app-bar v-if="!isAuthPage" color="primary" elevation="2">
       <template #prepend>
-        <v-icon icon="mdi-baby-face-outline" class="ml-2" />
+        <v-avatar color="primary-darken-1" size="32" class="ml-2">
+          <v-icon icon="mdi-baby-face-outline" size="20" />
+        </v-avatar>
       </template>
       <v-app-bar-title>
-        <span class="text-subtitle-1 font-weight-bold">{{
+        <v-menu v-if="hasMultipleChildren" location="bottom">
+          <template #activator="{ props: menuProps }">
+            <div class="d-flex align-center" style="cursor: pointer" v-bind="menuProps">
+              <span class="text-subtitle-1 font-weight-bold">{{
+                activeChild?.name ?? t('common.appName')
+              }}</span>
+              <v-icon icon="mdi-chevron-down" size="18" class="ml-1" />
+            </div>
+          </template>
+          <v-list density="comfortable">
+            <v-list-item
+              v-for="child in childrenStore.children"
+              :key="child.id"
+              :active="child.id === activeChild?.id"
+              @click="feverLogStore.watchChild(child.id)"
+            >
+              <v-list-item-title>{{ child.name }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <span v-else class="text-subtitle-1 font-weight-bold">{{
           activeChild?.name ?? t('common.appName')
         }}</span>
       </v-app-bar-title>

@@ -13,7 +13,6 @@ import AddDoseDialog from '@/components/AddDoseDialog.vue'
 import NextDoseCard from '@/components/NextDoseCard.vue'
 import CombinedTimelineList from '@/components/CombinedTimelineList.vue'
 import InstallPwaBanner from '@/components/InstallPwaBanner.vue'
-import ChildSwitcher from '@/components/ChildSwitcher.vue'
 import OnboardingWizard from '@/components/OnboardingWizard.vue'
 
 const { t } = useI18n()
@@ -82,8 +81,6 @@ const medicationsWithHistory = computed(() =>
     </template>
 
     <template v-else>
-      <ChildSwitcher />
-
       <div class="d-flex flex-column mb-6" style="gap: 12px">
         <v-btn
           block
