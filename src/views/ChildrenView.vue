@@ -77,7 +77,10 @@ async function confirmDelete() {
       <span class="text-h6 ml-2">{{ t('children.title') }}</span>
     </div>
 
-    <v-list v-if="childrenStore.children.length" lines="two" class="mb-4">
+    <div v-if="childrenStore.loading" class="text-center py-8">
+      <v-progress-circular indeterminate color="primary" />
+    </div>
+    <v-list v-else-if="childrenStore.children.length" lines="two" class="mb-4">
       <v-list-item v-for="child in childrenStore.children" :key="child.id" @click="openEdit(child)">
         <template #prepend>
           <v-avatar color="primary" variant="tonal">

@@ -72,7 +72,13 @@ const medicationsWithHistory = computed(() =>
 
 <template>
   <v-container class="py-4" style="max-width: 560px">
-    <template v-if="!hasChildren">
+    <template v-if="childrenStore.loading">
+      <div class="text-center py-8">
+        <v-progress-circular indeterminate color="primary" />
+      </div>
+    </template>
+
+    <template v-else-if="!hasChildren">
       <div class="text-center py-8">
         <v-icon icon="mdi-baby-face-outline" size="56" color="primary" class="mb-4" />
         <h2 class="text-h6 mb-2">{{ t('home.addChildTitle') }}</h2>

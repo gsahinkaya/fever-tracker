@@ -14,6 +14,11 @@ import type { Child } from '@/types/family'
 
 export const useChildrenStore = defineStore('children', () => {
   const children = ref<Child[]>([])
+  // True from the moment a family is watched until its first snapshot
+  // arrives, so views can tell "no children yet" apart from "haven't heard
+  // back from Firestore yet" and avoid flashing an empty state right after
+  // joining a family that already has children.
+  const loading = ref(false)
   let unsubscribe: (() => void) | null = null
 
   function watchFamily(familyId: string | null) {
@@ -22,9 +27,14 @@ export const useChildrenStore = defineStore('children', () => {
       unsubscribe = null
     }
     children.value = []
-    if (!familyId) return
+    if (!familyId) {
+      loading.value = false
+      return
+    }
+    loading.value = true
     unsubscribe = onSnapshot(collection(db, 'families', familyId, 'children'), (snap) => {
       children.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Child)
+      loading.value = false
     })
   }
 
@@ -57,5 +67,5 @@ export const useChildrenStore = defineStore('children', () => {
     await batch.commit()
   }
 
-  return { children, watchFamily, addChild, updateChild, removeChild }
+  return { children, loading, watchFamily, addChild, updateChild, removeChild }
 })
