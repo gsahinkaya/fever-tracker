@@ -10,6 +10,7 @@ import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
 import { describeEntry, describeFeeding, describeMedication } from '@/lib/describeActivity'
+import KidoMark from '@/components/KidoMark.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -128,9 +129,11 @@ watch(
   <v-app>
     <v-app-bar v-if="!isAuthPage" color="primary" elevation="2">
       <template #prepend>
-        <v-avatar color="primary-darken-1" size="32" class="ml-2">
-          <v-icon icon="mdi-baby-face-outline" size="20" />
-        </v-avatar>
+        <RouterLink to="/" class="ml-2 d-flex" style="text-decoration: none">
+          <v-avatar color="white" size="36">
+            <KidoMark :size="26" />
+          </v-avatar>
+        </RouterLink>
       </template>
       <v-app-bar-title>
         <v-menu v-if="hasMultipleChildren" location="bottom">

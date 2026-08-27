@@ -30,56 +30,50 @@ const recent = computed(() => store.recentEntries(48))
       <span class="text-h6 ml-2">{{ t('feeding.title') }}</span>
     </div>
 
-    <v-row class="mb-2">
-      <v-col cols="4">
-        <v-btn
-          block
-          color="secondary"
-          variant="flat"
-          style="aspect-ratio: 1 / 1; height: auto"
-          rounded="lg"
-          @click="showBreastfeedingDialog = true"
-        >
-          <div class="d-flex flex-column align-center">
-            <v-icon icon="mdi-mother-nurse" size="34" class="mb-2" />
-            <span class="text-body-2 font-weight-bold">{{ t('feeding.tiles.breastfeeding') }}</span>
-          </div>
-        </v-btn>
-      </v-col>
-      <v-col cols="4">
-        <v-btn
-          block
-          color="primary"
-          variant="flat"
-          style="aspect-ratio: 1 / 1; height: auto"
-          rounded="lg"
-          @click="showBottleDialog = true"
-        >
-          <div class="d-flex flex-column align-center">
-            <v-icon icon="mdi-baby-bottle-outline" size="34" class="mb-2" />
-            <span class="text-body-2 font-weight-bold">{{ t('feeding.tiles.bottle') }}</span>
-          </div>
-        </v-btn>
-      </v-col>
-      <v-col cols="4">
-        <v-btn
-          block
-          color="success"
-          variant="flat"
-          style="aspect-ratio: 1 / 1; height: auto"
-          rounded="lg"
-          @click="showSolidFoodDialog = true"
-        >
-          <div class="d-flex flex-column align-center">
-            <v-icon icon="mdi-food-apple-outline" size="34" class="mb-2" />
-            <span class="text-body-2 font-weight-bold">{{ t('feeding.tiles.solid') }}</span>
-          </div>
-        </v-btn>
-      </v-col>
-    </v-row>
+    <div class="d-flex flex-column mb-6" style="gap: 12px">
+      <v-btn
+        block
+        height="64"
+        color="secondary"
+        variant="flat"
+        rounded="lg"
+        @click="showBreastfeedingDialog = true"
+      >
+        <div class="d-flex align-center w-100">
+          <v-icon icon="mdi-mother-nurse" size="26" class="mr-3" />
+          <span class="text-body-1 font-weight-bold">{{ t('feeding.tiles.breastfeeding') }}</span>
+        </div>
+      </v-btn>
+      <v-btn
+        block
+        height="64"
+        color="primary"
+        variant="flat"
+        rounded="lg"
+        @click="showBottleDialog = true"
+      >
+        <div class="d-flex align-center w-100">
+          <v-icon icon="mdi-baby-bottle-outline" size="26" class="mr-3" />
+          <span class="text-body-1 font-weight-bold">{{ t('feeding.tiles.bottle') }}</span>
+        </div>
+      </v-btn>
+      <v-btn
+        block
+        height="64"
+        color="success"
+        variant="flat"
+        rounded="lg"
+        @click="showSolidFoodDialog = true"
+      >
+        <div class="d-flex align-center w-100">
+          <v-icon icon="mdi-food-apple-outline" size="26" class="mr-3" />
+          <span class="text-body-1 font-weight-bold">{{ t('feeding.tiles.solid') }}</span>
+        </div>
+      </v-btn>
+    </div>
 
     <template v-if="recent.length">
-      <div class="d-flex align-center justify-space-between mb-2 mt-4">
+      <div class="mb-2">
         <span class="text-subtitle-2 text-medium-emphasis">{{ t('feeding.last48h') }}</span>
       </div>
       <v-card variant="outlined">
