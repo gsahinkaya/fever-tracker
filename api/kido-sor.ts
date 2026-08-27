@@ -1,5 +1,32 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { bearerToken, verifyFirebaseToken } from '../server/verifyToken'
+import { createRemoteJWKSet, jwtVerify } from 'jose'
+
+// Verifying a Firebase ID token doesn't require the Admin SDK (and its heavy,
+// serverless-bundler-unfriendly dependency tree) — it's a standard RS256 JWT
+// signed with Google's rotating public keys. Verifying it directly with a
+// lightweight JOSE library needs no service-account secret at all.
+//
+// This file deliberately does NOT import from a shared local module (e.g.
+// api/_lib or a project-root server/ dir) even though notify-family.ts needs
+// the exact same logic — every attempt at that broke both functions with
+// FUNCTION_INVOCATION_FAILED / ERR_MODULE_NOT_FOUND in Vercel's actual
+// deploy, even though it type-checked and bundled fine locally with
+// @vercel/ncc. Duplicating these ~15 lines is the price of Vercel's
+// zero-config per-file function bundling actually working.
+const JWKS = createRemoteJWKSet(
+  new URL(
+    'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com',
+  ),
+)
+
+async function verifyFirebaseToken(idToken: string) {
+  const projectId = process.env.VITE_FIREBASE_PROJECT_ID
+  if (!projectId) throw new Error('VITE_FIREBASE_PROJECT_ID is not set')
+  await jwtVerify(idToken, JWKS, {
+    issuer: `https://securetoken.google.com/${projectId}`,
+    audience: projectId,
+  })
+}
 
 const SYSTEM_PROMPT = `Sen Kido adında, bebek/çocuk sahibi ebeveynlere yardımcı olan bir asistansın.
 Kido uygulaması ateş, ilaç ve beslenme (emzirme/biberon/katı gıda) takibi yapan bir aile uygulamasıdır.
@@ -14,7 +41,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const idToken = bearerToken(req.headers.authorization)
+  const authHeader = req.headers.authorization
+  const idToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
   if (!idToken) {
     res.status(401).json({ error: 'Giriş yapman gerekiyor.' })
     return
