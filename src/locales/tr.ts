@@ -108,6 +108,10 @@ export default {
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
     last48h: 'Son 48 Saat',
+    viewAllHistory: 'Tümünü Gör',
+  },
+  history: {
+    title: 'Tüm Geçmiş',
   },
   settings: {
     title: 'Ayarlar',

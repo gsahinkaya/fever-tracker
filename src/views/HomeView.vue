@@ -158,14 +158,16 @@ const medicationsWithHistory = computed(() =>
         </v-row>
       </template>
 
-      <template v-if="recentActivity.length">
-        <div class="mb-2">
-          <span class="text-subtitle-2 text-medium-emphasis">{{ t('home.last48h') }}</span>
-        </div>
-        <v-card variant="outlined">
-          <CombinedTimelineList :entries="recentActivity" />
-        </v-card>
-      </template>
+      <div class="mb-2 d-flex align-center">
+        <span class="text-subtitle-2 text-medium-emphasis">{{ t('home.last48h') }}</span>
+        <v-spacer />
+        <v-btn variant="text" size="small" color="primary" to="/gecmis">{{
+          t('home.viewAllHistory')
+        }}</v-btn>
+      </div>
+      <v-card variant="outlined">
+        <CombinedTimelineList :entries="recentActivity" />
+      </v-card>
 
       <AddReadingDialog v-model="showReadingDialog" />
       <AddDoseDialog v-model="showDoseDialog" />

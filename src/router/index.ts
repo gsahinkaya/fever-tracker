@@ -17,6 +17,11 @@ const router = createRouter({
       component: () => import('../views/DoctorReportView.vue'),
     },
     {
+      path: '/gecmis',
+      name: 'history',
+      component: () => import('../views/HistoryView.vue'),
+    },
+    {
       path: '/ayarlar',
       name: 'settings',
       component: () => import('../views/SettingsView.vue'),
