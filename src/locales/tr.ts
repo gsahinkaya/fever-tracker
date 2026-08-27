@@ -16,6 +16,47 @@ export default {
   errors: {
     noActiveChild: 'Aktif çocuk seçilmedi',
   },
+  onboarding: {
+    next: 'İleri',
+    back: 'Geri',
+    skip: 'Atla',
+    finish: 'Anladım, başlayalım',
+    stepLabel: '{current} / {total}',
+    steps: [
+      {
+        title: "Kido'ya Hoş Geldin!",
+        body: 'Ateş, ilaç ve beslenme takibini ailece kolayca yapmanı sağlıyoruz. Sana hızlıca nasıl çalıştığını gösterelim.',
+      },
+      {
+        title: 'Ateş',
+        body: 'Bu butona basarak çocuğunun ateşini kaydet. İstersen aynı anda ilaç da verildiğini işaretleyebilirsin.',
+      },
+      {
+        title: 'İlaç',
+        body: 'Bir doz ilaç verdiğinde buraya kaydet. Kido bir sonraki güvenli doz zamanını senin için hesaplayıp ana sayfada gösterir.',
+      },
+      {
+        title: 'Beslenme',
+        body: 'Emzirme, biberon ve katı gıda girişlerini bu ekrandan kaydedebilirsin.',
+      },
+      {
+        title: 'Özet Rapor',
+        body: 'Son 48 saatin ateş ve ilaç kayıtlarını tek dokunuşla PDF olarak indirip doktorla paylaşabilirsin.',
+      },
+      {
+        title: "Kido'ya Sor",
+        body: "Ateş, ilaç ya da beslenmeyle ilgili merak ettiğin bir şeyi Kido'ya sorabilirsin.",
+      },
+      {
+        title: 'Bildirimler',
+        body: 'Eşin ya da aileden biri bir kayıt eklediğinde sağ üstteki zil ikonunda bunu görürsün, kimse birbirinden habersiz kalmaz.',
+      },
+      {
+        title: 'Aile Üyesi Davet Et',
+        body: "Ayarlar'dan bir davet kodu veya linki paylaşarak eşini, anne-babanı ya da bakıcını davet edebilir, aynı çocuğu birlikte takip edebilirsiniz.",
+      },
+    ],
+  },
   auth: {
     login: {
       emailLabel: 'E-posta',

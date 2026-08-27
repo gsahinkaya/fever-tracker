@@ -5,6 +5,7 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { useAuthStore } from '@/stores/auth'
 import { useDoseReminders } from '@/composables/useDoseReminders'
 import { useNow } from '@/composables/useNow'
 import AddReadingDialog from '@/components/AddReadingDialog.vue'
@@ -13,17 +14,25 @@ import NextDoseCard from '@/components/NextDoseCard.vue'
 import CombinedTimelineList from '@/components/CombinedTimelineList.vue'
 import InstallPwaBanner from '@/components/InstallPwaBanner.vue'
 import ChildSwitcher from '@/components/ChildSwitcher.vue'
+import OnboardingWizard from '@/components/OnboardingWizard.vue'
 
 const { t } = useI18n()
 const store = useFeverLogStore()
 const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
 const feedingLogStore = useFeedingLogStore()
+const authStore = useAuthStore()
 const { requestPermission } = useDoseReminders()
 const now = useNow()
 
 const showReadingDialog = ref(false)
 const showDoseDialog = ref(false)
+const showOnboarding = computed({
+  get: () => !!authStore.profile && !authStore.profile.hasSeenOnboarding,
+  set: (value) => {
+    if (!value) authStore.markOnboardingSeen()
+  },
+})
 
 // Ask once automatically instead of nagging the user with an in-app
 // banner — the browser's own native prompt is enough, and after this
@@ -146,6 +155,7 @@ const medicationsWithHistory = computed(() =>
 
       <AddReadingDialog v-model="showReadingDialog" />
       <AddDoseDialog v-model="showDoseDialog" />
+      <OnboardingWizard v-model="showOnboarding" />
     </template>
   </v-container>
 </template>

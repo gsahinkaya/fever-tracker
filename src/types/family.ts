@@ -13,6 +13,9 @@ export interface UserProfile {
   name?: string
   phone?: string
   birthDate?: string
+  // Tracked on the account (not just a device) so the onboarding wizard
+  // stays dismissed across devices/reinstalls once the user has seen it.
+  hasSeenOnboarding?: boolean
 }
 
 export interface Family {

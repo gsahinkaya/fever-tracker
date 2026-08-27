@@ -98,9 +98,25 @@ export const useAuthStore = defineStore('auth', () => {
     await signInWithEmailAndPassword(auth, email, password)
   }
 
+  async function markOnboardingSeen() {
+    if (!user.value || profile.value?.hasSeenOnboarding) return
+    await updateDoc(doc(db, 'users', user.value.uid), { hasSeenOnboarding: true })
+    if (profile.value) profile.value.hasSeenOnboarding = true
+  }
+
   async function logout() {
     await firebaseSignOut(auth)
   }
 
-  return { user, profile, initializing, isAuthenticated, familyId, register, login, logout }
+  return {
+    user,
+    profile,
+    initializing,
+    isAuthenticated,
+    familyId,
+    register,
+    login,
+    logout,
+    markOnboardingSeen,
+  }
 })
