@@ -246,6 +246,8 @@ export default {
     history: 'Geçmiş',
     percentileHint:
       'DSÖ büyüme eğrileriyle karşılaştırmak için çocuğunun doğum tarihini ve cinsiyetini Çocuk Bilgileri ekranından ekle.',
+    percentileExplanation:
+      'Kesikli çizgiler Dünya Sağlık Örgütü\'nün (DSÖ/WHO) resmi büyüme standardı verisinden çekilir. Ortadaki "50" aynı yaş-cinsiyetteki çocukların ortalamasını (medyan), "3" ve "97" ise en düşük ve en yüksek uçları gösterir — mavi çizgi (çocuğunun kendi ölçümleri) bu aralıkta nerede durduğunu gösterir.',
     empty: 'Henüz ölçüm eklenmedi.',
     emptyChart: 'Henüz ölçüm kaydı yok.',
     deleteAria: 'Ölçümü sil',

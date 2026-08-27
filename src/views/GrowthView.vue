@@ -114,6 +114,9 @@ const headCircumferenceTable = computed(() =>
       <p v-if="!canShowPercentiles" class="text-caption text-medium-emphasis mb-4">
         {{ t('growth.percentileHint') }}
       </p>
+      <p v-else class="text-caption text-medium-emphasis mb-4">
+        {{ t('growth.percentileExplanation') }}
+      </p>
 
       <div class="mb-2">
         <span class="text-subtitle-2 text-medium-emphasis">{{ t('growth.heightChartTitle') }}</span>
