@@ -7,15 +7,23 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 
 import { createVuetify } from 'vuetify'
+import { THEME_STORAGE_KEY, type ThemeMode } from '@/lib/theme'
+
+// Read synchronously at module init (before Vue even mounts) so the app
+// never paints one frame in the wrong theme and then flips — Vuetify's own
+// theme.global.name switch (used for later toggling, see stores/theme.ts)
+// only takes effect after the plugin/component tree is already live.
+function initialTheme(): ThemeMode {
+  return localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light'
+}
 
 export default createVuetify({
   theme: {
-    // Without this, Vuetify falls back to auto-detecting the OS color
-    // scheme and switches to its own built-in dark theme — which knows
-    // nothing about our custom "medication" color (renders transparent)
-    // and turns the whole app background black on a phone in dark mode.
-    // The app only ever defines/wants the one light theme below.
-    defaultTheme: 'light',
+    // Without an explicit default, Vuetify auto-detects the OS color scheme
+    // and switches to its own built-in dark theme — which knows nothing
+    // about our custom "medication"/"growth"/"pharmacy" colors (renders
+    // transparent). Both themes below are ours; the OS is never consulted.
+    defaultTheme: initialTheme(),
     themes: {
       light: {
         colors: {
@@ -48,6 +56,26 @@ export default createVuetify({
           surface: '#FFFFFF',
           'on-background': '#18181B',
           'on-surface': '#18181B',
+        },
+      },
+      dark: {
+        colors: {
+          // Same brand hues, lifted a step so they stay vivid (not muddy)
+          // against a near-black surface instead of reusing the light
+          // theme's values verbatim.
+          primary: '#9457FF',
+          secondary: '#e07840',
+          medication: '#22a6c2',
+          growth: '#e0468a',
+          pharmacy: '#10b981',
+          error: '#F97066',
+          success: '#32D583',
+          warning: '#FDB022',
+          info: '#53B1FD',
+          background: '#121212',
+          surface: '#1E1E1E',
+          'on-background': '#E4E4E7',
+          'on-surface': '#E4E4E7',
         },
       },
     },

@@ -4,19 +4,25 @@
   box-sizing: border-box;
 }
 
-/* Force light regardless of OS/phone dark mode — without this, iOS/Android
-   render the browser's own chrome (overscroll bounce, scrollbars, native
-   form controls) in dark gray/black even though the app's own painted UI
-   stays on the light Vuetify theme, since only the app's CSS opting into
-   `color-scheme: light` overrides the browser's per-OS default. */
+/* The app's own light/dark toggle (stores/theme.ts) drives this via
+   [data-theme] on <html>, independent of the OS/phone setting — without an
+   explicit color-scheme, iOS/Android render the browser's own chrome
+   (overscroll bounce, scrollbars, native form controls) using the device's
+   dark/light setting even when it doesn't match the app's chosen theme. */
 :root {
   color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 html,
 body {
   overflow-x: hidden;
   background: #fcfcfc;
+}
+:root[data-theme='dark'] body {
+  background: #121212;
 }
 
 .v-application,

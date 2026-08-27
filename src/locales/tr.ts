@@ -131,6 +131,9 @@ export default {
   },
   settings: {
     title: 'Ayarlar',
+    appearance: 'Görünüm',
+    lightMode: 'Aydınlık',
+    darkMode: 'Karanlık',
     account: 'Hesap',
     logout: 'Çıkış Yap',
     childrenTitle: 'Çocuklarım',

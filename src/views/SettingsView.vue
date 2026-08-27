@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
+import { useThemeStore } from '@/stores/theme'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -13,6 +14,7 @@ const authStore = useAuthStore()
 const feverLogStore = useFeverLogStore()
 const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
+const themeStore = useThemeStore()
 
 const inviteLink = computed(() =>
   authStore.familyId ? `${window.location.origin}/kayit?kod=${authStore.familyId}` : '',
@@ -57,6 +59,27 @@ async function logout() {
       />
       <span class="text-h6 ml-2">{{ t('settings.title') }}</span>
     </div>
+
+    <v-card variant="outlined" class="mb-6">
+      <v-card-title class="text-subtitle-1">{{ t('settings.appearance') }}</v-card-title>
+      <v-card-text>
+        <v-btn-toggle
+          :model-value="themeStore.mode"
+          color="primary"
+          variant="outlined"
+          density="comfortable"
+          mandatory
+          @update:model-value="themeStore.setMode"
+        >
+          <v-btn value="light" prepend-icon="mdi-white-balance-sunny">{{
+            t('settings.lightMode')
+          }}</v-btn>
+          <v-btn value="dark" prepend-icon="mdi-weather-night">{{
+            t('settings.darkMode')
+          }}</v-btn>
+        </v-btn-toggle>
+      </v-card-text>
+    </v-card>
 
     <v-card variant="outlined" class="mb-6">
       <v-card-title class="text-subtitle-1">{{ t('settings.account') }}</v-card-title>

@@ -8,6 +8,7 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
+import { useThemeStore } from '@/stores/theme'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
 import {
@@ -26,6 +27,7 @@ const feverLogStore = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
 const feedingLogStore = useFeedingLogStore()
 const growthLogStore = useGrowthLogStore()
+useThemeStore()
 
 useEntryNotifications()
 
