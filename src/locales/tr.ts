@@ -33,23 +33,31 @@ export default {
       },
       {
         title: 'İlaç',
-        body: 'Bir doz ilaç verdiğinde buraya kaydet. Kido bir sonraki güvenli doz zamanını senin için hesaplayıp ana sayfada gösterir.',
+        body: 'Bir doz ilaç verdiğinde buraya kaydet. Kido bir sonraki güvenli doz zamanını senin için hesaplayıp ana sayfada gösterir. İlaçlarım ekranında şurubun açılış ve son kullanma tarihini de kaydedebilir, süresi dolmadan önce uyarı alabilirsin.',
       },
       {
         title: 'Beslenme',
         body: 'Emzirme, biberon ve katı gıda girişlerini bu ekrandan kaydedebilirsin.',
       },
       {
+        title: 'Aşılar',
+        body: 'T.C. Sağlık Bakanlığı aşı takvimine göre çocuğunun geçmiş ve gelecek aşılarını görür, yapılanları işaretlersin. Sırası gelen bir aşı varsa Kido bir gün önceden bildirimle hatırlatır.',
+      },
+      {
         title: 'Büyüme',
-        body: 'Boy ve kilo ölçümlerini kaydet, zaman içindeki gelişimini grafikte takip et.',
+        body: 'Boy, kilo ve baş çevresi ölçümlerini kaydet; Dünya Sağlık Örgütü (DSÖ) büyüme eğrileriyle karşılaştırarak çocuğunun kendi yaş ve cinsiyetindeki yerini (persentilini) gör.',
       },
       {
         title: 'Özet Rapor',
-        body: 'Son 48 saatin ateş ve ilaç kayıtlarını tek dokunuşla PDF olarak indirip doktorla paylaşabilirsin.',
+        body: 'Ateş, ilaç, beslenme, büyüme ve aşı bilgilerini içeren bir özeti tek dokunuşla PDF olarak indirip doktorla paylaşabilirsin.',
       },
       {
         title: "Kido'ya Sor",
         body: "Ateş, ilaç ya da beslenmeyle ilgili merak ettiğin bir şeyi Kido'ya sorabilirsin.",
+      },
+      {
+        title: 'Nöbetçi Eczane',
+        body: 'Konumuna göre yakınındaki nöbetçi eczaneleri anında listeler, tek dokunuşla arayabilir ya da yol tarifi alabilirsin.',
       },
       {
         title: 'Bildirimler',

@@ -14,9 +14,11 @@ const stepMeta = [
   { icon: 'mdi-thermometer', color: 'error' },
   { icon: 'mdi-pill', color: 'medication' },
   { icon: 'mdi-baby-bottle-outline', color: 'secondary' },
+  { icon: 'mdi-needle', color: 'vaccine' },
   { icon: 'mdi-human-male-height', color: 'growth' },
   { icon: 'mdi-file-chart-outline', color: 'info' },
   { icon: 'mdi-chat-question-outline', color: 'success' },
+  { icon: 'mdi-mortar-pestle', color: 'pharmacy' },
   { icon: 'mdi-bell-alert', color: 'primary' },
   { icon: 'mdi-account-multiple-plus-outline', color: 'primary' },
 ]
