@@ -125,6 +125,12 @@ const medicationsWithHistory = computed(() =>
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.feeding') }}</span>
           </div>
         </v-btn>
+        <v-btn block height="64" color="vaccine" variant="flat" rounded="lg" to="/asilar">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-needle" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.vaccinations') }}</span>
+          </div>
+        </v-btn>
         <v-btn block height="64" color="growth" variant="flat" rounded="lg" to="/buyume">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-human-male-height" size="26" class="mr-3" />
@@ -147,12 +153,6 @@ const medicationsWithHistory = computed(() =>
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-mortar-pestle" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.dutyPharmacy') }}</span>
-          </div>
-        </v-btn>
-        <v-btn block height="64" color="vaccine" variant="flat" rounded="lg" to="/asilar">
-          <div class="d-flex align-center w-100">
-            <v-icon icon="mdi-needle" size="26" class="mr-3" />
-            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.vaccinations') }}</span>
           </div>
         </v-btn>
       </div>
