@@ -1,6 +1,7 @@
 import { watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
+import { t } from '@/i18n'
 import { useNow } from './useNow'
 
 // Foreground-only reminder: notifies while this tab/PWA is open and in memory.
@@ -32,8 +33,8 @@ export function useDoseReminders() {
       const key = `${med.id}:${last.id}`
       if (safeAt <= current && !notifiedFor.has(key)) {
         notifiedFor.add(key)
-        new Notification('Kido', {
-          body: `${med.name} için güvenli doz zamanı geldi.`,
+        new Notification(t('common.appName'), {
+          body: t('notifications.doseReady', { name: med.name }),
           icon: '/icon-192.png',
           tag: key,
         })

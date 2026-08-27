@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { FeverReading } from '@/types/health'
 
+const { t } = useI18n()
 const props = defineProps<{ readings: FeverReading[] }>()
 
 const sorted = computed(() => [...props.readings].sort((a, b) => a.takenAt - b.takenAt))
@@ -101,7 +103,7 @@ function timeLabel(ts: number) {
       :viewBox="`0 0 ${width} ${height}`"
       preserveAspectRatio="xMidYMid meet"
       role="img"
-      aria-label="Son 48 saat ateş grafiği"
+      :aria-label="t('temperatureChart.ariaLabel')"
       @pointermove="onMove"
       @pointerleave="hoverIndex = null"
     >
@@ -186,7 +188,7 @@ function timeLabel(ts: number) {
       </template>
     </svg>
 
-    <div v-else class="empty-state">Son 48 saatte ölçüm kaydı yok.</div>
+    <div v-else class="empty-state">{{ t('temperatureChart.empty') }}</div>
 
     <div v-if="hovered" class="tooltip">
       <strong>{{ hovered.temperature.toFixed(1) }} °C</strong>

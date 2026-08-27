@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import KidoLogo from '@/components/KidoLogo.vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
@@ -25,20 +27,17 @@ onMounted(() => {
 
 function friendlyError(err: unknown): string {
   const code = (err as { code?: string })?.code ?? ''
-  if (code === 'auth/email-already-in-use')
-    return 'Bu e-posta ile zaten bir hesap var. Giriş yapmayı dene.'
-  if (code === 'auth/weak-password') return 'Şifre en az 6 karakter olmalı.'
-  if (code === 'auth/invalid-email') return 'Geçerli bir e-posta gir.'
+  if (code === 'auth/email-already-in-use') return t('auth.register.errors.emailInUse')
+  if (code === 'auth/weak-password') return t('auth.register.errors.weakPassword')
+  if (code === 'auth/invalid-email') return t('auth.register.errors.invalidEmail')
   const message = (err as Error)?.message
-  return message && !message.startsWith('Firebase:')
-    ? message
-    : 'Kayıt sırasında bir sorun oluştu, tekrar dene.'
+  return message && !message.startsWith('Firebase:') ? message : t('auth.register.errors.generic')
 }
 
 async function submit() {
   errorMessage.value = ''
   if (password.value !== confirmPassword.value) {
-    errorMessage.value = 'Şifreler eşleşmiyor.'
+    errorMessage.value = t('auth.register.errors.passwordMismatch')
     return
   }
   loading.value = true
@@ -64,13 +63,13 @@ async function submit() {
   <v-container class="py-8" style="max-width: 420px">
     <div class="text-center mb-8">
       <h1><KidoLogo :height="40" /></h1>
-      <p class="text-subtitle-1 mt-3 mb-0">Hesap Oluştur</p>
+      <p class="text-subtitle-1 mt-3 mb-0">{{ t('auth.register.heading') }}</p>
     </div>
 
     <v-form @submit.prevent="submit">
       <v-text-field
         v-model="name"
-        label="Ad Soyad"
+        :label="t('auth.register.nameLabel')"
         variant="outlined"
         density="comfortable"
         autofocus
@@ -78,7 +77,7 @@ async function submit() {
       />
       <v-text-field
         v-model="email"
-        label="E-posta"
+        :label="t('auth.register.emailLabel')"
         type="email"
         variant="outlined"
         density="comfortable"
@@ -86,14 +85,14 @@ async function submit() {
       />
       <v-text-field
         v-model="phone"
-        label="Telefon (opsiyonel)"
+        :label="t('auth.register.phoneLabel')"
         type="tel"
         variant="outlined"
         density="comfortable"
       />
       <v-text-field
         v-model="password"
-        label="Şifre"
+        :label="t('auth.register.passwordLabel')"
         type="password"
         variant="outlined"
         density="comfortable"
@@ -101,7 +100,7 @@ async function submit() {
       />
       <v-text-field
         v-model="confirmPassword"
-        label="Şifre (tekrar)"
+        :label="t('auth.register.confirmPasswordLabel')"
         type="password"
         variant="outlined"
         density="comfortable"
@@ -110,14 +109,14 @@ async function submit() {
       <v-text-field
         v-model="birthDate"
         type="date"
-        label="Doğum tarihin (opsiyonel)"
+        :label="t('auth.register.birthDateLabel')"
         variant="outlined"
         density="comfortable"
       />
       <v-text-field
         v-model="inviteCode"
-        label="Davet kodu (varsa)"
-        hint="Bir aile üyesi seni davet ettiyse buraya kodu gir"
+        :label="t('auth.register.inviteCodeLabel')"
+        :hint="t('auth.register.inviteCodeHint')"
         persistent-hint
         variant="outlined"
         density="comfortable"
@@ -128,14 +127,14 @@ async function submit() {
         {{ errorMessage }}
       </v-alert>
 
-      <v-btn type="submit" block size="large" color="primary" :loading="loading" class="mt-2"
-        >Kayıt Ol</v-btn
-      >
+      <v-btn type="submit" block size="large" color="primary" :loading="loading" class="mt-2">{{
+        t('auth.register.submit')
+      }}</v-btn>
     </v-form>
 
     <div class="text-center mt-6">
-      <span class="text-medium-emphasis">Zaten hesabın var mı?</span>
-      <v-btn variant="text" color="primary" to="/giris">Giriş yap</v-btn>
+      <span class="text-medium-emphasis">{{ t('auth.register.haveAccount') }}</span>
+      <v-btn variant="text" color="primary" to="/giris">{{ t('auth.register.loginLink') }}</v-btn>
     </div>
   </v-container>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas-pro'
 import { useFeverLogStore } from '@/stores/feverLog'
@@ -8,6 +9,7 @@ import { ageLabel } from '@/lib/age'
 import type { FeverReading } from '@/types/health'
 import TemperatureChart from '@/components/chart/TemperatureChart.vue'
 
+const { t } = useI18n()
 const store = useFeverLogStore()
 const childrenStore = useChildrenStore()
 
@@ -18,13 +20,15 @@ const activeChild = computed(
 )
 const activeChildName = computed(() => activeChild.value?.name ?? '')
 
-const genderLabels: Record<string, string> = { female: 'Kız', male: 'Erkek' }
+function genderLabel(gender: string): string {
+  return gender === 'female' || gender === 'male' ? t(`doctorReport.gender.${gender}`) : gender
+}
 
 const childSummaryParts = computed(() => {
   const child = activeChild.value
   if (!child) return []
   const parts: string[] = []
-  if (child.gender) parts.push(genderLabels[child.gender] ?? child.gender)
+  if (child.gender) parts.push(genderLabel(child.gender))
   if (child.birthDate) {
     const formatted = new Date(child.birthDate).toLocaleDateString('tr-TR')
     parts.push(`${formatted} (${ageLabel(child.birthDate)})`)
@@ -97,10 +101,10 @@ async function createPdf() {
         icon="mdi-arrow-left"
         variant="tonal"
         color="primary"
-        aria-label="Geri"
+        :aria-label="t('common.back')"
         @click="$router.back()"
       />
-      <span class="text-h6 ml-2">Doktor Özet Raporu</span>
+      <span class="text-h6 ml-2">{{ t('doctorReport.title') }}</span>
       <v-spacer />
       <v-btn
         color="primary"
@@ -109,22 +113,21 @@ async function createPdf() {
         :loading="generatingPdf"
         @click="createPdf"
       >
-        PDF Oluştur
+        {{ t('doctorReport.createPdf') }}
       </v-btn>
     </div>
     <p class="text-body-2 text-medium-emphasis mb-4 no-print">
-      Son 48 saatin ateş ve ilaç kayıtları. Bu ekranı doğrudan doktora gösterebilir ya da "PDF
-      Oluştur" ile indirip paylaşabilirsin.
+      {{ t('doctorReport.description') }}
     </p>
 
     <div ref="reportContent">
       <v-card variant="outlined" class="mb-4 pa-4">
-        <div class="text-h6">{{ activeChildName || 'Doktor Özet Raporu' }}</div>
+        <div class="text-h6">{{ activeChildName || t('doctorReport.title') }}</div>
         <div v-if="childSummaryParts.length" class="text-body-2 text-medium-emphasis">
           {{ childSummaryParts.join(' · ') }}
         </div>
         <div class="text-caption text-medium-emphasis mt-1">
-          Son 48 saat · Oluşturulma: {{ generatedAtLabel }}
+          {{ t('doctorReport.generatedAt', { date: generatedAtLabel }) }}
         </div>
       </v-card>
 
@@ -135,15 +138,21 @@ async function createPdf() {
       <v-table density="comfortable">
         <thead>
           <tr>
-            <th>Saat</th>
-            <th>Tür</th>
-            <th>Değer</th>
+            <th>{{ t('doctorReport.columns.time') }}</th>
+            <th>{{ t('doctorReport.columns.type') }}</th>
+            <th>{{ t('doctorReport.columns.value') }}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="entry in recent" :key="entry.id">
             <td>{{ timeLabel(entry.takenAt) }}</td>
-            <td>{{ entry.type === 'reading' ? 'Ateş' : 'İlaç' }}</td>
+            <td>
+              {{
+                entry.type === 'reading'
+                  ? t('doctorReport.typeFever')
+                  : t('doctorReport.typeMedication')
+              }}
+            </td>
             <td>
               {{
                 entry.type === 'reading'
@@ -154,7 +163,7 @@ async function createPdf() {
           </tr>
           <tr v-if="!recent.length">
             <td colspan="3" class="text-center text-medium-emphasis py-4">
-              Son 48 saatte kayıt yok
+              {{ t('doctorReport.noRecords') }}
             </td>
           </tr>
         </tbody>

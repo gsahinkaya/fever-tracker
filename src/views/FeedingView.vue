@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import AddBreastfeedingDialog from '@/components/AddBreastfeedingDialog.vue'
 import AddBottleDialog from '@/components/AddBottleDialog.vue'
 import AddSolidFoodDialog from '@/components/AddSolidFoodDialog.vue'
 import FeedingTimelineList from '@/components/FeedingTimelineList.vue'
 
+const { t } = useI18n()
 const store = useFeedingLogStore()
 
 const showBreastfeedingDialog = ref(false)
@@ -22,10 +24,10 @@ const recent = computed(() => store.recentEntries(48))
         icon="mdi-arrow-left"
         variant="tonal"
         color="primary"
-        aria-label="Geri"
+        :aria-label="t('common.back')"
         @click="$router.back()"
       />
-      <span class="text-h6 ml-2">Beslenme</span>
+      <span class="text-h6 ml-2">{{ t('feeding.title') }}</span>
     </div>
 
     <v-row class="mb-2">
@@ -40,7 +42,7 @@ const recent = computed(() => store.recentEntries(48))
         >
           <div class="d-flex flex-column align-center">
             <v-icon icon="mdi-mother-nurse" size="34" class="mb-2" />
-            <span class="text-body-2 font-weight-bold">Emzirme</span>
+            <span class="text-body-2 font-weight-bold">{{ t('feeding.tiles.breastfeeding') }}</span>
           </div>
         </v-btn>
       </v-col>
@@ -55,7 +57,7 @@ const recent = computed(() => store.recentEntries(48))
         >
           <div class="d-flex flex-column align-center">
             <v-icon icon="mdi-baby-bottle-outline" size="34" class="mb-2" />
-            <span class="text-body-2 font-weight-bold">Biberon</span>
+            <span class="text-body-2 font-weight-bold">{{ t('feeding.tiles.bottle') }}</span>
           </div>
         </v-btn>
       </v-col>
@@ -70,7 +72,7 @@ const recent = computed(() => store.recentEntries(48))
         >
           <div class="d-flex flex-column align-center">
             <v-icon icon="mdi-food-apple-outline" size="34" class="mb-2" />
-            <span class="text-body-2 font-weight-bold">Katı Gıda</span>
+            <span class="text-body-2 font-weight-bold">{{ t('feeding.tiles.solid') }}</span>
           </div>
         </v-btn>
       </v-col>
@@ -78,7 +80,7 @@ const recent = computed(() => store.recentEntries(48))
 
     <template v-if="recent.length">
       <div class="d-flex align-center justify-space-between mb-2 mt-4">
-        <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saat</span>
+        <span class="text-subtitle-2 text-medium-emphasis">{{ t('feeding.last48h') }}</span>
       </div>
       <v-card variant="outlined">
         <FeedingTimelineList :entries="recent" />

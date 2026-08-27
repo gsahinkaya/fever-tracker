@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import KidoLogo from '@/components/KidoLogo.vue'
 
+const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -19,7 +21,7 @@ async function submit() {
     await authStore.login(email.value, password.value)
     router.push('/')
   } catch {
-    errorMessage.value = 'E-posta veya şifre hatalı.'
+    errorMessage.value = t('auth.login.error')
   } finally {
     loading.value = false
   }
@@ -35,7 +37,7 @@ async function submit() {
     <v-form @submit.prevent="submit">
       <v-text-field
         v-model="email"
-        label="E-posta"
+        :label="t('auth.login.emailLabel')"
         type="email"
         variant="outlined"
         density="comfortable"
@@ -44,7 +46,7 @@ async function submit() {
       />
       <v-text-field
         v-model="password"
-        label="Şifre"
+        :label="t('auth.login.passwordLabel')"
         type="password"
         variant="outlined"
         density="comfortable"
@@ -55,20 +57,18 @@ async function submit() {
         {{ errorMessage }}
       </v-alert>
 
-      <v-btn type="submit" block size="large" color="primary" :loading="loading">Giriş Yap</v-btn>
+      <v-btn type="submit" block size="large" color="primary" :loading="loading">{{
+        t('auth.login.submit')
+      }}</v-btn>
     </v-form>
 
     <div class="text-center mt-6">
-      <span class="text-medium-emphasis">Hesabın yok mu?</span>
-      <v-btn variant="text" color="primary" to="/kayit">Kayıt ol</v-btn>
+      <span class="text-medium-emphasis">{{ t('auth.login.noAccount') }}</span>
+      <v-btn variant="text" color="primary" to="/kayit">{{ t('auth.login.registerLink') }}</v-btn>
     </div>
 
     <p class="text-body-2 text-medium-emphasis text-center mt-8">
-      Kido, çocuğunun ateş, ilaç ve beslenme takibini ailece paylaşmanı sağlayan bir asistan. Tüm
-      kayıtlar cihazında saklanır, bu yüzden internet olmadan da çalışır ve bağlantı geldiğinde
-      otomatik senkronize olur. Ateş ölçümü, ilaç dozu ve emzirme/biberon/katı gıda girişlerini
-      kaydet, güvenli doz zamanını takip et; eşin ya da diğer aile üyeleri bir şey ekleyince
-      bildirim al ve doktor için özet rapor oluştur.
+      {{ t('auth.login.intro') }}
     </p>
   </v-container>
 </template>

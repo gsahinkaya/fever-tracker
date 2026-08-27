@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { currentTimeString, resolveTakenAt } from '@/lib/time'
 
+const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
 const store = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
@@ -39,11 +41,11 @@ function save() {
 <template>
   <v-dialog v-model="model" max-width="420">
     <v-card>
-      <v-card-title class="text-h6">Ateş Girişi</v-card-title>
+      <v-card-title class="text-h6">{{ t('dialogs.addReading.title') }}</v-card-title>
       <v-card-text>
         <v-text-field
           v-model.number="temperature"
-          label="Vücut sıcaklığı (°C)"
+          :label="t('dialogs.addReading.tempLabel')"
           type="number"
           step="0.1"
           inputmode="decimal"
@@ -53,15 +55,15 @@ function save() {
         />
         <v-text-field
           v-model="note"
-          label="Not (opsiyonel)"
+          :label="t('dialogs.addReading.noteLabel')"
           variant="outlined"
           density="comfortable"
         />
         <v-text-field
           v-model="time"
           type="time"
-          label="Saat"
-          hint="Önceden ölçtüysen saati değiştirebilirsin"
+          :label="t('dialogs.addReading.timeLabel')"
+          :hint="t('dialogs.addReading.timeHint')"
           persistent-hint
           variant="outlined"
           density="comfortable"
@@ -70,7 +72,7 @@ function save() {
         <template v-if="medicationsStore.medications.length">
           <v-checkbox
             v-model="alsoGaveMedication"
-            label="Aynı anda ilaç da verildi"
+            :label="t('dialogs.addReading.alsoGaveMedication')"
             density="comfortable"
             hide-details
           />
@@ -90,16 +92,17 @@ function save() {
           </v-radio-group>
         </template>
         <p v-else class="text-caption text-medium-emphasis mt-2">
-          İlaç da kaydetmek istersen önce <RouterLink to="/ilaclar">İlaçlarım</RouterLink>'dan bir
-          ilaç ekle.
+          {{ t('dialogs.addReading.addMedicationHintPrefix') }}
+          <RouterLink to="/ilaclar">{{ t('dialogs.addReading.addMedicationHintLink') }}</RouterLink
+          >{{ t('dialogs.addReading.addMedicationHintSuffix') }}
         </p>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="text" @click="model = false">Vazgeç</v-btn>
-        <v-btn color="error" variant="flat" size="large" :disabled="!temperature" @click="save"
-          >Kaydet</v-btn
-        >
+        <v-btn variant="text" @click="model = false">{{ t('common.cancel') }}</v-btn>
+        <v-btn color="error" variant="flat" size="large" :disabled="!temperature" @click="save">{{
+          t('common.save')
+        }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

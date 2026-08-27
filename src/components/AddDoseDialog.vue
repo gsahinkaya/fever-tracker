@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useNow } from '@/composables/useNow'
 import { currentTimeString, resolveTakenAt } from '@/lib/time'
 
+const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
 const store = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
@@ -39,6 +41,10 @@ const remainingLabel = computed(() => {
   return `${h} sa ${m} dk`
 })
 
+const tooEarlyMessage = computed(() =>
+  t('dialogs.addDose.tooEarly', { remaining: remainingLabel.value }),
+)
+
 function confirm() {
   if (!selectedMedication.value) return
   store.addDose(
@@ -53,7 +59,7 @@ function confirm() {
 <template>
   <v-dialog v-model="model" max-width="420">
     <v-card v-if="medicationsStore.medications.length">
-      <v-card-title class="text-h6">İlaç Verildi</v-card-title>
+      <v-card-title class="text-h6">{{ t('dialogs.addDose.title') }}</v-card-title>
       <v-card-text>
         <v-radio-group v-model="medicationId" density="comfortable">
           <v-radio
@@ -71,15 +77,14 @@ function confirm() {
           density="comfortable"
           class="mb-4"
         >
-          Son dozdan bu yana yeterli süre geçmedi. Güvenli zamana {{ remainingLabel }} kaldı. Yine
-          de kaydedebilirsin, ama doktor/eczacına danış.
+          {{ tooEarlyMessage }}
         </v-alert>
 
         <v-text-field
           v-model="time"
           type="time"
-          label="Saat"
-          hint="Önceden verildiyse saati değiştirebilirsin"
+          :label="t('dialogs.addDose.timeLabel')"
+          :hint="t('dialogs.addDose.timeHint')"
           persistent-hint
           variant="outlined"
           density="comfortable"
@@ -87,27 +92,29 @@ function confirm() {
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="text" @click="model = false">Vazgeç</v-btn>
+        <v-btn variant="text" @click="model = false">{{ t('common.cancel') }}</v-btn>
         <v-btn
           :color="isTooEarly ? 'warning' : 'primary'"
           variant="flat"
           size="large"
           @click="confirm"
         >
-          Kaydet
+          {{ t('common.save') }}
         </v-btn>
       </v-card-actions>
     </v-card>
 
     <v-card v-else>
-      <v-card-title class="text-h6">Henüz ilaç eklenmedi</v-card-title>
+      <v-card-title class="text-h6">{{ t('dialogs.addDose.noMedTitle') }}</v-card-title>
       <v-card-text>
-        İlaç kaydı yapabilmek için önce takip etmek istediğin ilacı ve güvenli doz aralığını ekle.
+        {{ t('dialogs.addDose.noMedBody') }}
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="text" @click="model = false">Vazgeç</v-btn>
-        <v-btn color="primary" variant="flat" to="/ilaclar" @click="model = false">İlaç Ekle</v-btn>
+        <v-btn variant="text" @click="model = false">{{ t('common.cancel') }}</v-btn>
+        <v-btn color="primary" variant="flat" to="/ilaclar" @click="model = false">{{
+          t('dialogs.addDose.addMedButton')
+        }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

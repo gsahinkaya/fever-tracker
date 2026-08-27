@@ -2,6 +2,7 @@ import { computed, ref, shallowRef } from 'vue'
 import { onSnapshot, type DocumentData, type Query } from 'firebase/firestore'
 import { useAuthStore } from '@/stores/auth'
 import { loadLastSeen, saveLastSeen } from '@/lib/lastSeen'
+import { t } from '@/i18n'
 
 interface CreatedByFields {
   createdBy?: string
@@ -88,7 +89,7 @@ export function useWatermarkedFeed<T extends CreatedByFields>(options: {
   function requireContext() {
     const authStore = useAuthStore()
     if (!authStore.familyId || !activeChildId.value) {
-      throw new Error('Aktif çocuk seçilmedi')
+      throw new Error(t('errors.noActiveChild'))
     }
     return { familyId: authStore.familyId, childId: activeChildId.value }
   }

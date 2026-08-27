@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
 
+const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
 const feverLogStore = useFeverLogStore()
@@ -50,14 +52,14 @@ async function logout() {
         icon="mdi-arrow-left"
         variant="tonal"
         color="primary"
-        aria-label="Geri"
+        :aria-label="t('common.back')"
         @click="$router.back()"
       />
-      <span class="text-h6 ml-2">Ayarlar</span>
+      <span class="text-h6 ml-2">{{ t('settings.title') }}</span>
     </div>
 
     <v-card variant="outlined" class="mb-6">
-      <v-card-title class="text-subtitle-1">Hesap</v-card-title>
+      <v-card-title class="text-subtitle-1">{{ t('settings.account') }}</v-card-title>
       <v-card-text>
         <div v-if="authStore.profile?.name" class="text-body-2 font-weight-bold">
           {{ authStore.profile.name }}
@@ -66,50 +68,48 @@ async function logout() {
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="text" @click="logout">Çıkış Yap</v-btn>
+        <v-btn variant="text" @click="logout">{{ t('settings.logout') }}</v-btn>
       </v-card-actions>
     </v-card>
 
     <v-card variant="outlined" class="mb-6">
-      <v-card-title class="text-subtitle-1">Çocuklarım</v-card-title>
+      <v-card-title class="text-subtitle-1">{{ t('settings.childrenTitle') }}</v-card-title>
       <v-card-text class="text-body-2 text-medium-emphasis">
-        {{ childrenStore.children.length }} çocuk kayıtlı
+        {{ t('settings.childrenCount', { count: childrenStore.children.length }) }}
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" variant="text" to="/cocuklar">Yönet</v-btn>
+        <v-btn color="primary" variant="text" to="/cocuklar">{{ t('settings.manage') }}</v-btn>
       </v-card-actions>
     </v-card>
 
     <v-card variant="outlined" class="mb-6">
-      <v-card-title class="text-subtitle-1">İlaçlarım</v-card-title>
+      <v-card-title class="text-subtitle-1">{{ t('settings.medicationsTitle') }}</v-card-title>
       <v-card-text class="text-body-2 text-medium-emphasis">
-        {{ medicationsStore.medications.length }} ilaç kayıtlı
+        {{ t('settings.medicationsCount', { count: medicationsStore.medications.length }) }}
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" variant="text" to="/ilaclar">Yönet</v-btn>
+        <v-btn color="primary" variant="text" to="/ilaclar">{{ t('settings.manage') }}</v-btn>
       </v-card-actions>
     </v-card>
 
     <v-card variant="outlined" class="mb-6">
-      <v-card-title class="text-subtitle-1">Aile Üyesi Davet Et</v-card-title>
+      <v-card-title class="text-subtitle-1">{{ t('settings.inviteTitle') }}</v-card-title>
       <v-card-text>
         <p class="text-body-2 text-medium-emphasis mb-2">
-          Bu kodu veya linki istediğin kişiyle paylaş — eşin, anne-baban ya da bakıcı olabilir.
-          Kayıt olurken girdiğinde aynı çocukları görüp takip edebilir; istediğin kadar kişi
-          ekleyebilirsin.
+          {{ t('settings.inviteBody') }}
         </p>
         <v-text-field
           :model-value="authStore.familyId"
-          label="Davet kodu"
+          :label="t('settings.inviteCodeLabel')"
           readonly
           variant="outlined"
           density="comfortable"
         />
         <v-text-field
           :model-value="inviteLink"
-          label="Davet linki"
+          :label="t('settings.inviteLinkLabel')"
           readonly
           variant="outlined"
           density="comfortable"
@@ -123,37 +123,36 @@ async function logout() {
           :append-icon="copied ? 'mdi-check' : 'mdi-content-copy'"
           @click="copyInvite"
         >
-          {{ copied ? 'Kopyalandı' : 'Linki Kopyala' }}
+          {{ copied ? t('settings.copied') : t('settings.copyLink') }}
         </v-btn>
       </v-card-actions>
     </v-card>
 
     <v-card v-if="activeChildName" variant="outlined" class="mb-6">
-      <v-card-title class="text-subtitle-1 text-error">Tehlikeli Bölge</v-card-title>
+      <v-card-title class="text-subtitle-1 text-error">{{ t('settings.dangerZone') }}</v-card-title>
       <v-card-text>
-        {{ activeChildName }} için tüm ateş ve ilaç kayıtlarını kalıcı olarak sil. Bu işlem geri
-        alınamaz.
+        {{ t('settings.dangerZoneBody', { name: activeChildName }) }}
       </v-card-text>
       <v-card-actions>
         <v-spacer />
         <v-btn color="error" variant="text" @click="showClearConfirm = true">
-          {{ activeChildName }} kayıtlarını sil
+          {{ t('settings.deleteRecordsButton', { name: activeChildName }) }}
         </v-btn>
       </v-card-actions>
     </v-card>
 
     <p class="text-caption text-medium-emphasis text-center">
-      Kido, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.
+      {{ t('settings.footer') }}
     </p>
 
     <v-dialog v-model="showClearConfirm" max-width="360">
       <v-card>
-        <v-card-title class="text-h6">Emin misin?</v-card-title>
-        <v-card-text>{{ activeChildName }} için tüm kayıtlar kalıcı olarak silinecek.</v-card-text>
+        <v-card-title class="text-h6">{{ t('settings.confirmDialog.title') }}</v-card-title>
+        <v-card-text>{{ t('settings.confirmDialog.body', { name: activeChildName }) }}</v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn variant="text" @click="showClearConfirm = false">Vazgeç</v-btn>
-          <v-btn color="error" variant="flat" @click="clearAll">Sil</v-btn>
+          <v-btn variant="text" @click="showClearConfirm = false">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="error" variant="flat" @click="clearAll">{{ t('common.delete') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

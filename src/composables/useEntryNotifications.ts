@@ -2,35 +2,8 @@ import { watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
-import type { FeedingEntry, LogEntry, Medication } from '@/types/health'
-
-function describeEntry(entry: LogEntry): string {
-  const who = entry.createdByEmail?.split('@')[0] ?? 'Bir aile üyesi'
-  const what =
-    entry.type === 'reading'
-      ? `${entry.temperature}° ölçüm ekledi`
-      : `${entry.medicationName} verdi`
-  return `${who} ${what}`
-}
-
-function describeMedication(medication: Medication): string {
-  const who = medication.createdByEmail?.split('@')[0] ?? 'Bir aile üyesi'
-  return `${who} ${medication.name} ilacını ekledi`
-}
-
-const feedingMilkTypeLabels: Record<string, string> = {
-  formula: 'mama',
-  'breast-milk': 'anne sütü',
-  mixed: 'karışık',
-}
-
-function describeFeeding(entry: FeedingEntry): string {
-  const who = entry.createdByEmail?.split('@')[0] ?? 'Bir aile üyesi'
-  if (entry.type === 'breastfeeding') return `${who} emzirdi`
-  if (entry.type === 'bottle')
-    return `${who} ${entry.amountMl} ml ${feedingMilkTypeLabels[entry.milkType]} verdi`
-  return `${who} katı gıda verdi`
-}
+import { t } from '@/i18n'
+import { describeEntry, describeFeeding, describeMedication } from '@/lib/describeActivity'
 
 // Android Chrome throws on `new Notification()` and requires going through a
 // service worker; desktop browsers support both. Prefer the SW registration
@@ -63,7 +36,7 @@ export function useEntryNotifications() {
     () => feverLogStore.lastRemoteEntry,
     (entry) => {
       if (entry)
-        void showSystemNotification('Kido', describeEntry(entry), `entry-${entry.id}`)
+        void showSystemNotification(t('common.appName'), describeEntry(entry), `entry-${entry.id}`)
     },
   )
 
@@ -72,7 +45,7 @@ export function useEntryNotifications() {
     (medication) => {
       if (medication) {
         void showSystemNotification(
-          'Kido',
+          t('common.appName'),
           describeMedication(medication),
           `medication-${medication.id}`,
         )
@@ -84,7 +57,11 @@ export function useEntryNotifications() {
     () => feedingLogStore.lastRemoteEntry,
     (entry) => {
       if (entry)
-        void showSystemNotification('Kido', describeFeeding(entry), `feeding-${entry.id}`)
+        void showSystemNotification(
+          t('common.appName'),
+          describeFeeding(entry),
+          `feeding-${entry.id}`,
+        )
     },
   )
 }

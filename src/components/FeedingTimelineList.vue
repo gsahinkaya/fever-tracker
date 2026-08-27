@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { FeedingEntry } from '@/types/health'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { feedingEntryTitle } from '@/lib/entryTitles'
 
+const { t } = useI18n()
 defineProps<{ entries: FeedingEntry[] }>()
 const store = useFeedingLogStore()
 
@@ -18,29 +21,8 @@ const colors: Record<FeedingEntry['type'], string> = {
   bottle: 'primary',
   solid: 'success',
 }
-const milkTypeLabels: Record<string, string> = {
-  formula: 'Mama',
-  'breast-milk': 'Anne sütü',
-  mixed: 'Karışık',
-}
-const sideLabels: Record<string, string> = {
-  left: 'Sol',
-  right: 'Sağ',
-  both: 'İkisi',
-}
 
-function title(entry: FeedingEntry): string {
-  if (entry.type === 'breastfeeding') {
-    const parts = ['Emzirme']
-    if (entry.durationMinutes) parts.push(`${entry.durationMinutes} dk`)
-    if (entry.side) parts.push(sideLabels[entry.side] ?? entry.side)
-    return parts.join(' · ')
-  }
-  if (entry.type === 'bottle') {
-    return `${entry.amountMl} ml · ${milkTypeLabels[entry.milkType]}`
-  }
-  return entry.note ? `Katı gıda · ${entry.note}` : 'Katı gıda'
-}
+const title = feedingEntryTitle
 
 function timeLabel(ts: number) {
   return new Date(ts).toLocaleString('tr-TR', {
@@ -72,14 +54,14 @@ function confirmDelete() {
           icon="mdi-delete-outline"
           variant="text"
           size="small"
-          aria-label="Kaydı sil"
+          :aria-label="t('timeline.deleteAria')"
           @click="confirmTarget = entry"
         />
       </template>
     </v-list-item>
   </v-list>
   <div v-else class="text-center text-medium-emphasis py-8">
-    Henüz beslenme kaydı yok. Yukarıdaki butonlarla ilk kaydı ekle.
+    {{ t('timeline.feedingEmpty') }}
   </div>
 
   <v-dialog
@@ -88,15 +70,17 @@ function confirmDelete() {
     @update:model-value="(v) => !v && (confirmTarget = null)"
   >
     <v-card v-if="confirmTarget">
-      <v-card-title class="text-h6">Kaydı sil</v-card-title>
-      <v-card-text
-        >{{ title(confirmTarget) }} · {{ timeLabel(confirmTarget.takenAt) }} kaydı silinsin
-        mi?</v-card-text
-      >
+      <v-card-title class="text-h6">{{ t('timeline.deleteConfirmTitle') }}</v-card-title>
+      <v-card-text>{{
+        t('timeline.deleteConfirmBody', {
+          title: title(confirmTarget),
+          time: timeLabel(confirmTarget.takenAt),
+        })
+      }}</v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="text" @click="confirmTarget = null">Vazgeç</v-btn>
-        <v-btn color="error" variant="flat" @click="confirmDelete">Sil</v-btn>
+        <v-btn variant="text" @click="confirmTarget = null">{{ t('common.cancel') }}</v-btn>
+        <v-btn color="error" variant="flat" @click="confirmDelete">{{ t('common.delete') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

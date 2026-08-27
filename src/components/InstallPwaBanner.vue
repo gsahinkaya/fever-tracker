@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -41,10 +44,10 @@ async function install() {
     closable
     @click:close="showBanner = false"
   >
-    Kido'yu ana ekranına ekleyip tek dokunuşla açabilirsin.
+    {{ t('installBanner.text') }}
 
     <template #append>
-      <v-btn size="small" variant="text" @click="install">Ekle</v-btn>
+      <v-btn size="small" variant="text" @click="install">{{ t('installBanner.addButton') }}</v-btn>
     </template>
   </v-alert>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
@@ -13,6 +14,7 @@ import CombinedTimelineList from '@/components/CombinedTimelineList.vue'
 import InstallPwaBanner from '@/components/InstallPwaBanner.vue'
 import ChildSwitcher from '@/components/ChildSwitcher.vue'
 
+const { t } = useI18n()
 const store = useFeverLogStore()
 const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
@@ -60,13 +62,13 @@ const medicationsWithHistory = computed(() =>
     <template v-if="!hasChildren">
       <div class="text-center py-8">
         <v-icon icon="mdi-baby-face-outline" size="56" color="primary" class="mb-4" />
-        <h2 class="text-h6 mb-2">Önce bir çocuk ekle</h2>
+        <h2 class="text-h6 mb-2">{{ t('home.addChildTitle') }}</h2>
         <p class="text-body-2 text-medium-emphasis mb-6">
-          Ateş ve ilaç takibi yapabilmek için önce çocuğunun bilgilerini ekle.
+          {{ t('home.addChildBody') }}
         </p>
-        <v-btn color="primary" size="large" prepend-icon="mdi-plus" to="/cocuklar"
-          >Çocuk Ekle</v-btn
-        >
+        <v-btn color="primary" size="large" prepend-icon="mdi-plus" to="/cocuklar">{{
+          t('home.addChildButton')
+        }}</v-btn>
       </div>
     </template>
 
@@ -84,7 +86,7 @@ const medicationsWithHistory = computed(() =>
         >
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-thermometer" size="26" class="mr-3" />
-            <span class="text-body-1 font-weight-bold">Ateş</span>
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.fever') }}</span>
           </div>
         </v-btn>
         <v-btn
@@ -97,25 +99,25 @@ const medicationsWithHistory = computed(() =>
         >
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-pill" size="26" class="mr-3" />
-            <span class="text-body-1 font-weight-bold">İlaç</span>
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.medication') }}</span>
           </div>
         </v-btn>
         <v-btn block height="64" color="secondary" variant="flat" rounded="lg" to="/beslenme">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-baby-bottle-outline" size="26" class="mr-3" />
-            <span class="text-body-1 font-weight-bold">Beslenme</span>
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.feeding') }}</span>
           </div>
         </v-btn>
         <v-btn block height="64" color="info" variant="flat" rounded="lg" to="/rapor">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-file-chart-outline" size="26" class="mr-3" />
-            <span class="text-body-1 font-weight-bold">Özet Rapor</span>
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.report') }}</span>
           </div>
         </v-btn>
         <v-btn block height="64" color="success" variant="flat" rounded="lg" to="/sor">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-chat-question-outline" size="26" class="mr-3" />
-            <span class="text-body-1 font-weight-bold">Kido'ya Sor</span>
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.askKido') }}</span>
           </div>
         </v-btn>
       </div>
@@ -124,7 +126,7 @@ const medicationsWithHistory = computed(() =>
 
       <template v-if="medicationsWithHistory.length">
         <div class="mb-2">
-          <span class="text-subtitle-2 text-medium-emphasis">Sonraki Güvenli Doz</span>
+          <span class="text-subtitle-2 text-medium-emphasis">{{ t('home.nextSafeDose') }}</span>
         </div>
         <v-row class="mb-6">
           <v-col v-for="med in medicationsWithHistory" :key="med.id" cols="12" sm="6">
@@ -135,7 +137,7 @@ const medicationsWithHistory = computed(() =>
 
       <template v-if="recentActivity.length">
         <div class="mb-2">
-          <span class="text-subtitle-2 text-medium-emphasis">Son 48 Saat</span>
+          <span class="text-subtitle-2 text-medium-emphasis">{{ t('home.last48h') }}</span>
         </div>
         <v-card variant="outlined">
           <CombinedTimelineList :entries="recentActivity" />

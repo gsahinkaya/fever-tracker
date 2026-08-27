@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { auth } from '@/firebase'
 
 interface Exchange {
@@ -9,6 +10,7 @@ interface Exchange {
   loading: boolean
 }
 
+const { t } = useI18n()
 const question = ref('')
 const exchanges = ref<Exchange[]>([])
 const listEl = ref<HTMLElement | null>(null)
@@ -38,10 +40,10 @@ async function ask() {
       body: JSON.stringify({ question: q }),
     })
     const data = await response.json()
-    if (!response.ok) throw new Error(data.error || 'Yanıt alınamadı, tekrar dene.')
+    if (!response.ok) throw new Error(data.error || t('askKido.genericError'))
     exchanges.value[idx]!.answer = data.answer
   } catch (err) {
-    exchanges.value[idx]!.error = err instanceof Error ? err.message : 'Yanıt alınamadı, tekrar dene.'
+    exchanges.value[idx]!.error = err instanceof Error ? err.message : t('askKido.genericError')
   } finally {
     exchanges.value[idx]!.loading = false
     await scrollToBottom()
@@ -56,16 +58,16 @@ async function ask() {
         icon="mdi-arrow-left"
         variant="tonal"
         color="primary"
-        aria-label="Geri"
+        :aria-label="t('common.back')"
         @click="$router.back()"
       />
-      <span class="text-h6 ml-2">Kido'ya Sor</span>
+      <span class="text-h6 ml-2">{{ t('askKido.title') }}</span>
     </div>
 
     <div v-if="!exchanges.length" class="text-center text-medium-emphasis py-8">
       <v-icon icon="mdi-chat-question-outline" size="40" color="success" class="mb-2" />
       <p class="text-body-2">
-        Ateş, ilaç ya da beslenmeyle ilgili merak ettiğin bir şeyi Kido'ya sorabilirsin.
+        {{ t('askKido.emptyBody') }}
       </p>
     </div>
 
@@ -93,7 +95,7 @@ async function ask() {
     <v-form class="d-flex ga-2" @submit.prevent="ask">
       <v-text-field
         v-model="question"
-        label="Bir şey sor..."
+        :label="t('askKido.inputLabel')"
         variant="outlined"
         density="comfortable"
         hide-details
@@ -103,7 +105,7 @@ async function ask() {
     </v-form>
 
     <p class="text-caption text-medium-emphasis text-center mt-2">
-      Kido bir doktorun yerini tutmaz; ciddi durumlarda mutlaka bir hekime danış.
+      {{ t('askKido.disclaimer') }}
     </p>
   </v-container>
 </template>

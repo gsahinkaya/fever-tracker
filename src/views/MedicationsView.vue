@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import type { Medication } from '@/types/health'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const childrenStore = useChildrenStore()
 const feverLogStore = useFeverLogStore()
@@ -80,14 +82,13 @@ async function confirmDelete() {
         icon="mdi-arrow-left"
         variant="tonal"
         color="primary"
-        aria-label="Geri"
+        :aria-label="t('common.back')"
         @click="$router.back()"
       />
-      <span class="text-h6 ml-2">İlaçlarım</span>
+      <span class="text-h6 ml-2">{{ t('medications.title') }}</span>
     </div>
     <p v-if="activeChild" class="text-body-2 text-medium-emphasis mb-4">
-      {{ activeChild.name }} için tanımlı ilaçlar. Her ilacın adını ve iki doz arasında beklenmesi
-      gereken süreyi sen belirlersin.
+      {{ t('medications.description', { name: activeChild.name }) }}
     </p>
 
     <v-list v-if="medicationsStore.medications.length" lines="two" class="mb-4">
@@ -99,22 +100,21 @@ async function confirmDelete() {
         </template>
         <v-list-item-title>{{ med.name }}</v-list-item-title>
         <v-list-item-subtitle>
-          {{ med.minIntervalHours }} saatte bir güvenli<span v-if="med.note">
-            · {{ med.note }}</span
-          >
+          {{ t('medications.perSafe', { hours: med.minIntervalHours })
+          }}<span v-if="med.note"> · {{ med.note }}</span>
         </v-list-item-subtitle>
         <template #append>
           <v-btn
             icon="mdi-delete-outline"
             variant="text"
             size="small"
-            aria-label="İlacı sil"
+            :aria-label="t('medications.deleteAria')"
             @click.stop="confirmDeleteTarget = med"
           />
         </template>
       </v-list-item>
     </v-list>
-    <div v-else class="text-center text-medium-emphasis py-8">Henüz ilaç eklenmedi.</div>
+    <div v-else class="text-center text-medium-emphasis py-8">{{ t('medications.empty') }}</div>
 
     <v-btn
       block
@@ -124,19 +124,19 @@ async function confirmDelete() {
       prepend-icon="mdi-plus"
       @click="openAdd"
     >
-      İlaç Ekle
+      {{ t('medications.addButton') }}
     </v-btn>
 
     <v-dialog v-model="showDialog" max-width="420">
       <v-card>
         <v-card-title class="text-h6">{{
-          editingMedication ? 'İlacı Düzenle' : 'İlaç Ekle'
+          editingMedication ? t('medications.dialog.editTitle') : t('medications.dialog.addTitle')
         }}</v-card-title>
         <v-card-text>
           <v-text-field
             v-model="name"
-            label="İlaç adı"
-            placeholder="Örn. Calpol şurup"
+            :label="t('medications.dialog.nameLabel')"
+            :placeholder="t('medications.dialog.namePlaceholder')"
             variant="outlined"
             density="comfortable"
             autofocus
@@ -144,29 +144,29 @@ async function confirmDelete() {
           <v-text-field
             v-model.number="minIntervalHours"
             type="number"
-            label="Kaç saatte bir güvenli?"
-            placeholder="Örn. 4"
+            :label="t('medications.dialog.intervalLabel')"
+            :placeholder="t('medications.dialog.intervalPlaceholder')"
             variant="outlined"
             density="comfortable"
           />
           <v-text-field
             v-model="note"
-            label="Not (opsiyonel)"
-            placeholder="Örn. 5 ml, yemekten sonra"
+            :label="t('medications.dialog.noteLabel')"
+            :placeholder="t('medications.dialog.notePlaceholder')"
             variant="outlined"
             density="comfortable"
           />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn variant="text" @click="showDialog = false">Vazgeç</v-btn>
+          <v-btn variant="text" @click="showDialog = false">{{ t('common.cancel') }}</v-btn>
           <v-btn
             color="primary"
             variant="flat"
             :disabled="!name.trim() || !minIntervalHours"
             @click="save"
           >
-            Kaydet
+            {{ t('common.save') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -178,15 +178,16 @@ async function confirmDelete() {
       @update:model-value="(v: boolean) => !v && (confirmDeleteTarget = null)"
     >
       <v-card v-if="confirmDeleteTarget">
-        <v-card-title class="text-h6">İlacı sil</v-card-title>
+        <v-card-title class="text-h6">{{ t('medications.deleteConfirm.title') }}</v-card-title>
         <v-card-text>
-          {{ confirmDeleteTarget.name }} silinecek. Geçmiş kayıtlar etkilenmez, sadece yeni doz
-          girişinde bu ilaç artık seçilemez.
+          {{ t('medications.deleteConfirm.body', { name: confirmDeleteTarget.name }) }}
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn variant="text" @click="confirmDeleteTarget = null">Vazgeç</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmDelete">Sil</v-btn>
+          <v-btn variant="text" @click="confirmDeleteTarget = null">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmDelete">{{
+            t('common.delete')
+          }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
@@ -8,8 +9,9 @@ import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
-import type { FeedingEntry, LogEntry, Medication } from '@/types/health'
+import { describeEntry, describeFeeding, describeMedication } from '@/lib/describeActivity'
 
+const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
 const childrenStore = useChildrenStore()
@@ -21,34 +23,6 @@ useEntryNotifications()
 
 const isAuthPage = computed(() => route.path === '/giris' || route.path === '/kayit')
 
-function describeIncomingEntry(entry: LogEntry): string {
-  const who = entry.createdByEmail?.split('@')[0] ?? 'Bir aile üyesi'
-  const what =
-    entry.type === 'reading'
-      ? `${entry.temperature}° ölçüm ekledi`
-      : `${entry.medicationName} verdi`
-  return `${who} ${what}`
-}
-
-function describeIncomingMedication(medication: Medication): string {
-  const who = medication.createdByEmail?.split('@')[0] ?? 'Bir aile üyesi'
-  return `${who} ${medication.name} ilacını ekledi`
-}
-
-const feedingMilkTypeLabels: Record<string, string> = {
-  formula: 'mama',
-  'breast-milk': 'anne sütü',
-  mixed: 'karışık',
-}
-
-function describeIncomingFeeding(entry: FeedingEntry): string {
-  const who = entry.createdByEmail?.split('@')[0] ?? 'Bir aile üyesi'
-  if (entry.type === 'breastfeeding') return `${who} emzirdi`
-  if (entry.type === 'bottle')
-    return `${who} ${entry.amountMl} ml ${feedingMilkTypeLabels[entry.milkType]} verdi`
-  return `${who} katı gıda verdi`
-}
-
 // Merge separately-tracked streams (fever entries, medications, feedings) by
 // when they actually happened, oldest first, so both the banner and the
 // bell menu agree on what's truly latest — not just whichever store's
@@ -57,15 +31,15 @@ const incomingItems = computed(() =>
   [
     ...feverLogStore.incomingEntries.map((entry) => ({
       at: entry.takenAt,
-      text: describeIncomingEntry(entry),
+      text: describeEntry(entry),
     })),
     ...medicationsStore.incomingMedications.map((medication) => ({
       at: medication.createdAt ?? 0,
-      text: describeIncomingMedication(medication),
+      text: describeMedication(medication),
     })),
     ...feedingLogStore.incomingEntries.map((entry) => ({
       at: entry.takenAt,
-      text: describeIncomingFeeding(entry),
+      text: describeFeeding(entry),
     })),
   ].sort((a, b) => a.at - b.at),
 )
@@ -74,7 +48,9 @@ const incomingBannerText = computed(() => {
   const items = incomingItems.value
   if (!items.length) return ''
   const latest = items[items.length - 1]!.text
-  return items.length === 1 ? latest : `${latest} (+${items.length - 1} diğer)`
+  return items.length === 1
+    ? latest
+    : t('notifications.bannerMore', { text: latest, count: items.length - 1 })
 })
 
 // The toast-style banner and the bell badge read the same underlying data,
@@ -107,9 +83,9 @@ function acknowledgeIncoming() {
 const now = useNow(60_000)
 function relativeTime(at: number): string {
   const minutes = Math.floor((now.value - at) / 60_000)
-  if (minutes < 1) return 'az önce'
-  if (minutes < 60) return `${minutes} dk önce`
-  return `${Math.floor(minutes / 60)} sa önce`
+  if (minutes < 1) return t('notifications.relativeTime.justNow')
+  if (minutes < 60) return t('notifications.relativeTime.minutesAgo', { n: minutes })
+  return t('notifications.relativeTime.hoursAgo', { n: Math.floor(minutes / 60) })
 }
 
 const activeChild = computed(
@@ -154,7 +130,9 @@ watch(
         <v-icon icon="mdi-baby-face-outline" class="ml-2" />
       </template>
       <v-app-bar-title>
-        <span class="text-subtitle-1 font-weight-bold">{{ activeChild?.name ?? 'Kido' }}</span>
+        <span class="text-subtitle-1 font-weight-bold">{{
+          activeChild?.name ?? t('common.appName')
+        }}</span>
       </v-app-bar-title>
       <template #append>
         <v-menu v-if="incomingItems.length" location="bottom end">
@@ -163,7 +141,7 @@ watch(
               <v-btn
                 icon="mdi-bell-alert"
                 variant="text"
-                aria-label="Bildirimler"
+                :aria-label="t('common.notifications')"
                 v-bind="menuProps"
               />
             </v-badge>
@@ -177,13 +155,18 @@ watch(
             </v-list>
             <v-card-actions>
               <v-spacer />
-              <v-btn size="small" variant="text" @click="acknowledgeIncoming()"
-                >Tümünü gördüm</v-btn
-              >
+              <v-btn size="small" variant="text" @click="acknowledgeIncoming()">{{
+                t('notifications.markAllSeen')
+              }}</v-btn>
             </v-card-actions>
           </v-card>
         </v-menu>
-        <v-btn icon="mdi-cog-outline" variant="text" to="/ayarlar" aria-label="Ayarlar" />
+        <v-btn
+          icon="mdi-cog-outline"
+          variant="text"
+          to="/ayarlar"
+          :aria-label="t('common.settings')"
+        />
       </template>
     </v-app-bar>
 

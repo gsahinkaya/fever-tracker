@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import type { Medication } from '@/types/health'
 import { useNow } from '@/composables/useNow'
 
 const props = defineProps<{ medication: Medication }>()
 
+const { t } = useI18n()
 const store = useFeverLogStore()
 const now = useNow()
 
 const last = computed(() => store.lastDose(props.medication.id))
-const safeAt = computed(() => store.nextSafeDoseAt(props.medication.id, props.medication.minIntervalHours))
+const safeAt = computed(() =>
+  store.nextSafeDoseAt(props.medication.id, props.medication.minIntervalHours),
+)
 
 const status = computed<'none' | 'ready' | 'waiting'>(() => {
   if (!last.value || !safeAt.value) return 'none'
@@ -36,20 +40,31 @@ const lastDoseLabel = computed(() => {
 </script>
 
 <template>
-  <v-card :color="status === 'ready' ? 'error' : undefined" :variant="status === 'ready' ? 'tonal' : 'outlined'">
+  <v-card
+    :color="status === 'ready' ? 'error' : undefined"
+    :variant="status === 'ready' ? 'tonal' : 'outlined'"
+  >
     <v-card-item>
       <v-card-title class="text-subtitle-1">{{ medication.name }}</v-card-title>
       <v-card-subtitle v-if="medication.note">{{ medication.note }}</v-card-subtitle>
     </v-card-item>
     <v-card-text>
-      <span v-if="status === 'none'" class="text-medium-emphasis">Henüz kayıt yok</span>
+      <span v-if="status === 'none'" class="text-medium-emphasis">{{
+        t('nextDoseCard.noRecord')
+      }}</span>
       <template v-else-if="status === 'ready'">
-        <div class="text-h6 text-error">Şimdi verilebilir</div>
-        <div class="text-caption text-medium-emphasis">Son doz: {{ lastDoseLabel }}</div>
+        <div class="text-h6 text-error">{{ t('nextDoseCard.readyNow') }}</div>
+        <div class="text-caption text-medium-emphasis">
+          {{ t('nextDoseCard.lastDose', { time: lastDoseLabel }) }}
+        </div>
       </template>
       <template v-else>
-        <div class="text-h5 font-weight-bold">{{ remainingLabel }}</div>
-        <div class="text-caption text-medium-emphasis">sonra güvenli · son doz {{ lastDoseLabel }}</div>
+        <div class="text-h5 font-weight-bold">
+          {{ t('nextDoseCard.remaining', { time: remainingLabel }) }}
+        </div>
+        <div class="text-caption text-medium-emphasis">
+          {{ t('nextDoseCard.lastDoseInline', { time: lastDoseLabel }) }}
+        </div>
       </template>
     </v-card-text>
   </v-card>

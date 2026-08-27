@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { currentTimeString, resolveTakenAt } from '@/lib/time'
 import type { BottleEntry } from '@/types/health'
 
+const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
 const store = useFeedingLogStore()
 
@@ -29,11 +31,11 @@ function save() {
 <template>
   <v-dialog v-model="model" max-width="420">
     <v-card>
-      <v-card-title class="text-h6">Biberon</v-card-title>
+      <v-card-title class="text-h6">{{ t('dialogs.addBottle.title') }}</v-card-title>
       <v-card-text>
         <v-text-field
           v-model.number="amountMl"
-          label="Miktar (ml)"
+          :label="t('dialogs.addBottle.amountLabel')"
           type="number"
           inputmode="numeric"
           autofocus
@@ -41,15 +43,15 @@ function save() {
           density="comfortable"
         />
         <v-radio-group v-model="milkType" density="comfortable" hide-details>
-          <v-radio label="Mama" value="formula" />
-          <v-radio label="Anne sütü" value="breast-milk" />
-          <v-radio label="Karışık" value="mixed" />
+          <v-radio :label="t('dialogs.addBottle.formula')" value="formula" />
+          <v-radio :label="t('dialogs.addBottle.breastMilk')" value="breast-milk" />
+          <v-radio :label="t('dialogs.addBottle.mixed')" value="mixed" />
         </v-radio-group>
         <v-text-field
           v-model="time"
           type="time"
-          label="Saat"
-          hint="Önceden verildiyse saati değiştirebilirsin"
+          :label="t('dialogs.addBottle.timeLabel')"
+          :hint="t('dialogs.addBottle.timeHint')"
           persistent-hint
           variant="outlined"
           density="comfortable"
@@ -58,10 +60,10 @@ function save() {
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="text" @click="model = false">Vazgeç</v-btn>
-        <v-btn color="primary" variant="flat" size="large" :disabled="!amountMl" @click="save"
-          >Kaydet</v-btn
-        >
+        <v-btn variant="text" @click="model = false">{{ t('common.cancel') }}</v-btn>
+        <v-btn color="primary" variant="flat" size="large" :disabled="!amountMl" @click="save">{{
+          t('common.save')
+        }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
