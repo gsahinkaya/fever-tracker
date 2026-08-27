@@ -72,10 +72,11 @@ export type FeedingEntry = BreastfeedingEntry | BottleEntry | SolidFoodEntry
 export interface GrowthEntry {
   id: string
   takenAt: number
-  // At least one of the two is required (enforced by the add dialog) —
-  // a visit might only measure weight, or only height.
+  // At least one of the three is required (enforced by the add dialog) —
+  // a visit might only measure some of these.
   heightCm?: number
   weightKg?: number
+  headCircumferenceCm?: number
   createdBy?: string
   createdByEmail?: string
 }

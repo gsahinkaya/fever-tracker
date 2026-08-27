@@ -29,12 +29,18 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     sortKey: (entry) => entry.takenAt,
   })
 
-  async function addGrowthEntry(heightCm?: number, weightKg?: number, takenAt?: Date) {
+  async function addGrowthEntry(
+    heightCm?: number,
+    weightKg?: number,
+    takenAt?: Date,
+    headCircumferenceCm?: number,
+  ) {
     const { familyId, childId } = requireContext()
     const payload: Omit<GrowthEntry, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
       takenAt: takenAt ? Timestamp.fromDate(takenAt) : Timestamp.now(),
       ...(heightCm ? { heightCm } : {}),
       ...(weightKg ? { weightKg } : {}),
+      ...(headCircumferenceCm ? { headCircumferenceCm } : {}),
       ...creatorFields(),
     }
     await addDoc(growthCollection(familyId, childId), payload)

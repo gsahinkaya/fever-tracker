@@ -14,6 +14,7 @@ function title(entry: GrowthEntry): string {
   const parts: string[] = []
   if (entry.heightCm) parts.push(`${entry.heightCm} cm`)
   if (entry.weightKg) parts.push(`${entry.weightKg} kg`)
+  if (entry.headCircumferenceCm) parts.push(`${entry.headCircumferenceCm} cm (baş çevresi)`)
   return parts.join(' · ')
 }
 

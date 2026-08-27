@@ -10,22 +10,25 @@ const store = useGrowthLogStore()
 
 const heightCm = ref<number | null>(null)
 const weightKg = ref<number | null>(null)
+const headCircumferenceCm = ref<number | null>(null)
 const time = ref('')
 
 watch(model, (open) => {
   if (open) {
     heightCm.value = null
     weightKg.value = null
+    headCircumferenceCm.value = null
     time.value = currentTimeString()
   }
 })
 
 function save() {
-  if (!heightCm.value && !weightKg.value) return
+  if (!heightCm.value && !weightKg.value && !headCircumferenceCm.value) return
   store.addGrowthEntry(
     heightCm.value ?? undefined,
     weightKg.value ?? undefined,
     resolveTakenAt(time.value),
+    headCircumferenceCm.value ?? undefined,
   )
   model.value = false
 }
@@ -55,6 +58,14 @@ function save() {
             density="comfortable"
           />
         </div>
+        <v-text-field
+          v-model.number="headCircumferenceCm"
+          type="number"
+          step="0.1"
+          :label="t('growth.dialog.headCircumferenceLabel')"
+          variant="outlined"
+          density="comfortable"
+        />
         <p class="text-caption text-medium-emphasis mt-n2 mb-2">{{ t('growth.dialog.hint') }}</p>
         <v-text-field
           v-model="time"
@@ -73,7 +84,7 @@ function save() {
           color="growth"
           variant="flat"
           size="large"
-          :disabled="!heightCm && !weightKg"
+          :disabled="!heightCm && !weightKg && !headCircumferenceCm"
           @click="save"
         >
           {{ t('common.save') }}

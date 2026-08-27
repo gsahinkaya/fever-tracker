@@ -233,7 +233,10 @@ export default {
     addButton: 'Ölçüm Ekle',
     heightChartTitle: 'Boy',
     weightChartTitle: 'Kilo',
+    headCircumferenceChartTitle: 'Baş Çevresi',
     history: 'Geçmiş',
+    percentileHint:
+      'DSÖ büyüme eğrileriyle karşılaştırmak için çocuğunun doğum tarihini ve cinsiyetini Çocuk Bilgileri ekranından ekle.',
     empty: 'Henüz ölçüm eklenmedi.',
     emptyChart: 'Henüz ölçüm kaydı yok.',
     deleteAria: 'Ölçümü sil',
@@ -243,6 +246,7 @@ export default {
       title: 'Ölçüm Ekle',
       heightLabel: 'Boy (cm)',
       weightLabel: 'Kilo (kg)',
+      headCircumferenceLabel: 'Baş çevresi (cm, opsiyonel)',
       timeLabel: 'Saat',
       timeHint: 'Önceden ölçtüysen saati değiştirebilirsin',
       hint: 'En az birini gir.',
