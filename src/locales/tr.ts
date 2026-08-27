@@ -218,7 +218,10 @@ export default {
     },
     warnings: {
       expired: 'Son kullanma tarihi geçti ({date}). Yenisini almalısın.',
+      expiringSoon: 'Son kullanma tarihine {days} gün kaldı, yenisini almayı planla.',
       openedTooLong: 'Açalı {months} ay oldu, yenisini almalısın.',
+      openedExpiringSoon:
+        'Açık kalma süresine {days} gün kaldı, kullanmaya devam etmek sakıncalı olabilir — yenisini almayı planla.',
     },
     deleteConfirm: {
       title: 'İlacı sil',

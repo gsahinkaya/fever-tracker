@@ -79,22 +79,54 @@ async function save() {
   showDialog.value = false
 }
 
+const WARN_AHEAD_DAYS = 7
+
+interface InventoryWarning {
+  text: string
+  severity: 'warning' | 'error'
+}
+
 // Two independent expiry signals: the box's own printed expiry date, and a
 // syrup's much shorter shelf life once opened (typically far sooner than
 // the printed date — a pharmacist rule of thumb, defaulted to 90 days when
-// the parent hasn't entered the box's specific value).
-function inventoryWarning(med: Medication): string | null {
+// the parent hasn't entered the box's specific value). Each fires an
+// earlier heads-up (WARN_AHEAD_DAYS out) before escalating once the date
+// actually passes, rather than staying silent right up to the deadline.
+function inventoryWarning(med: Medication): InventoryWarning | null {
   const now = Date.now()
-  if (med.expiryDate && new Date(med.expiryDate).getTime() < now) {
-    return t('medications.warnings.expired', {
-      date: new Date(med.expiryDate).toLocaleDateString('tr-TR'),
-    })
+  if (med.expiryDate) {
+    const expiresAt = new Date(med.expiryDate).getTime()
+    const daysLeft = Math.ceil((expiresAt - now) / 86_400_000)
+    if (daysLeft < 0) {
+      return {
+        severity: 'error',
+        text: t('medications.warnings.expired', {
+          date: new Date(med.expiryDate).toLocaleDateString('tr-TR'),
+        }),
+      }
+    }
+    if (daysLeft <= WARN_AHEAD_DAYS) {
+      return {
+        severity: 'warning',
+        text: t('medications.warnings.expiringSoon', { days: daysLeft }),
+      }
+    }
   }
   if (med.openedAt) {
     const shelfLifeDays = med.shelfLifeDaysAfterOpening ?? DEFAULT_SHELF_LIFE_DAYS
     const openSinceDays = Math.floor((now - med.openedAt) / 86_400_000)
-    if (openSinceDays >= shelfLifeDays) {
-      return t('medications.warnings.openedTooLong', { months: Math.floor(openSinceDays / 30) })
+    const daysLeft = shelfLifeDays - openSinceDays
+    if (daysLeft < 0) {
+      return {
+        severity: 'error',
+        text: t('medications.warnings.openedTooLong', { months: Math.floor(openSinceDays / 30) }),
+      }
+    }
+    if (daysLeft <= WARN_AHEAD_DAYS) {
+      return {
+        severity: 'warning',
+        text: t('medications.warnings.openedExpiringSoon', { days: daysLeft }),
+      }
     }
   }
   return null
@@ -139,8 +171,12 @@ async function confirmDelete() {
         <v-list-item-subtitle>
           {{ t('medications.perSafe', { hours: med.minIntervalHours })
           }}<span v-if="med.note"> · {{ med.note }}</span>
-          <div v-if="inventoryWarning(med)" class="text-warning font-weight-medium mt-1">
-            {{ inventoryWarning(med) }}
+          <div
+            v-if="inventoryWarning(med)"
+            class="font-weight-medium mt-1"
+            :class="inventoryWarning(med)!.severity === 'error' ? 'text-error' : 'text-warning'"
+          >
+            {{ inventoryWarning(med)!.text }}
           </div>
         </v-list-item-subtitle>
         <template #append>
