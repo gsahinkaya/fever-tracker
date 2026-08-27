@@ -12,6 +12,13 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
+import {
+  currentWhoLabel,
+  messageForBottle,
+  messageForBreastfeeding,
+  messageForSolidFood,
+} from '@/lib/describeActivity'
+import { notifyFamily } from '@/lib/notifyFamily'
 import type { BottleEntry, BreastfeedingEntry, FeedingEntry, SolidFoodEntry } from '@/types/health'
 
 function feedingsCollection(familyId: string, childId: string) {
@@ -51,6 +58,7 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
       ...creatorFields(),
     }
     await addDoc(feedingsCollection(familyId, childId), payload)
+    void notifyFamily(messageForBreastfeeding(currentWhoLabel()), 'entry-push')
   }
 
   async function addBottle(amountMl: number, milkType: BottleEntry['milkType'], takenAt?: Date) {
@@ -63,6 +71,7 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
       ...creatorFields(),
     }
     await addDoc(feedingsCollection(familyId, childId), payload)
+    void notifyFamily(messageForBottle(currentWhoLabel(), amountMl, milkType), 'entry-push')
   }
 
   async function addSolidFood(note?: string, takenAt?: Date) {
@@ -74,6 +83,7 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
       ...creatorFields(),
     }
     await addDoc(feedingsCollection(familyId, childId), payload)
+    void notifyFamily(messageForSolidFood(currentWhoLabel()), 'entry-push')
   }
 
   async function removeEntry(id: string) {

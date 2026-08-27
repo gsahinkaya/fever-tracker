@@ -12,6 +12,8 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
+import { currentWhoLabel, messageForDose, messageForReading } from '@/lib/describeActivity'
+import { notifyFamily } from '@/lib/notifyFamily'
 import type { LogEntry, FeverReading, DoseEntry } from '@/types/health'
 
 function entriesCollection(familyId: string, childId: string) {
@@ -47,6 +49,7 @@ export const useFeverLogStore = defineStore('feverLog', () => {
       ...creatorFields(),
     }
     await addDoc(entriesCollection(familyId, childId), payload)
+    void notifyFamily(messageForReading(currentWhoLabel(), temperature), 'entry-push')
   }
 
   async function addDose(medicationId: string, medicationName: string, takenAt?: Date) {
@@ -59,6 +62,7 @@ export const useFeverLogStore = defineStore('feverLog', () => {
       ...creatorFields(),
     }
     await addDoc(entriesCollection(familyId, childId), payload)
+    void notifyFamily(messageForDose(currentWhoLabel(), medicationName), 'entry-push')
   }
 
   async function removeEntry(id: string) {

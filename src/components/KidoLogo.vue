@@ -7,15 +7,7 @@ const props = withDefaults(defineProps<{ height?: number }>(), { height: 40 })
 <template>
   <span class="kido-logo d-inline-flex align-center" :style="{ gap: props.height * 0.3 + 'px' }">
     <KidoMark :size="height" />
-    <svg
-      :height="height"
-      viewBox="0 0 116 40"
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="kido"
-    >
-      <text x="0" y="29" class="kido-logo__text">kido</text>
-    </svg>
+    <span class="kido-logo__text" :style="{ fontSize: props.height * 0.75 + 'px' }">kido</span>
   </span>
 </template>
 
@@ -27,9 +19,9 @@ const props = withDefaults(defineProps<{ height?: number }>(), { height: 40 })
     -apple-system,
     'Segoe UI',
     sans-serif;
-  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.5px;
-  fill: #5f07ef;
+  color: #5f07ef;
+  line-height: 1;
 }
 </style>

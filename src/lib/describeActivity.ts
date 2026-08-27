@@ -1,39 +1,70 @@
 import { t } from '@/i18n'
+import { useAuthStore } from '@/stores/auth'
 import type { FeedingEntry, GrowthEntry, LogEntry, Medication } from '@/types/health'
 
-// Turns a fever/medication/feeding entry into a human sentence — shared by
-// the in-app bell/banner (App.vue) and the OS system notification
+function whoLabel(email?: string): string {
+  return email?.split('@')[0] ?? t('notifications.someone')
+}
+
+// For messages built right after *this* device's own write (the push-family
+// trigger) — the read-side functions below instead read createdByEmail off
+// the fetched entry, since that's who actually wrote it, not who's reading.
+export function currentWhoLabel(): string {
+  const authStore = useAuthStore()
+  return whoLabel(authStore.profile?.email ?? authStore.user?.email ?? undefined)
+}
+
+export function messageForReading(who: string, temp: number): string {
+  return t('notifications.addedReading', { who, temp })
+}
+export function messageForDose(who: string, name: string): string {
+  return t('notifications.gaveMedication', { who, name })
+}
+export function messageForMedicationAdded(who: string, name: string): string {
+  return t('notifications.addedMedication', { who, name })
+}
+export function messageForBreastfeeding(who: string): string {
+  return t('notifications.breastfed', { who })
+}
+export function messageForBottle(who: string, amount: number, milkType: string): string {
+  return t('notifications.gaveBottle', {
+    who,
+    amount,
+    milkType: t(`notifications.milkTypes.${milkType}`),
+  })
+}
+export function messageForSolidFood(who: string): string {
+  return t('notifications.gaveSolidFood', { who })
+}
+export function messageForGrowth(who: string, heightCm?: number, weightKg?: number): string {
+  const parts: string[] = []
+  if (heightCm) parts.push(`${heightCm} cm`)
+  if (weightKg) parts.push(`${weightKg} kg`)
+  return t('notifications.addedGrowth', { who, parts: parts.join(' · ') })
+}
+
+// Turns a fever/medication/feeding/growth entry into a human sentence —
+// shared by the in-app bell/banner (App.vue) and the OS system notification
 // (useEntryNotifications), which both need to describe the exact same
 // "someone else just did X" activity.
 export function describeEntry(entry: LogEntry): string {
-  const who = entry.createdByEmail?.split('@')[0] ?? t('notifications.someone')
+  const who = whoLabel(entry.createdByEmail)
   return entry.type === 'reading'
-    ? t('notifications.addedReading', { who, temp: entry.temperature })
-    : t('notifications.gaveMedication', { who, name: entry.medicationName })
+    ? messageForReading(who, entry.temperature)
+    : messageForDose(who, entry.medicationName)
 }
 
 export function describeMedication(medication: Medication): string {
-  const who = medication.createdByEmail?.split('@')[0] ?? t('notifications.someone')
-  return t('notifications.addedMedication', { who, name: medication.name })
+  return messageForMedicationAdded(whoLabel(medication.createdByEmail), medication.name)
 }
 
 export function describeFeeding(entry: FeedingEntry): string {
-  const who = entry.createdByEmail?.split('@')[0] ?? t('notifications.someone')
-  if (entry.type === 'breastfeeding') return t('notifications.breastfed', { who })
-  if (entry.type === 'bottle') {
-    return t('notifications.gaveBottle', {
-      who,
-      amount: entry.amountMl,
-      milkType: t(`notifications.milkTypes.${entry.milkType}`),
-    })
-  }
-  return t('notifications.gaveSolidFood', { who })
+  const who = whoLabel(entry.createdByEmail)
+  if (entry.type === 'breastfeeding') return messageForBreastfeeding(who)
+  if (entry.type === 'bottle') return messageForBottle(who, entry.amountMl, entry.milkType)
+  return messageForSolidFood(who)
 }
 
 export function describeGrowth(entry: GrowthEntry): string {
-  const who = entry.createdByEmail?.split('@')[0] ?? t('notifications.someone')
-  const parts: string[] = []
-  if (entry.heightCm) parts.push(`${entry.heightCm} cm`)
-  if (entry.weightKg) parts.push(`${entry.weightKg} kg`)
-  return t('notifications.addedGrowth', { who, parts: parts.join(' · ') })
+  return messageForGrowth(whoLabel(entry.createdByEmail), entry.heightCm, entry.weightKg)
 }

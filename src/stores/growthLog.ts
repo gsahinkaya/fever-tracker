@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { addDoc, collection, deleteDoc, doc, orderBy, query, Timestamp } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
+import { currentWhoLabel, messageForGrowth } from '@/lib/describeActivity'
+import { notifyFamily } from '@/lib/notifyFamily'
 import type { GrowthEntry } from '@/types/health'
 
 function growthCollection(familyId: string, childId: string) {
@@ -36,6 +38,7 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
       ...creatorFields(),
     }
     await addDoc(growthCollection(familyId, childId), payload)
+    void notifyFamily(messageForGrowth(currentWhoLabel(), heightCm, weightKg), 'entry-push')
   }
 
   async function removeEntry(id: string) {

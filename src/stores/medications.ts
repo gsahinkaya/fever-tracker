@@ -3,6 +3,8 @@ import { addDoc, collection, doc, updateDoc, deleteDoc, Timestamp } from 'fireba
 import { db } from '@/firebase'
 import { useAuthStore } from '@/stores/auth'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
+import { currentWhoLabel, messageForMedicationAdded } from '@/lib/describeActivity'
+import { notifyFamily } from '@/lib/notifyFamily'
 import type { Medication } from '@/types/health'
 
 function medicationsCollection(familyId: string, childId: string) {
@@ -41,6 +43,7 @@ export const useMedicationsStore = defineStore('medications', () => {
       ...(email ? { createdByEmail: email } : {}),
     }
     const ref = await addDoc(medicationsCollection(familyId, childId), payload)
+    void notifyFamily(messageForMedicationAdded(currentWhoLabel(), data.name), 'entry-push')
     return ref.id
   }
 

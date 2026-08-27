@@ -7,6 +7,7 @@ import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useAuthStore } from '@/stores/auth'
 import { useDoseReminders } from '@/composables/useDoseReminders'
+import { registerDeviceForPush } from '@/composables/usePushNotifications'
 import { useNow } from '@/composables/useNow'
 import AddReadingDialog from '@/components/AddReadingDialog.vue'
 import AddDoseDialog from '@/components/AddDoseDialog.vue'
@@ -36,9 +37,13 @@ const showOnboarding = computed({
 // Ask once automatically instead of nagging the user with an in-app
 // banner — the browser's own native prompt is enough, and after this
 // the choice is remembered so it never asks again.
-onMounted(() => {
-  if ('Notification' in window && Notification.permission === 'default') {
-    requestPermission()
+onMounted(async () => {
+  if (!('Notification' in window)) return
+  if (Notification.permission === 'default') {
+    await requestPermission()
+  }
+  if (Notification.permission === 'granted') {
+    registerDeviceForPush()
   }
 })
 
