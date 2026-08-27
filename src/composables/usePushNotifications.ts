@@ -24,8 +24,15 @@ function waitForActive(
 // Registered at a scope distinct from vite-plugin-pwa's own service worker
 // (which handles offline caching) so the two coexist instead of one
 // clobbering the other's control of the page.
+//
+// getRegistration(PUSH_SCOPE) is deliberately NOT used here: it resolves by
+// longest-matching scope, so once vite-plugin-pwa's own worker is registered
+// at '/' it "wins" the lookup for any sub-path including PUSH_SCOPE — this
+// function would then silently reuse that unrelated worker (no Firebase
+// message handler) and getToken() would never point at the real one.
 async function registerPushServiceWorker(): Promise<ServiceWorkerRegistration> {
-  const existing = await navigator.serviceWorker.getRegistration(PUSH_SCOPE)
+  const registrations = await navigator.serviceWorker.getRegistrations()
+  const existing = registrations.find((r) => r.scope.endsWith(PUSH_SCOPE))
   const registration =
     existing ??
     (await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: PUSH_SCOPE }))
