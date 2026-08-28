@@ -1,5 +1,15 @@
 import { defineStore } from 'pinia'
-import { addDoc, collection, deleteDoc, doc, orderBy, query, Timestamp } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  Timestamp,
+} from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
 import { currentWhoLabel, messageForGrowth } from '@/lib/describeActivity'
@@ -52,19 +62,24 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     await deleteDoc(doc(growthCollection(familyId, childId), id))
   }
 
-  // Used only when a brand-new child is created with height/weight/head
-  // circumference already filled in on the profile form — seeds a first
-  // Growth reading so the charts have a starting point without the parent
-  // re-entering the same numbers there. Takes familyId/childId directly
-  // (not requireContext/activeChildId) since a just-created child isn't
-  // necessarily the active one yet.
-  async function seedInitialEntry(
+  // Called from the child profile form (both creating a new child and
+  // editing an existing one) whenever height/weight/head-circumference was
+  // entered there — but only actually writes a Growth entry if this child
+  // has none yet. Once real Growth entries exist, the profile form is just
+  // updating the child's own fields (see childrenStore.updateChild) and
+  // must NOT keep minting new dated entries every time a parent tweaks a
+  // number in Settings. Takes familyId/childId directly (not
+  // requireContext/activeChildId) since the edited child isn't necessarily
+  // the active one.
+  async function seedInitialEntryIfNone(
     familyId: string,
     childId: string,
     heightCm?: number,
     weightKg?: number,
     headCircumferenceCm?: number,
   ) {
+    const existing = await getDocs(query(growthCollection(familyId, childId), limit(1)))
+    if (!existing.empty) return
     const payload: Omit<GrowthEntry, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
       takenAt: Timestamp.now(),
       ...(heightCm ? { heightCm } : {}),
@@ -84,6 +99,6 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     acknowledgeIncoming,
     addGrowthEntry,
     removeEntry,
-    seedInitialEntry,
+    seedInitialEntryIfNone,
   }
 })

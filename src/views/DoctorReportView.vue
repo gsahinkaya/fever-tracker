@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas-pro'
@@ -137,6 +137,16 @@ async function createPdf() {
   if (!reportContent.value) return
   generatingPdf.value = true
   try {
+    // A user landing on this screen and immediately tapping "PDF Oluştur"
+    // can beat both the Inter webfont finishing its swap and Vue's own
+    // layout settling — html2canvas then rasterizes mid-reflow (fallback
+    // font metrics, a card still animating in), producing a garbled first
+    // PDF that a second attempt (everything now warm) doesn't reproduce.
+    // Waiting out both before the very first snapshot removes the retry.
+    await document.fonts.ready
+    await nextTick()
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+
     const canvas = await html2canvas(reportContent.value, { scale: 2, backgroundColor: '#ffffff' })
     const imgData = canvas.toDataURL('image/png')
 

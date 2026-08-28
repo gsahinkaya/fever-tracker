@@ -54,23 +54,27 @@ async function save() {
     ...(weightKg.value ? { weightKg: weightKg.value } : {}),
     ...(headCircumferenceCm.value ? { headCircumferenceCm: headCircumferenceCm.value } : {}),
   }
+  const childId = editingChild.value
+    ? editingChild.value.id
+    : await childrenStore.addChild(authStore.familyId, data)
   if (editingChild.value) {
-    await childrenStore.updateChild(authStore.familyId, editingChild.value.id, data)
-  } else {
-    const childId = await childrenStore.addChild(authStore.familyId, data)
-    // A brand-new child has no growth history yet — seed one from
-    // whatever height/weight/head circumference was entered here so
-    // Büyüme has a starting point instead of the parent re-entering the
-    // same numbers a second time.
-    if (heightCm.value || weightKg.value || headCircumferenceCm.value) {
-      await growthLogStore.seedInitialEntry(
-        authStore.familyId,
-        childId,
-        heightCm.value ?? undefined,
-        weightKg.value ?? undefined,
-        headCircumferenceCm.value ?? undefined,
-      )
-    }
+    await childrenStore.updateChild(authStore.familyId, childId, data)
+  }
+  // If this child has no growth history yet, seed one from whatever
+  // height/weight/head circumference was entered here — whether that's on
+  // first creation or a later edit — so Büyüme has a starting point
+  // instead of the parent re-entering the same numbers a second time.
+  // Once real Growth entries exist, this is a no-op (see
+  // seedInitialEntryIfNone) so it never overwrites a deliberately-dated
+  // measurement with today's date.
+  if (heightCm.value || weightKg.value || headCircumferenceCm.value) {
+    await growthLogStore.seedInitialEntryIfNone(
+      authStore.familyId,
+      childId,
+      heightCm.value ?? undefined,
+      weightKg.value ?? undefined,
+      headCircumferenceCm.value ?? undefined,
+    )
   }
   showDialog.value = false
 }
