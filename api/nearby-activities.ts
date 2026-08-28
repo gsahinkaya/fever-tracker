@@ -99,14 +99,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     })
     if (!overpassRes.ok) {
-      console.error('Overpass error', overpassRes.status, await overpassRes.text())
-      res.status(502).json({ error: 'Yer bilgisi alınamadı, tekrar dene.' })
+      const bodyText = await overpassRes.text()
+      console.error('Overpass error', overpassRes.status, bodyText)
+      // TEMPORARY: surface the real upstream status/body to the client
+      // while diagnosing a 502 that Vercel's own function logs would
+      // otherwise hide from us. Remove once the root cause is confirmed.
+      res.status(502).json({
+        error: 'Yer bilgisi alınamadı, tekrar dene.',
+        debugUpstreamStatus: overpassRes.status,
+        debugUpstreamBody: bodyText.slice(0, 500),
+      })
       return
     }
     const data = await overpassRes.json()
     res.status(200).json(data)
   } catch (err) {
     console.error('nearby-activities request failed', err)
-    res.status(502).json({ error: 'Yer bilgisi alınamadı, tekrar dene.' })
+    res.status(502).json({
+      error: 'Yer bilgisi alınamadı, tekrar dene.',
+      debugCatch: err instanceof Error ? err.message : String(err),
+    })
   }
 }
