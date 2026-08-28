@@ -62,5 +62,9 @@ service cloud.firestore {
     match /families/{familyId}/children/{childId}/symptoms/{symptomId} {
       allow read, write: if isMember(familyId);
     }
+
+    match /families/{familyId}/children/{childId}/sleep/{sleepId} {
+      allow read, write: if isMember(familyId);
+    }
   }
 }

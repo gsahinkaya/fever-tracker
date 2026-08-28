@@ -1,6 +1,6 @@
 import { t } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
-import type { FeedingEntry, GrowthEntry, LogEntry, Medication, SymptomEntry } from '@/types/health'
+import type { FeedingEntry, GrowthEntry, LogEntry, Medication, SleepEntry, SymptomEntry } from '@/types/health'
 
 function whoLabel(email?: string): string {
   return email?.split('@')[0] ?? t('notifications.someone')
@@ -45,6 +45,17 @@ export function messageForGrowth(who: string, heightCm?: number, weightKg?: numb
 export function messageForSymptom(who: string, type: string): string {
   return t('notifications.addedSymptom', { who, type: t(`symptoms.types.${type}`) })
 }
+export function messageForSleepStart(who: string): string {
+  return t('notifications.startedSleep', { who })
+}
+export function formatDuration(durationMinutes: number): string {
+  const h = Math.floor(durationMinutes / 60)
+  const m = durationMinutes % 60
+  return h > 0 ? `${h} sa ${m} dk` : `${m} dk`
+}
+export function messageForSleepEnd(who: string, durationMinutes: number): string {
+  return t('notifications.wokeUp', { who, duration: formatDuration(durationMinutes) })
+}
 
 // Turns a fever/medication/feeding/growth entry into a human sentence —
 // shared by the in-app bell/banner (App.vue) and the OS system notification
@@ -74,4 +85,17 @@ export function describeGrowth(entry: GrowthEntry): string {
 
 export function describeSymptom(entry: SymptomEntry): string {
   return messageForSymptom(whoLabel(entry.createdByEmail), entry.type)
+}
+
+// Only ever reflects the "just started" state in practice — the bell/
+// banner's incoming list is driven by Firestore "added" events (see
+// useWatermarkedFeed), which fire once at creation; the later update that
+// sets endedAt doesn't re-trigger it. The wake-up push notification (see
+// sleepLog.ts endSleep) is a separate, explicit notifyFamily call so that
+// half of the story still reaches the family even though it never shows
+// up in-app as a second "incoming" item.
+export function describeSleep(entry: SleepEntry): string {
+  const who = whoLabel(entry.createdByEmail)
+  if (entry.endedAt == null) return messageForSleepStart(who)
+  return messageForSleepEnd(who, Math.round((entry.endedAt - entry.takenAt) / 60_000))
 }

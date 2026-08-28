@@ -58,6 +58,9 @@ export default createVuetify({
           // Next-safe-dose tile/actions — neutral slate, distinct from
           // "medication" teal right above it on Home.
           nextdose: '#475569',
+          // Sleep-tracking tile/actions — deep night-blue, distinct from
+          // "info"'s brighter blue and "pharmacy"'s indigo.
+          sleep: '#1E3A8A',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',
@@ -85,6 +88,7 @@ export default createVuetify({
           activity: '#E879F9',
           symptom: '#A3E635',
           nextdose: '#94A3B8',
+          sleep: '#7DD3FC',
           error: '#F97066',
           success: '#32D583',
           warning: '#FDB022',

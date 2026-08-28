@@ -93,6 +93,12 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.symptoms') }}</span>
           </div>
         </v-btn>
+        <v-btn block height="64" color="sleep" variant="flat" rounded="lg" to="/uyku">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-sleep" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.sleep') }}</span>
+          </div>
+        </v-btn>
         <v-btn
           block
           height="64"

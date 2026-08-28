@@ -77,6 +77,11 @@ const router = createRouter({
       component: () => import('../views/NextDoseView.vue'),
     },
     {
+      path: '/uyku',
+      name: 'sleep',
+      component: () => import('../views/SleepView.vue'),
+    },
+    {
       path: '/giris',
       name: 'login',
       component: () => import('../views/LoginView.vue'),

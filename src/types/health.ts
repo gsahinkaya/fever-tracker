@@ -95,10 +95,18 @@ export interface SymptomEntry {
   takenAt: number
   type: SymptomType
   note?: string
-  // Firebase Storage download URL for an optional photo (a rash, e.g.) —
-  // set once the upload finishes, so a slow upload doesn't block the
-  // Firestore write that makes the entry show up for the family.
-  photoUrl?: string
+  createdBy?: string
+  createdByEmail?: string
+}
+
+export interface SleepEntry {
+  id: string
+  // Kept as `takenAt` (matching every other entry type) so this can go
+  // through the same useWatermarkedFeed/sortKey/recentEntries machinery —
+  // it's the start time, i.e. when the sleep session began.
+  takenAt: number
+  // Absent while the sleep is still ongoing (started but not yet ended).
+  endedAt?: number
   createdBy?: string
   createdByEmail?: string
 }
