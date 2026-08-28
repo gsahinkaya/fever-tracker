@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { getCurrentPosition, haversineKm } from '@/lib/geolocation'
+import { auth } from '@/firebase'
 
 export interface NearbyActivity {
   id: string
@@ -28,20 +29,7 @@ const CATEGORIES: { tag: string; value: string; label: string }[] = [
   { tag: 'leisure', value: 'amusement_arcade', label: 'Oyun Salonu' },
   { tag: 'leisure', value: 'bowling_alley', label: 'Bowling' },
 ]
-const RADIUS_METERS = 10_000
 const MAX_RESULTS = 30
-
-function buildOverpassQuery(lat: number, lon: number): string {
-  const clauses = CATEGORIES.flatMap(({ tag, value }) => [
-    `node["${tag}"="${value}"](around:${RADIUS_METERS},${lat},${lon});`,
-    `way["${tag}"="${value}"](around:${RADIUS_METERS},${lat},${lon});`,
-  ]).join('\n  ')
-  // No numeric limit here: Overpass's "out N" caps by OSM id order, not by
-  // distance, so capping server-side risks silently dropping genuinely
-  // closer results in a dense area. Fetch everything in the radius and
-  // truncate client-side after sorting by actual distance instead.
-  return `[out:json][timeout:25];\n(\n  ${clauses}\n);\nout center tags;`
-}
 
 interface OverpassElement {
   type: 'node' | 'way'
@@ -93,11 +81,11 @@ export function useNearbyActivities() {
     }
 
     try {
-      const res = await fetch('https://overpass-api.de/api/interpreter', {
-        method: 'POST',
-        body: `data=${encodeURIComponent(buildOverpassQuery(lat, lon))}`,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      })
+      const idToken = await auth.currentUser?.getIdToken()
+      const res = await fetch(
+        `/api/nearby-activities?lat=${lat}&lon=${lon}`,
+        { headers: idToken ? { Authorization: `Bearer ${idToken}` } : {} },
+      )
       if (!res.ok) throw new Error('fetch-failed')
       const data = (await res.json()) as { elements: OverpassElement[] }
 
