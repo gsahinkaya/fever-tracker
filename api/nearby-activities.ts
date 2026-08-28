@@ -96,28 +96,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const overpassRes = await fetch('https://overpass-api.de/api/interpreter', {
       method: 'POST',
       body: `data=${encodeURIComponent(buildOverpassQuery(lat, lon))}`,
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        // Overpass's Apache front-end 406s requests from Vercel's Node
+        // fetch (undici) because it sends no Accept header — Apache's
+        // content-negotiation then can't pick a representation. An
+        // explicit Accept (and a real User-Agent, per Overpass's usage
+        // policy) fixes it; curl from a regular machine never hit this
+        // since curl always sends `Accept: */*`.
+        Accept: 'application/json',
+        'User-Agent': 'Kido/1.0 (+https://fever-tracker-nu.vercel.app)',
+      },
     })
     if (!overpassRes.ok) {
-      const bodyText = await overpassRes.text()
-      console.error('Overpass error', overpassRes.status, bodyText)
-      // TEMPORARY: surface the real upstream status/body to the client
-      // while diagnosing a 502 that Vercel's own function logs would
-      // otherwise hide from us. Remove once the root cause is confirmed.
-      res.status(502).json({
-        error: 'Yer bilgisi alınamadı, tekrar dene.',
-        debugUpstreamStatus: overpassRes.status,
-        debugUpstreamBody: bodyText.slice(0, 500),
-      })
+      console.error('Overpass error', overpassRes.status, await overpassRes.text())
+      res.status(502).json({ error: 'Yer bilgisi alınamadı, tekrar dene.' })
       return
     }
     const data = await overpassRes.json()
     res.status(200).json(data)
   } catch (err) {
     console.error('nearby-activities request failed', err)
-    res.status(502).json({
-      error: 'Yer bilgisi alınamadı, tekrar dene.',
-      debugCatch: err instanceof Error ? err.message : String(err),
-    })
+    res.status(502).json({ error: 'Yer bilgisi alınamadı, tekrar dene.' })
   }
 }
