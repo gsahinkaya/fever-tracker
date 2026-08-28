@@ -67,6 +67,11 @@ const router = createRouter({
       component: () => import('../views/GrowthView.vue'),
     },
     {
+      path: '/semptomlar',
+      name: 'symptoms',
+      component: () => import('../views/SymptomsView.vue'),
+    },
+    {
       path: '/giris',
       name: 'login',
       component: () => import('../views/LoginView.vue'),

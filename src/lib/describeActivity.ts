@@ -1,6 +1,6 @@
 import { t } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
-import type { FeedingEntry, GrowthEntry, LogEntry, Medication } from '@/types/health'
+import type { FeedingEntry, GrowthEntry, LogEntry, Medication, SymptomEntry } from '@/types/health'
 
 function whoLabel(email?: string): string {
   return email?.split('@')[0] ?? t('notifications.someone')
@@ -42,6 +42,9 @@ export function messageForGrowth(who: string, heightCm?: number, weightKg?: numb
   if (weightKg) parts.push(`${weightKg} kg`)
   return t('notifications.addedGrowth', { who, parts: parts.join(' · ') })
 }
+export function messageForSymptom(who: string, type: string): string {
+  return t('notifications.addedSymptom', { who, type: t(`symptoms.types.${type}`) })
+}
 
 // Turns a fever/medication/feeding/growth entry into a human sentence —
 // shared by the in-app bell/banner (App.vue) and the OS system notification
@@ -67,4 +70,8 @@ export function describeFeeding(entry: FeedingEntry): string {
 
 export function describeGrowth(entry: GrowthEntry): string {
   return messageForGrowth(whoLabel(entry.createdByEmail), entry.heightCm, entry.weightKg)
+}
+
+export function describeSymptom(entry: SymptomEntry): string {
+  return messageForSymptom(whoLabel(entry.createdByEmail), entry.type)
 }

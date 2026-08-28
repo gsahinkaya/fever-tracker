@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas-pro'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
+import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useChildrenStore } from '@/stores/children'
 import { ageLabel } from '@/lib/age'
@@ -20,13 +21,14 @@ import {
 } from '@/data/whoGrowthStandards'
 import { percentileForMeasurement } from '@/lib/growthPercentile'
 import { VACCINATION_SCHEDULE } from '@/data/vaccinationSchedule'
-import type { FeverReading, FeedingEntry } from '@/types/health'
+import type { FeverReading, FeedingEntry, SymptomEntry } from '@/types/health'
 import TemperatureChart from '@/components/chart/TemperatureChart.vue'
 
 const { t } = useI18n()
 const store = useFeverLogStore()
 const feedingLogStore = useFeedingLogStore()
 const growthLogStore = useGrowthLogStore()
+const symptomLogStore = useSymptomLogStore()
 const medicationsStore = useMedicationsStore()
 const childrenStore = useChildrenStore()
 
@@ -38,10 +40,18 @@ const WINDOW_HOURS = 24 * 7
 const recent = computed(() => store.recentEntries(WINDOW_HOURS))
 const readings = computed(() => recent.value.filter((e) => e.type === 'reading') as FeverReading[])
 const recentFeedings = computed(() => feedingLogStore.recentEntries(WINDOW_HOURS))
-type CombinedRow = (typeof recent.value)[number] | FeedingEntry
+const recentSymptoms = computed(() => symptomLogStore.recentEntries(WINDOW_HOURS))
+type CombinedRow = (typeof recent.value)[number] | FeedingEntry | SymptomEntry
 const combinedRecent = computed<CombinedRow[]>(() =>
-  [...recent.value, ...recentFeedings.value].sort((a, b) => b.takenAt - a.takenAt),
+  [...recent.value, ...recentFeedings.value, ...recentSymptoms.value].sort(
+    (a, b) => b.takenAt - a.takenAt,
+  ),
 )
+
+const SYMPTOM_TYPES = new Set(['cough', 'vomiting', 'diarrhea', 'rash', 'runnyNose', 'other'])
+function isSymptom(entry: CombinedRow): entry is SymptomEntry {
+  return SYMPTOM_TYPES.has((entry as SymptomEntry).type)
+}
 
 const activeChild = computed(
   () => childrenStore.children.find((c) => c.id === store.activeChildId) ?? null,
@@ -284,7 +294,9 @@ async function createPdf() {
                   ? t('doctorReport.typeFever')
                   : entry.type === 'dose'
                     ? t('doctorReport.typeMedication')
-                    : t('doctorReport.typeFeeding')
+                    : isSymptom(entry)
+                      ? t('doctorReport.typeSymptom')
+                      : t('doctorReport.typeFeeding')
               }}
             </td>
             <td>
@@ -293,7 +305,9 @@ async function createPdf() {
                   ? `${entry.temperature.toFixed(1)} °C`
                   : entry.type === 'dose'
                     ? entry.medicationName
-                    : feedingRowLabel(entry)
+                    : isSymptom(entry)
+                      ? t(`symptoms.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
+                      : feedingRowLabel(entry as FeedingEntry)
               }}
             </td>
           </tr>

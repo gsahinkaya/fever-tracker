@@ -87,3 +87,14 @@ export interface GrowthEntry {
   createdBy?: string
   createdByEmail?: string
 }
+
+export type SymptomType = 'cough' | 'vomiting' | 'diarrhea' | 'rash' | 'runnyNose' | 'other'
+
+export interface SymptomEntry {
+  id: string
+  takenAt: number
+  type: SymptomType
+  note?: string
+  createdBy?: string
+  createdByEmail?: string
+}

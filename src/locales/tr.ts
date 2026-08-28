@@ -117,6 +117,7 @@ export default {
       vaccinations: 'Aşılar',
       nearbyActivities: 'Yakındaki Etkinlikler',
       last48h: 'Son 48 Saat',
+      symptoms: 'Semptomlar',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
   },
@@ -164,6 +165,29 @@ export default {
       done: 'Yapıldı · {date}',
       overdue: 'Gecikti · {date} tarihinde yapılmalıydı',
       upcoming: '{date} tarihinde yapılmalı',
+    },
+  },
+  symptoms: {
+    title: 'Semptomlar',
+    addButton: 'Semptom Ekle',
+    empty: 'Henüz semptom eklenmedi.',
+    deleteAria: 'Semptomu sil',
+    deleteConfirmTitle: 'Semptomu sil',
+    deleteConfirmBody: '{type} · {time} kaydı silinsin mi?',
+    types: {
+      cough: 'Öksürük',
+      vomiting: 'Kusma',
+      diarrhea: 'İshal',
+      rash: 'Döküntü',
+      runnyNose: 'Burun Akıntısı',
+      other: 'Diğer',
+    },
+    dialog: {
+      title: 'Semptom Ekle',
+      noteLabel: 'Not (opsiyonel)',
+      notePlaceholder: 'Örn. gece daha çok öksürdü',
+      timeLabel: 'Saat',
+      timeHint: 'Önceden başladıysa saati değiştirebilirsin',
     },
   },
   settings: {
@@ -295,7 +319,7 @@ export default {
     title: 'Doktor Özet Raporu',
     createPdf: 'PDF Oluştur',
     description:
-      'Son 7 günün ateş, ilaç ve beslenme kayıtları, güncel büyüme/aşı durumu. Bu ekranı doğrudan doktora gösterebilir ya da "PDF Oluştur" ile indirip paylaşabilirsin.',
+      'Son 7 günün ateş, ilaç, beslenme ve semptom kayıtları, güncel büyüme/aşı durumu. Bu ekranı doğrudan doktora gösterebilir ya da "PDF Oluştur" ile indirip paylaşabilirsin.',
     generatedAt: 'Son 7 gün · Oluşturulma: {date}',
     healthSummaryTitle: 'Büyüme ve Aşı Durumu',
     growthSummaryLabel: 'Son ölçüm ({date})',
@@ -310,6 +334,7 @@ export default {
     typeFever: 'Ateş',
     typeMedication: 'İlaç',
     typeFeeding: 'Beslenme',
+    typeSymptom: 'Semptom',
     noRecords: 'Son 7 günde kayıt yok',
     gender: {
       female: 'Kız',
@@ -411,6 +436,7 @@ export default {
     gaveBottle: '{who} {amount} ml {milkType} verdi',
     gaveSolidFood: '{who} katı gıda verdi',
     addedGrowth: '{who} yeni bir ölçüm ekledi ({parts})',
+    addedSymptom: '{who} bir semptom ekledi: {type}',
     milkTypes: {
       formula: 'mama',
       'breast-milk': 'anne sütü',

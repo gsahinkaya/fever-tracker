@@ -52,6 +52,9 @@ export default createVuetify({
           // Nearby-activities tile/actions — fuchsia, kept far enough from
           // growth's crimson-pink to read as its own color.
           activity: '#C026D3',
+          // Symptom-log tile/actions — olive/lime, distinct from the pure
+          // green "success" and the orange "warning" states.
+          symptom: '#65A30D',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',
@@ -77,6 +80,7 @@ export default createVuetify({
           pharmacy: '#818CF8',
           vaccine: '#D97706',
           activity: '#E879F9',
+          symptom: '#A3E635',
           error: '#F97066',
           success: '#32D583',
           warning: '#FDB022',
