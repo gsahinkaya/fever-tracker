@@ -12,13 +12,16 @@ const { tm } = useI18n()
 const stepMeta = [
   { icon: 'mdi-hand-wave-outline', color: 'primary' },
   { icon: 'mdi-thermometer', color: 'error' },
+  { icon: 'mdi-emoticon-sick-outline', color: 'symptom' },
   { icon: 'mdi-pill', color: 'medication' },
   { icon: 'mdi-baby-bottle-outline', color: 'secondary' },
+  { icon: 'mdi-sleep', color: 'sleep' },
   { icon: 'mdi-needle', color: 'vaccine' },
   { icon: 'mdi-human-male-height', color: 'growth' },
   { icon: 'mdi-file-chart-outline', color: 'info' },
   { icon: 'mdi-chat-question-outline', color: 'success' },
   { icon: 'mdi-mortar-pestle', color: 'pharmacy' },
+  { icon: 'mdi-drama-masks', color: 'activity' },
   { icon: 'mdi-bell-alert', color: 'primary' },
   { icon: 'mdi-account-multiple-plus-outline', color: 'primary' },
 ]

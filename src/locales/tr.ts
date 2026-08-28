@@ -32,12 +32,20 @@ export default {
         body: 'Bu butona basarak çocuğunun ateşini kaydet. İstersen aynı anda ilaç da verildiğini işaretleyebilirsin.',
       },
       {
+        title: 'Semptomlar',
+        body: 'Öksürük, kusma, ishal, döküntü gibi semptomları kaydet; ateş ve ilaç geçmişinle birlikte doktor için özet raporda görünür.',
+      },
+      {
         title: 'İlaç',
         body: 'Bir doz ilaç verdiğinde buraya kaydet. Kido bir sonraki güvenli doz zamanını senin için hesaplayıp ana sayfada gösterir. İlaçlarım ekranında şurubun açılış ve son kullanma tarihini de kaydedebilir, süresi dolmadan önce uyarı alabilirsin.',
       },
       {
         title: 'Beslenme',
         body: 'Emzirme, biberon ve katı gıda girişlerini bu ekrandan kaydedebilirsin.',
+      },
+      {
+        title: 'Uyku Takibi',
+        body: 'Çocuğun uykuya daldığında başlat, uyandığında bitir düğmesine bas — Kido süreyi hesaplar ve diğer aile üyelerine haber verir.',
       },
       {
         title: 'Aşılar',
@@ -58,6 +66,10 @@ export default {
       {
         title: 'Nöbetçi Eczane',
         body: 'Konumuna göre yakınındaki nöbetçi eczaneleri anında listeler, tek dokunuşla arayabilir ya da yol tarifi alabilirsin.',
+      },
+      {
+        title: 'Yakındaki Etkinlikler',
+        body: 'Konumuna göre yakınındaki sinema, tiyatro, müze, oyun alanı gibi çocuk dostu mekanları listeler, tek dokunuşla arayabilir ya da yol tarifi alabilirsin.',
       },
       {
         title: 'Bildirimler',
