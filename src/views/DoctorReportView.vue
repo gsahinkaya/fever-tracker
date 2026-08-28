@@ -7,6 +7,7 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
+import { useDiaperLogStore } from '@/stores/diaperLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useChildrenStore } from '@/stores/children'
 import { ageLabel } from '@/lib/age'
@@ -21,7 +22,7 @@ import {
 } from '@/data/whoGrowthStandards'
 import { percentileForMeasurement } from '@/lib/growthPercentile'
 import { VACCINATION_SCHEDULE } from '@/data/vaccinationSchedule'
-import type { FeverReading, FeedingEntry, SymptomEntry } from '@/types/health'
+import type { FeverReading, FeedingEntry, SymptomEntry, DiaperEntry } from '@/types/health'
 import TemperatureChart from '@/components/chart/TemperatureChart.vue'
 
 const { t } = useI18n()
@@ -29,6 +30,7 @@ const store = useFeverLogStore()
 const feedingLogStore = useFeedingLogStore()
 const growthLogStore = useGrowthLogStore()
 const symptomLogStore = useSymptomLogStore()
+const diaperLogStore = useDiaperLogStore()
 const medicationsStore = useMedicationsStore()
 const childrenStore = useChildrenStore()
 
@@ -41,9 +43,10 @@ const recent = computed(() => store.recentEntries(WINDOW_HOURS))
 const readings = computed(() => recent.value.filter((e) => e.type === 'reading') as FeverReading[])
 const recentFeedings = computed(() => feedingLogStore.recentEntries(WINDOW_HOURS))
 const recentSymptoms = computed(() => symptomLogStore.recentEntries(WINDOW_HOURS))
-type CombinedRow = (typeof recent.value)[number] | FeedingEntry | SymptomEntry
+const recentDiapers = computed(() => diaperLogStore.recentEntries(WINDOW_HOURS))
+type CombinedRow = (typeof recent.value)[number] | FeedingEntry | SymptomEntry | DiaperEntry
 const combinedRecent = computed<CombinedRow[]>(() =>
-  [...recent.value, ...recentFeedings.value, ...recentSymptoms.value].sort(
+  [...recent.value, ...recentFeedings.value, ...recentSymptoms.value, ...recentDiapers.value].sort(
     (a, b) => b.takenAt - a.takenAt,
   ),
 )
@@ -51,6 +54,10 @@ const combinedRecent = computed<CombinedRow[]>(() =>
 const SYMPTOM_TYPES = new Set(['cough', 'vomiting', 'diarrhea', 'rash', 'runnyNose', 'other'])
 function isSymptom(entry: CombinedRow): entry is SymptomEntry {
   return SYMPTOM_TYPES.has((entry as SymptomEntry).type)
+}
+const DIAPER_TYPES = new Set(['pee', 'poop', 'both'])
+function isDiaper(entry: CombinedRow): entry is DiaperEntry {
+  return DIAPER_TYPES.has((entry as DiaperEntry).type)
 }
 
 const activeChild = computed(
@@ -109,6 +116,7 @@ function rowTypeLabel(entry: CombinedRow): string {
   if (entry.type === 'reading') return t('doctorReport.typeFever')
   if (entry.type === 'dose') return t('doctorReport.typeMedication')
   if (isSymptom(entry)) return t('doctorReport.typeSymptom')
+  if (isDiaper(entry)) return t('doctorReport.typeDiaper')
   return t('doctorReport.typeFeeding')
 }
 
@@ -116,6 +124,7 @@ function rowValueLabel(entry: CombinedRow): string {
   if (entry.type === 'reading') return `${entry.temperature.toFixed(1)} °C`
   if (entry.type === 'dose') return entry.medicationName
   if (isSymptom(entry)) return t(`symptoms.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
+  if (isDiaper(entry)) return t(`diaper.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
   return feedingRowLabel(entry as FeedingEntry)
 }
 
@@ -128,6 +137,8 @@ function confirmDelete() {
     store.removeEntry(entry.id)
   } else if (isSymptom(entry)) {
     symptomLogStore.removeEntry(entry.id)
+  } else if (isDiaper(entry)) {
+    diaperLogStore.removeEntry(entry.id)
   } else {
     feedingLogStore.removeEntry(entry.id)
   }

@@ -99,6 +99,20 @@ export interface SymptomEntry {
   createdByEmail?: string
 }
 
+// A newborn's diaper changes are tracked separately from other symptoms —
+// pee/poop frequency is a routine pediatric hydration/feeding check, not an
+// illness signal, and parents log it far more often than an actual symptom.
+export type DiaperType = 'pee' | 'poop' | 'both'
+
+export interface DiaperEntry {
+  id: string
+  takenAt: number
+  type: DiaperType
+  note?: string
+  createdBy?: string
+  createdByEmail?: string
+}
+
 export interface SleepEntry {
   id: string
   // Kept as `takenAt` (matching every other entry type) so this can go

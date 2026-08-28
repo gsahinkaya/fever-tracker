@@ -82,6 +82,11 @@ const router = createRouter({
       component: () => import('../views/SleepView.vue'),
     },
     {
+      path: '/bez-degisimi',
+      name: 'diaper',
+      component: () => import('../views/DiaperView.vue'),
+    },
+    {
       path: '/giris',
       name: 'login',
       component: () => import('../views/LoginView.vue'),

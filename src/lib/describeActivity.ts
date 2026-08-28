@@ -1,6 +1,14 @@
 import { t } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
-import type { FeedingEntry, GrowthEntry, LogEntry, Medication, SleepEntry, SymptomEntry } from '@/types/health'
+import type {
+  DiaperEntry,
+  FeedingEntry,
+  GrowthEntry,
+  LogEntry,
+  Medication,
+  SleepEntry,
+  SymptomEntry,
+} from '@/types/health'
 
 function whoLabel(email?: string): string {
   return email?.split('@')[0] ?? t('notifications.someone')
@@ -45,6 +53,9 @@ export function messageForGrowth(who: string, heightCm?: number, weightKg?: numb
 export function messageForSymptom(who: string, type: string): string {
   return t('notifications.addedSymptom', { who, type: t(`symptoms.types.${type}`) })
 }
+export function messageForDiaper(who: string, type: string): string {
+  return t('notifications.addedDiaper', { who, type: t(`diaper.types.${type}`) })
+}
 export function messageForSleepStart(who: string): string {
   return t('notifications.startedSleep', { who })
 }
@@ -85,6 +96,10 @@ export function describeGrowth(entry: GrowthEntry): string {
 
 export function describeSymptom(entry: SymptomEntry): string {
   return messageForSymptom(whoLabel(entry.createdByEmail), entry.type)
+}
+
+export function describeDiaper(entry: DiaperEntry): string {
+  return messageForDiaper(whoLabel(entry.createdByEmail), entry.type)
 }
 
 // Only ever reflects the "just started" state in practice — the bell/

@@ -15,6 +15,7 @@ const stepMeta = [
   { icon: 'mdi-emoticon-sick-outline', color: 'symptom' },
   { icon: 'mdi-pill', color: 'medication' },
   { icon: 'mdi-baby-bottle-outline', color: 'secondary' },
+  { icon: 'mdi-diaper-outline', color: 'diaper' },
   { icon: 'mdi-sleep', color: 'sleep' },
   { icon: 'mdi-needle', color: 'vaccine' },
   { icon: 'mdi-human-male-height', color: 'growth' },

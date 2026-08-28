@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { LogEntry, FeedingEntry, SymptomEntry, SleepEntry } from '@/types/health'
+import type { LogEntry, FeedingEntry, SymptomEntry, SleepEntry, DiaperEntry } from '@/types/health'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
+import { useDiaperLogStore } from '@/stores/diaperLog'
 import { feedingEntryTitle } from '@/lib/entryTitles'
 import { formatDuration } from '@/lib/describeActivity'
 
-type CombinedEntry = LogEntry | FeedingEntry | SymptomEntry | SleepEntry
+type CombinedEntry = LogEntry | FeedingEntry | SymptomEntry | SleepEntry | DiaperEntry
 
 const { t } = useI18n()
 defineProps<{ entries: CombinedEntry[] }>()
@@ -17,12 +18,17 @@ const feverLogStore = useFeverLogStore()
 const feedingLogStore = useFeedingLogStore()
 const symptomLogStore = useSymptomLogStore()
 const sleepLogStore = useSleepLogStore()
+const diaperLogStore = useDiaperLogStore()
 
 const confirmTarget = ref<CombinedEntry | null>(null)
 
 const SYMPTOM_TYPES = new Set(['cough', 'vomiting', 'diarrhea', 'rash', 'runnyNose', 'other'])
 function isSymptom(entry: CombinedEntry): entry is SymptomEntry {
   return 'type' in entry && SYMPTOM_TYPES.has(entry.type)
+}
+const DIAPER_TYPES = new Set(['pee', 'poop', 'both'])
+function isDiaper(entry: CombinedEntry): entry is DiaperEntry {
+  return 'type' in entry && DIAPER_TYPES.has(entry.type)
 }
 function isFeeding(entry: CombinedEntry): entry is FeedingEntry {
   return 'type' in entry && (entry.type === 'breastfeeding' || entry.type === 'bottle' || entry.type === 'solid')
@@ -51,11 +57,13 @@ const colors: Record<string, string> = {
 
 function iconFor(entry: CombinedEntry): string {
   if (isSymptom(entry)) return 'mdi-emoticon-sick-outline'
+  if (isDiaper(entry)) return 'mdi-diaper-outline'
   if (isSleep(entry)) return 'mdi-sleep'
   return icons[entry.type]!
 }
 function colorFor(entry: CombinedEntry): string {
   if (isSymptom(entry)) return 'symptom'
+  if (isDiaper(entry)) return 'diaper'
   if (isSleep(entry)) return 'sleep'
   return colors[entry.type]!
 }
@@ -63,6 +71,9 @@ function colorFor(entry: CombinedEntry): string {
 function title(entry: CombinedEntry): string {
   if (isSymptom(entry)) {
     return t(`symptoms.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
+  }
+  if (isDiaper(entry)) {
+    return t(`diaper.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
   }
   if (isSleep(entry)) {
     return entry.endedAt == null
@@ -87,6 +98,8 @@ function confirmDelete() {
   if (!confirmTarget.value) return
   if (isSymptom(confirmTarget.value)) {
     symptomLogStore.removeEntry(confirmTarget.value.id)
+  } else if (isDiaper(confirmTarget.value)) {
+    diaperLogStore.removeEntry(confirmTarget.value.id)
   } else if (isSleep(confirmTarget.value)) {
     sleepLogStore.removeEntry(confirmTarget.value.id)
   } else if (isFeeding(confirmTarget.value)) {

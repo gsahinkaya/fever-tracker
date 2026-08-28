@@ -5,6 +5,7 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
+import { useDiaperLogStore } from '@/stores/diaperLog'
 import CombinedTimelineList from '@/components/CombinedTimelineList.vue'
 
 const { t } = useI18n()
@@ -12,13 +13,13 @@ const feverLogStore = useFeverLogStore()
 const feedingLogStore = useFeedingLogStore()
 const symptomLogStore = useSymptomLogStore()
 const sleepLogStore = useSleepLogStore()
+const diaperLogStore = useDiaperLogStore()
 
 const showAll = ref(false)
 
-// The stores' Firestore listeners have no time filter (see
-// feverLog.ts/feedingLog.ts/symptomLog.ts/sleepLog.ts recentEntries), so
-// "tümünü göster" needs no extra query — everything is already in memory,
-// only the client-side window changes.
+// The stores' Firestore listeners have no time filter (see each store's
+// recentEntries), so "tümünü göster" needs no extra query — everything is
+// already in memory, only the client-side window changes.
 const activity = computed(() => {
   const fever = showAll.value ? feverLogStore.entries : feverLogStore.recentEntries(48)
   const feeding = showAll.value ? feedingLogStore.entries : feedingLogStore.recentEntries(48)
@@ -28,7 +29,10 @@ const activity = computed(() => {
   const sleep = (showAll.value ? sleepLogStore.entries : sleepLogStore.recentEntries(48)).filter(
     (e) => e.endedAt != null,
   )
-  return [...fever, ...feeding, ...symptoms, ...sleep].sort((a, b) => b.takenAt - a.takenAt)
+  const diapers = showAll.value ? diaperLogStore.entries : diaperLogStore.recentEntries(48)
+  return [...fever, ...feeding, ...symptoms, ...sleep, ...diapers].sort(
+    (a, b) => b.takenAt - a.takenAt,
+  )
 })
 </script>
 

@@ -44,6 +44,10 @@ export default {
         body: 'Emzirme, biberon ve katı gıda girişlerini bu ekrandan kaydedebilirsin.',
       },
       {
+        title: 'Bez Değişimi',
+        body: 'Özellikle yenidoğan dönemde çiş/kaka takibi önemlidir — her bez değişimini buradan kaydedebilir, doktor raporunda da görebilirsin.',
+      },
+      {
         title: 'Uyku Takibi',
         body: 'Çocuğun uykuya daldığında başlat, uyandığında bitir düğmesine bas — Kido süreyi hesaplar ve diğer aile üyelerine haber verir.',
       },
@@ -131,6 +135,7 @@ export default {
       last48h: 'Son 48 Saat',
       symptoms: 'Semptomlar',
       sleep: 'Uyku',
+      diaper: 'Bez Değişimi',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
   },
@@ -221,6 +226,30 @@ export default {
     ongoing: 'Uyuyor',
     duration: '{duration} uyudu',
   },
+  diaper: {
+    title: 'Bez Değişimi',
+    addButton: 'Bez Değişimi Ekle',
+    last48h: 'Son 48 Saat',
+    allHistory: 'Tüm Geçmiş',
+    viewAll: 'Tümünü Gör',
+    empty: 'Henüz bez değişimi kaydı yok.',
+    emptyWindow: 'Son 48 saatte bez değişimi kaydı yok.',
+    deleteAria: 'Kaydı sil',
+    deleteConfirmTitle: 'Kaydı sil',
+    deleteConfirmBody: '{type} · {time} kaydı silinsin mi?',
+    types: {
+      pee: 'Çiş',
+      poop: 'Kaka',
+      both: 'İkisi',
+    },
+    dialog: {
+      title: 'Bez Değişimi Ekle',
+      noteLabel: 'Not (opsiyonel)',
+      notePlaceholder: 'Örn. renk/kıvam farklıydı',
+      timeLabel: 'Saat',
+      timeHint: 'Önceden değiştirdiysen saati değiştirebilirsin',
+    },
+  },
   settings: {
     title: 'Ayarlar',
     appearance: 'Görünüm',
@@ -242,7 +271,7 @@ export default {
     copied: 'Kopyalandı',
     dangerZone: 'Tehlikeli Bölge',
     dangerZoneBody:
-      '{name} için ateş, beslenme, büyüme, semptom ve uyku kayıtlarının tümünü kalıcı olarak sil. Bu işlem geri alınamaz.',
+      '{name} için ateş, beslenme, büyüme, semptom, uyku ve bez değişimi kayıtlarının tümünü kalıcı olarak sil. Bu işlem geri alınamaz.',
     deleteRecordsButton: '{name} kayıtlarını sil',
     footer: 'Kido, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.',
     confirmDialog: {
@@ -269,7 +298,7 @@ export default {
     },
     deleteConfirm: {
       title: 'Çocuğu sil',
-      body: '{name} ve tüm kayıtları (ateş, ilaç, beslenme, büyüme, semptom, uyku) kalıcı olarak silinecek. Emin misin?',
+      body: '{name} ve tüm kayıtları (ateş, ilaç, beslenme, büyüme, semptom, uyku, bez değişimi) kalıcı olarak silinecek. Emin misin?',
     },
   },
   medications: {
@@ -350,7 +379,7 @@ export default {
     title: 'Doktor Özet Raporu',
     createPdf: 'PDF Oluştur',
     description:
-      'Son 7 günün ateş, ilaç, beslenme ve semptom kayıtları, güncel büyüme/aşı durumu. Bu ekranı doğrudan doktora gösterebilir ya da "PDF Oluştur" ile indirip paylaşabilirsin.',
+      'Son 7 günün ateş, ilaç, beslenme, semptom ve bez değişimi kayıtları, güncel büyüme/aşı durumu. Bu ekranı doğrudan doktora gösterebilir ya da "PDF Oluştur" ile indirip paylaşabilirsin.',
     generatedAt: 'Son 7 gün · Oluşturulma: {date}',
     healthSummaryTitle: 'Büyüme ve Aşı Durumu',
     growthSummaryLabel: 'Son ölçüm ({date})',
@@ -366,6 +395,7 @@ export default {
     typeMedication: 'İlaç',
     typeFeeding: 'Beslenme',
     typeSymptom: 'Semptom',
+    typeDiaper: 'Bez',
     noRecords: 'Son 7 günde kayıt yok',
     deleteAria: 'Kaydı sil',
     deleteConfirmTitle: 'Kaydı sil',
@@ -474,6 +504,7 @@ export default {
     addedSymptom: '{who} bir semptom ekledi: {type}',
     startedSleep: '{who} uyku kaydı başlattı',
     wokeUp: '{who} uyandı ({duration})',
+    addedDiaper: '{who} bez değişimi ekledi: {type}',
     milkTypes: {
       formula: 'mama',
       'breast-milk': 'anne sütü',

@@ -8,6 +8,7 @@ import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
+import { useDiaperLogStore } from '@/stores/diaperLog'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
 import { useThemeStore } from '@/stores/theme'
@@ -20,6 +21,7 @@ const feedingLogStore = useFeedingLogStore()
 const growthLogStore = useGrowthLogStore()
 const symptomLogStore = useSymptomLogStore()
 const sleepLogStore = useSleepLogStore()
+const diaperLogStore = useDiaperLogStore()
 const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
 const themeStore = useThemeStore()
@@ -51,6 +53,7 @@ async function clearAll() {
     growthLogStore.clearAllEntries(),
     symptomLogStore.clearAllEntries(),
     sleepLogStore.clearAllEntries(),
+    diaperLogStore.clearAllEntries(),
   ])
   showClearConfirm.value = false
 }

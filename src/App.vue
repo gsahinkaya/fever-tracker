@@ -10,10 +10,12 @@ import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
+import { useDiaperLogStore } from '@/stores/diaperLog'
 import { useThemeStore } from '@/stores/theme'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
 import {
+  describeDiaper,
   describeEntry,
   describeFeeding,
   describeGrowth,
@@ -33,6 +35,7 @@ const feedingLogStore = useFeedingLogStore()
 const growthLogStore = useGrowthLogStore()
 const symptomLogStore = useSymptomLogStore()
 const sleepLogStore = useSleepLogStore()
+const diaperLogStore = useDiaperLogStore()
 useThemeStore()
 
 useEntryNotifications()
@@ -68,6 +71,10 @@ const incomingItems = computed(() =>
     ...sleepLogStore.incomingEntries.map((entry) => ({
       at: entry.takenAt,
       text: describeSleep(entry),
+    })),
+    ...diaperLogStore.incomingEntries.map((entry) => ({
+      at: entry.takenAt,
+      text: describeDiaper(entry),
     })),
   ].sort((a, b) => a.at - b.at),
 )
@@ -106,6 +113,7 @@ function acknowledgeIncoming() {
   growthLogStore.acknowledgeIncoming()
   symptomLogStore.acknowledgeIncoming()
   sleepLogStore.acknowledgeIncoming()
+  diaperLogStore.acknowledgeIncoming()
   bannerDismissed.value = false
 }
 
@@ -151,6 +159,7 @@ watch(
     growthLogStore.watchChild(childId)
     symptomLogStore.watchChild(childId)
     sleepLogStore.watchChild(childId)
+    diaperLogStore.watchChild(childId)
     if (childId && authStore.familyId) {
       localStorage.setItem(`ates-olcer:active-child:${authStore.familyId}`, childId)
     }

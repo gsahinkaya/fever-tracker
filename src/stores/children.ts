@@ -57,6 +57,7 @@ export const useChildrenStore = defineStore('children', () => {
       'growth',
       'symptoms',
       'sleep',
+      'diapers',
     ]
     const snapshots = await Promise.all(
       subcollectionNames.map((name) =>
