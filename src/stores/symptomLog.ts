@@ -22,6 +22,7 @@ export const useSymptomLogStore = defineStore('symptomLog', () => {
     creatorFields,
     recentEntries,
     removeEntry,
+    clearAllEntries,
   } = useWatermarkedFeed<SymptomEntry>({
     storageKeyPrefix: 'ates-olcer:last-seen-symptoms',
     buildQuery: (familyId, childId) =>
@@ -53,6 +54,7 @@ export const useSymptomLogStore = defineStore('symptomLog', () => {
     acknowledgeIncoming,
     addSymptom,
     removeEntry,
+    clearAllEntries,
     recentEntries,
   }
 })

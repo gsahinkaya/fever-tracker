@@ -23,6 +23,7 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
     creatorFields,
     recentEntries,
     removeEntry,
+    clearAllEntries,
   } = useWatermarkedFeed<SleepEntry>({
     storageKeyPrefix: 'ates-olcer:last-seen-sleep',
     buildQuery: (familyId, childId) =>
@@ -81,6 +82,7 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
     startSleep,
     endSleep,
     removeEntry,
+    clearAllEntries,
     recentEntries,
   }
 })

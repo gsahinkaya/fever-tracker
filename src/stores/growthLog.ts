@@ -21,6 +21,7 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     requireContext,
     creatorFields,
     removeEntry,
+    clearAllEntries,
   } = useWatermarkedFeed<GrowthEntry>({
     storageKeyPrefix: 'ates-olcer:last-seen-growth',
     buildQuery: (familyId, childId) =>
@@ -94,6 +95,7 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     acknowledgeIncoming,
     addGrowthEntry,
     removeEntry,
+    clearAllEntries,
     syncEntryFromProfile,
   }
 })

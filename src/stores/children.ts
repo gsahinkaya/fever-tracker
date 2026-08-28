@@ -48,21 +48,23 @@ export const useChildrenStore = defineStore('children', () => {
   }
 
   async function removeChild(familyId: string, childId: string) {
-    // Firestore doesn't cascade-delete subcollections, so clear the child's
-    // entries, medications, and feedings first to avoid leaving orphaned
-    // data behind.
-    const entriesRef = collection(db, 'families', familyId, 'children', childId, 'entries')
-    const medicationsRef = collection(db, 'families', familyId, 'children', childId, 'medications')
-    const feedingsRef = collection(db, 'families', familyId, 'children', childId, 'feedings')
-    const [entriesSnap, medicationsSnap, feedingsSnap] = await Promise.all([
-      getDocs(entriesRef),
-      getDocs(medicationsRef),
-      getDocs(feedingsRef),
-    ])
+    // Firestore doesn't cascade-delete subcollections, so clear every one of
+    // the child's subcollections first to avoid leaving orphaned data behind.
+    const subcollectionNames = [
+      'entries',
+      'medications',
+      'feedings',
+      'growth',
+      'symptoms',
+      'sleep',
+    ]
+    const snapshots = await Promise.all(
+      subcollectionNames.map((name) =>
+        getDocs(collection(db, 'families', familyId, 'children', childId, name)),
+      ),
+    )
     const batch = writeBatch(db)
-    entriesSnap.docs.forEach((d) => batch.delete(d.ref))
-    medicationsSnap.docs.forEach((d) => batch.delete(d.ref))
-    feedingsSnap.docs.forEach((d) => batch.delete(d.ref))
+    snapshots.forEach((snap) => snap.docs.forEach((d) => batch.delete(d.ref)))
     batch.delete(doc(db, 'families', familyId, 'children', childId))
     await batch.commit()
   }

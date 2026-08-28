@@ -242,7 +242,7 @@ export default {
     copied: 'Kopyalandı',
     dangerZone: 'Tehlikeli Bölge',
     dangerZoneBody:
-      '{name} için tüm ateş ve ilaç kayıtlarını kalıcı olarak sil. Bu işlem geri alınamaz.',
+      '{name} için ateş, beslenme, büyüme, semptom ve uyku kayıtlarının tümünü kalıcı olarak sil. Bu işlem geri alınamaz.',
     deleteRecordsButton: '{name} kayıtlarını sil',
     footer: 'Kido, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.',
     confirmDialog: {
@@ -269,7 +269,7 @@ export default {
     },
     deleteConfirm: {
       title: 'Çocuğu sil',
-      body: '{name} ve tüm ateş/ilaç kayıtları kalıcı olarak silinecek. Emin misin?',
+      body: '{name} ve tüm kayıtları (ateş, ilaç, beslenme, büyüme, semptom, uyku) kalıcı olarak silinecek. Emin misin?',
     },
   },
   medications: {

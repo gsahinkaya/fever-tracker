@@ -4,6 +4,10 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useFeverLogStore } from '@/stores/feverLog'
+import { useFeedingLogStore } from '@/stores/feedingLog'
+import { useGrowthLogStore } from '@/stores/growthLog'
+import { useSymptomLogStore } from '@/stores/symptomLog'
+import { useSleepLogStore } from '@/stores/sleepLog'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
 import { useThemeStore } from '@/stores/theme'
@@ -12,6 +16,10 @@ const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
 const feverLogStore = useFeverLogStore()
+const feedingLogStore = useFeedingLogStore()
+const growthLogStore = useGrowthLogStore()
+const symptomLogStore = useSymptomLogStore()
+const sleepLogStore = useSleepLogStore()
 const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
 const themeStore = useThemeStore()
@@ -37,7 +45,13 @@ const activeChildName = computed(
 const showClearConfirm = ref(false)
 
 async function clearAll() {
-  await feverLogStore.clearAllEntries()
+  await Promise.all([
+    feverLogStore.clearAllEntries(),
+    feedingLogStore.clearAllEntries(),
+    growthLogStore.clearAllEntries(),
+    symptomLogStore.clearAllEntries(),
+    sleepLogStore.clearAllEntries(),
+  ])
   showClearConfirm.value = false
 }
 
