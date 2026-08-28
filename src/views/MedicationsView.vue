@@ -25,6 +25,8 @@ const note = ref('')
 const openedAt = ref('')
 const expiryDate = ref('')
 const shelfLifeDaysAfterOpening = ref<number | null>(null)
+const courseStartDate = ref('')
+const courseEndDate = ref('')
 const confirmDeleteTarget = ref<Medication | null>(null)
 
 const DEFAULT_SHELF_LIFE_DAYS = 90
@@ -37,6 +39,8 @@ function openAdd() {
   openedAt.value = ''
   expiryDate.value = ''
   shelfLifeDaysAfterOpening.value = null
+  courseStartDate.value = ''
+  courseEndDate.value = ''
   showDialog.value = true
 }
 
@@ -50,6 +54,8 @@ function openEdit(medication: Medication) {
     : ''
   expiryDate.value = medication.expiryDate ?? ''
   shelfLifeDaysAfterOpening.value = medication.shelfLifeDaysAfterOpening ?? null
+  courseStartDate.value = medication.courseStartDate ?? ''
+  courseEndDate.value = medication.courseEndDate ?? ''
   showDialog.value = true
 }
 
@@ -64,6 +70,8 @@ async function save() {
     ...(openedAt.value ? { openedAt: new Date(openedAt.value).getTime() } : {}),
     ...(expiryDate.value ? { expiryDate: expiryDate.value } : {}),
     ...(shelfLifeDaysAfterOpening.value ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value } : {}),
+    ...(courseStartDate.value ? { courseStartDate: courseStartDate.value } : {}),
+    ...(courseEndDate.value ? { courseEndDate: courseEndDate.value } : {}),
   }
 
   if (editingMedication.value) {
@@ -132,6 +140,33 @@ function inventoryWarning(med: Medication): InventoryWarning | null {
   return null
 }
 
+function dateLabel(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })
+}
+
+// A course medication (antibiotics being the classic case) only has one of
+// three states worth surfacing: hasn't started, actively running (this is
+// the state the dose-interval reminder above needs to still be firing in),
+// or done — each phrased so the parent knows whether to keep going.
+function courseLabel(med: Medication): string | null {
+  if (!med.courseStartDate && !med.courseEndDate) return null
+  const now = Date.now()
+  if (med.courseStartDate && now < new Date(med.courseStartDate).getTime()) {
+    return t('medications.course.upcoming', { date: dateLabel(med.courseStartDate) })
+  }
+  if (med.courseEndDate && now > new Date(med.courseEndDate).getTime() + 86_400_000) {
+    return t('medications.course.finished', { date: dateLabel(med.courseEndDate) })
+  }
+  if (med.courseStartDate && med.courseEndDate) {
+    return t('medications.course.active', {
+      start: dateLabel(med.courseStartDate),
+      end: dateLabel(med.courseEndDate),
+    })
+  }
+  if (med.courseEndDate) return t('medications.course.activeUntil', { date: dateLabel(med.courseEndDate) })
+  return t('medications.course.activeSince', { date: dateLabel(med.courseStartDate!) })
+}
+
 async function confirmDelete() {
   if (confirmDeleteTarget.value && authStore.familyId && feverLogStore.activeChildId) {
     await medicationsStore.removeMedication(
@@ -171,6 +206,9 @@ async function confirmDelete() {
         <v-list-item-subtitle>
           {{ t('medications.perSafe', { hours: med.minIntervalHours })
           }}<span v-if="med.note"> · {{ med.note }}</span>
+          <div v-if="courseLabel(med)" class="text-medium-emphasis mt-1">
+            {{ courseLabel(med) }}
+          </div>
           <div
             v-if="inventoryWarning(med)"
             class="font-weight-medium mt-1"
@@ -256,6 +294,26 @@ async function confirmDelete() {
               type="number"
               :label="t('medications.dialog.shelfLifeLabel')"
               :placeholder="String(DEFAULT_SHELF_LIFE_DAYS)"
+              variant="outlined"
+              density="comfortable"
+            />
+          </div>
+          <v-divider class="mb-4" />
+          <p class="text-caption text-medium-emphasis mb-2">
+            {{ t('medications.dialog.courseSectionHint') }}
+          </p>
+          <div class="d-flex ga-2">
+            <v-text-field
+              v-model="courseStartDate"
+              type="date"
+              :label="t('medications.dialog.courseStartLabel')"
+              variant="outlined"
+              density="comfortable"
+            />
+            <v-text-field
+              v-model="courseEndDate"
+              type="date"
+              :label="t('medications.dialog.courseEndLabel')"
               variant="outlined"
               density="comfortable"
             />

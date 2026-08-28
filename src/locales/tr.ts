@@ -323,6 +323,10 @@ export default {
       openedAtLabel: 'Açılış tarihi (opsiyonel)',
       expiryDateLabel: 'Son kullanma tarihi (opsiyonel)',
       shelfLifeLabel: 'Açıldıktan sonra kaç gün? (vars. 90)',
+      courseSectionHint:
+        'Antibiyotik gibi belirli bir süre kullanılması gereken ilaçlar için kür başlangıç ve bitiş tarihini gir — kür boyunca doz hatırlatmaları alırsın, kür bittiğinde de haber veririz (hepsi opsiyonel).',
+      courseStartLabel: 'Kür başlangıç tarihi (opsiyonel)',
+      courseEndLabel: 'Kür bitiş tarihi (opsiyonel)',
     },
     warnings: {
       expired: 'Son kullanma tarihi geçti ({date}). Yenisini almalısın.',
@@ -330,6 +334,13 @@ export default {
       openedTooLong: 'Açalı {months} ay oldu, yenisini almalısın.',
       openedExpiringSoon:
         'Açık kalma süresine {days} gün kaldı, kullanmaya devam etmek sakıncalı olabilir — yenisini almayı planla.',
+    },
+    course: {
+      upcoming: 'Kür {date} tarihinde başlayacak',
+      active: 'Kür sürüyor · {start} – {end}',
+      activeSince: 'Kür sürüyor · {date} tarihinden beri',
+      activeUntil: 'Kür sürüyor · {date} tarihine kadar',
+      finished: 'Kür tamamlandı ({date})',
     },
     deleteConfirm: {
       title: 'İlacı sil',
@@ -494,6 +505,7 @@ export default {
   notifications: {
     someone: 'Bir aile üyesi',
     doseReady: '{name} için güvenli doz zamanı geldi.',
+    courseStartReady: '{name} kürüne başlama zamanı geldi.',
     addedReading: '{who} {temp}° ölçüm ekledi',
     gaveMedication: '{who} {name} verdi',
     addedMedication: '{who} {name} ilacını ekledi',
