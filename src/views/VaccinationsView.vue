@@ -8,6 +8,7 @@ import { useNow } from '@/composables/useNow'
 import { VACCINATION_SCHEDULE } from '@/data/vaccinationSchedule'
 import type { CustomVaccine } from '@/types/family'
 import { localeTag } from '@/lib/dateFormat'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -85,6 +86,16 @@ const showAddDialog = ref(false)
 const newVaccineName = ref('')
 const newVaccineDueDate = ref('')
 const confirmDeleteTarget = ref<CustomVaccine | null>(null)
+const deleteCustomBody = computed(() =>
+  confirmDeleteTarget.value
+    ? t('vaccinations.deleteCustomConfirmBody', { name: confirmDeleteTarget.value.name })
+    : '',
+)
+
+function confirmDeleteCustom() {
+  if (confirmDeleteTarget.value) removeCustom(confirmDeleteTarget.value.id)
+  confirmDeleteTarget.value = null
+}
 
 watch(showAddDialog, (open) => {
   if (open) {
@@ -241,27 +252,12 @@ async function addCustomVaccine() {
       </v-card>
     </v-dialog>
 
-    <v-dialog
+    <ConfirmDialog
       :model-value="!!confirmDeleteTarget"
-      max-width="360"
       @update:model-value="(v: boolean) => !v && (confirmDeleteTarget = null)"
-    >
-      <v-card v-if="confirmDeleteTarget">
-        <v-card-title class="text-h6">{{ t('vaccinations.deleteCustomConfirmTitle') }}</v-card-title>
-        <v-card-text>
-          {{ t('vaccinations.deleteCustomConfirmBody', { name: confirmDeleteTarget.name }) }}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="confirmDeleteTarget = null">{{ t('common.cancel') }}</v-btn>
-          <v-btn
-            color="error"
-            variant="flat"
-            @click="removeCustom(confirmDeleteTarget.id); confirmDeleteTarget = null"
-            >{{ t('common.delete') }}</v-btn
-          >
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      :title="t('vaccinations.deleteCustomConfirmTitle')"
+      :body="deleteCustomBody"
+      @confirm="confirmDeleteCustom"
+    />
   </v-container>
 </template>

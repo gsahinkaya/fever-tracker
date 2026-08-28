@@ -3,30 +3,26 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import AddSymptomDialog from '@/components/AddSymptomDialog.vue'
-import { localeTag } from '@/lib/dateFormat'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import { use48hToggle } from '@/composables/use48hToggle'
+import { shortDateTime as timeLabel } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const store = useSymptomLogStore()
 
 const showAddDialog = ref(false)
-const showAll = ref(false)
 const confirmDeleteTarget = ref<{ id: string; type: string; takenAt: number } | null>(null)
 
-// Same 48h-default-with-a-"tümünü gör"-escape-hatch as Ana Sayfa/Geçmiş,
-// for consistency across the app's log-style screens.
-const sorted = computed(() => {
-  const entries = showAll.value ? store.entries : store.recentEntries(48)
-  return [...entries].sort((a, b) => b.takenAt - a.takenAt)
-})
+const { showAll, sorted } = use48hToggle(store)
 
-function timeLabel(ts: number) {
-  return new Date(ts).toLocaleString(localeTag(), {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
+const deleteBody = computed(() =>
+  confirmDeleteTarget.value
+    ? t('symptoms.deleteConfirmBody', {
+        type: t(`symptoms.types.${confirmDeleteTarget.value.type}`),
+        time: timeLabel(confirmDeleteTarget.value.takenAt),
+      })
+    : '',
+)
 
 function confirmDelete() {
   if (confirmDeleteTarget.value) store.removeEntry(confirmDeleteTarget.value.id)
@@ -101,29 +97,12 @@ function confirmDelete() {
 
     <AddSymptomDialog v-model="showAddDialog" />
 
-    <v-dialog
+    <ConfirmDialog
       :model-value="!!confirmDeleteTarget"
-      max-width="360"
       @update:model-value="(v: boolean) => !v && (confirmDeleteTarget = null)"
-    >
-      <v-card v-if="confirmDeleteTarget">
-        <v-card-title class="text-h6">{{ t('symptoms.deleteConfirmTitle') }}</v-card-title>
-        <v-card-text>
-          {{
-            t('symptoms.deleteConfirmBody', {
-              type: t(`symptoms.types.${confirmDeleteTarget.type}`),
-              time: timeLabel(confirmDeleteTarget.takenAt),
-            })
-          }}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="confirmDeleteTarget = null">{{ t('common.cancel') }}</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmDelete">{{
-            t('common.delete')
-          }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      :title="t('symptoms.deleteConfirmTitle')"
+      :body="deleteBody"
+      @confirm="confirmDelete"
+    />
   </v-container>
 </template>

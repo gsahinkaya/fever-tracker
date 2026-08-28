@@ -22,9 +22,10 @@ import {
 } from '@/data/whoGrowthStandards'
 import { percentileForMeasurement } from '@/lib/growthPercentile'
 import { VACCINATION_SCHEDULE } from '@/data/vaccinationSchedule'
-import { localeTag } from '@/lib/dateFormat'
+import { localeTag, plainDate, shortDateTime as timeLabel } from '@/lib/dateFormat'
 import type { FeverReading, FeedingEntry, SymptomEntry, DiaperEntry } from '@/types/health'
 import TemperatureChart from '@/components/chart/TemperatureChart.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const { t } = useI18n()
 const store = useFeverLogStore()
@@ -131,6 +132,15 @@ function rowValueLabel(entry: CombinedRow): string {
 
 const confirmDeleteTarget = ref<CombinedRow | null>(null)
 
+const deleteBody = computed(() =>
+  confirmDeleteTarget.value
+    ? t('doctorReport.deleteConfirmBody', {
+        title: rowValueLabel(confirmDeleteTarget.value),
+        time: timeLabel(confirmDeleteTarget.value.takenAt),
+      })
+    : '',
+)
+
 function confirmDelete() {
   const entry = confirmDeleteTarget.value
   if (!entry) return
@@ -156,22 +166,12 @@ const childSummaryParts = computed(() => {
   const parts: string[] = []
   if (child.gender) parts.push(genderLabel(child.gender))
   if (child.birthDate) {
-    const formatted = new Date(child.birthDate).toLocaleDateString(localeTag())
-    parts.push(`${formatted} (${ageLabel(child.birthDate)})`)
+    parts.push(`${plainDate(child.birthDate)} (${ageLabel(child.birthDate)})`)
   }
   if (child.heightCm) parts.push(`${child.heightCm} cm`)
   if (child.weightKg) parts.push(`${child.weightKg} kg`)
   return parts
 })
-
-function timeLabel(ts: number) {
-  return new Date(ts).toLocaleString(localeTag(), {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 const generatedAtLabel = new Date().toLocaleString(localeTag(), {
   day: '2-digit',
@@ -351,29 +351,12 @@ async function createPdf() {
       </v-table>
     </div>
 
-    <v-dialog
+    <ConfirmDialog
       :model-value="!!confirmDeleteTarget"
-      max-width="360"
       @update:model-value="(v: boolean) => !v && (confirmDeleteTarget = null)"
-    >
-      <v-card v-if="confirmDeleteTarget">
-        <v-card-title class="text-h6">{{ t('doctorReport.deleteConfirmTitle') }}</v-card-title>
-        <v-card-text>
-          {{
-            t('doctorReport.deleteConfirmBody', {
-              title: rowValueLabel(confirmDeleteTarget),
-              time: timeLabel(confirmDeleteTarget.takenAt),
-            })
-          }}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="confirmDeleteTarget = null">{{ t('common.cancel') }}</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmDelete">{{
-            t('common.delete')
-          }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      :title="t('doctorReport.deleteConfirmTitle')"
+      :body="deleteBody"
+      @confirm="confirmDelete"
+    />
   </v-container>
 </template>

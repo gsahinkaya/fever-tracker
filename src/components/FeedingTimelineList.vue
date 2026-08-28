@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FeedingEntry } from '@/types/health'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { feedingEntryTitle } from '@/lib/entryTitles'
-import { localeTag } from '@/lib/dateFormat'
+import { shortDateTime as timeLabel } from '@/lib/dateFormat'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const { t } = useI18n()
 defineProps<{ entries: FeedingEntry[] }>()
@@ -25,14 +26,14 @@ const colors: Record<FeedingEntry['type'], string> = {
 
 const title = feedingEntryTitle
 
-function timeLabel(ts: number) {
-  return new Date(ts).toLocaleString(localeTag(), {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
+const deleteBody = computed(() =>
+  confirmTarget.value
+    ? t('timeline.deleteConfirmBody', {
+        title: title(confirmTarget.value),
+        time: timeLabel(confirmTarget.value.takenAt),
+      })
+    : '',
+)
 
 function confirmDelete() {
   if (confirmTarget.value) store.removeEntry(confirmTarget.value.id)
@@ -65,24 +66,11 @@ function confirmDelete() {
     {{ t('timeline.feedingEmpty') }}
   </div>
 
-  <v-dialog
+  <ConfirmDialog
     :model-value="!!confirmTarget"
-    max-width="360"
-    @update:model-value="(v) => !v && (confirmTarget = null)"
-  >
-    <v-card v-if="confirmTarget">
-      <v-card-title class="text-h6">{{ t('timeline.deleteConfirmTitle') }}</v-card-title>
-      <v-card-text>{{
-        t('timeline.deleteConfirmBody', {
-          title: title(confirmTarget),
-          time: timeLabel(confirmTarget.takenAt),
-        })
-      }}</v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn variant="text" @click="confirmTarget = null">{{ t('common.cancel') }}</v-btn>
-        <v-btn color="error" variant="flat" @click="confirmDelete">{{ t('common.delete') }}</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    @update:model-value="(v: boolean) => !v && (confirmTarget = null)"
+    :title="t('timeline.deleteConfirmTitle')"
+    :body="deleteBody"
+    @confirm="confirmDelete"
+  />
 </template>

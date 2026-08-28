@@ -2,36 +2,22 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSleepLogStore } from '@/stores/sleepLog'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { formatDuration } from '@/lib/describeActivity'
 import { useNow } from '@/composables/useNow'
-import { localeTag } from '@/lib/dateFormat'
+import { use48hToggle } from '@/composables/use48hToggle'
+import { shortDateTime as timeLabel } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const store = useSleepLogStore()
 const now = useNow(30_000)
 
-const showAll = ref(false)
-const confirmDeleteTarget = ref<{ id: string; takenAt: number } | null>(null)
+const confirmDeleteTarget = ref<{ id: string; takenAt: number; endedAt?: number } | null>(null)
 
-// Same 48h-default-with-a-"tümünü gör"-escape-hatch as the other log-style
-// screens (Semptomlar, Aşılar) — except the ongoing sleep session (no
-// endedAt yet) is excluded from the list since it's already shown by the
-// start/stop card above.
-const sorted = computed(() => {
-  const entries = (showAll.value ? store.entries : store.recentEntries(48)).filter(
-    (e) => e.endedAt != null,
-  )
-  return [...entries].sort((a, b) => b.takenAt - a.takenAt)
-})
-
-function timeLabel(ts: number) {
-  return new Date(ts).toLocaleString(localeTag(), {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
+const { showAll, sorted: sortedAll } = use48hToggle(store)
+// The still-ongoing sleep session (no endedAt yet) is excluded from the
+// list since it's already shown by the start/stop card above.
+const sorted = computed(() => sortedAll.value.filter((e) => e.endedAt != null))
 
 const ongoingSince = computed(() => {
   if (!store.activeSleep) return ''
@@ -44,6 +30,17 @@ const ongoingDuration = computed(() => {
   if (!store.activeSleep) return ''
   return formatDuration(Math.round((now.value - store.activeSleep.takenAt) / 60_000))
 })
+
+const deleteBody = computed(() =>
+  confirmDeleteTarget.value
+    ? t('sleep.deleteConfirmBody', {
+        duration: formatDuration(
+          Math.round((confirmDeleteTarget.value.endedAt! - confirmDeleteTarget.value.takenAt) / 60_000),
+        ),
+        time: timeLabel(confirmDeleteTarget.value.takenAt),
+      })
+    : '',
+)
 
 function confirmDelete() {
   if (confirmDeleteTarget.value) store.removeEntry(confirmDeleteTarget.value.id)
@@ -132,22 +129,12 @@ function confirmDelete() {
       {{ showAll ? t('sleep.empty') : t('sleep.emptyWindow') }}
     </div>
 
-    <v-dialog
+    <ConfirmDialog
       :model-value="!!confirmDeleteTarget"
-      max-width="360"
       @update:model-value="(v: boolean) => !v && (confirmDeleteTarget = null)"
-    >
-      <v-card v-if="confirmDeleteTarget">
-        <v-card-title class="text-h6">{{ t('sleep.deleteAria') }}</v-card-title>
-        <v-card-text>{{ timeLabel(confirmDeleteTarget.takenAt) }}</v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="confirmDeleteTarget = null">{{ t('common.cancel') }}</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmDelete">{{
-            t('common.delete')
-          }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      :title="t('sleep.deleteConfirmTitle')"
+      :body="deleteBody"
+      @confirm="confirmDelete"
+    />
   </v-container>
 </template>

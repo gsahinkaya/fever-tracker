@@ -239,6 +239,8 @@ export default {
     empty: 'Henüz uyku kaydı yok.',
     emptyWindow: 'Son 48 saatte uyku kaydı yok.',
     deleteAria: 'Uyku kaydını sil',
+    deleteConfirmTitle: 'Uyku kaydını sil',
+    deleteConfirmBody: '{duration} · {time} kaydı silinsin mi?',
     ongoing: 'Uyuyor',
     duration: '{duration} uyudu',
   },

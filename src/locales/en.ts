@@ -237,6 +237,8 @@ export default {
     empty: 'No sleep logged yet.',
     emptyWindow: 'No sleep logged in the last 48 hours.',
     deleteAria: 'Delete sleep entry',
+    deleteConfirmTitle: 'Delete sleep entry',
+    deleteConfirmBody: 'Delete the {duration} · {time} entry?',
     ongoing: 'Sleeping',
     duration: 'Slept {duration}',
   },

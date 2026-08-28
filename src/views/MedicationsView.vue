@@ -6,7 +6,8 @@ import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import type { Medication } from '@/types/health'
-import { localeTag } from '@/lib/dateFormat'
+import { plainDate, mediumDateTime as dateTimeLabel } from '@/lib/dateFormat'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -120,7 +121,7 @@ function inventoryWarning(med: Medication): InventoryWarning | null {
       return {
         severity: 'error',
         text: t('medications.warnings.expired', {
-          date: new Date(med.expiryDate).toLocaleDateString(localeTag()),
+          date: plainDate(med.expiryDate),
         }),
       }
     }
@@ -151,15 +152,6 @@ function inventoryWarning(med: Medication): InventoryWarning | null {
   return null
 }
 
-function dateTimeLabel(ts: number): string {
-  return new Date(ts).toLocaleString(localeTag(), {
-    day: '2-digit',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
 // A course medication (antibiotics being the classic case) only has one of
 // three states worth surfacing: hasn't started, actively running (this is
 // the state the dose-interval reminder above needs to still be firing in),
@@ -182,6 +174,12 @@ function courseLabel(med: Medication): string | null {
   if (med.courseEndAt) return t('medications.course.activeUntil', { date: dateTimeLabel(med.courseEndAt) })
   return t('medications.course.activeSince', { date: dateTimeLabel(med.courseStartAt!) })
 }
+
+const deleteBody = computed(() =>
+  confirmDeleteTarget.value
+    ? t('medications.deleteConfirm.body', { name: confirmDeleteTarget.value.name })
+    : '',
+)
 
 async function confirmDelete() {
   if (confirmDeleteTarget.value && authStore.familyId && feverLogStore.activeChildId) {
@@ -348,24 +346,12 @@ async function confirmDelete() {
       </v-card>
     </v-dialog>
 
-    <v-dialog
+    <ConfirmDialog
       :model-value="!!confirmDeleteTarget"
-      max-width="360"
       @update:model-value="(v: boolean) => !v && (confirmDeleteTarget = null)"
-    >
-      <v-card v-if="confirmDeleteTarget">
-        <v-card-title class="text-h6">{{ t('medications.deleteConfirm.title') }}</v-card-title>
-        <v-card-text>
-          {{ t('medications.deleteConfirm.body', { name: confirmDeleteTarget.name }) }}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="confirmDeleteTarget = null">{{ t('common.cancel') }}</v-btn>
-          <v-btn color="error" variant="flat" @click="confirmDelete">{{
-            t('common.delete')
-          }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      :title="t('medications.deleteConfirm.title')"
+      :body="deleteBody"
+      @confirm="confirmDelete"
+    />
   </v-container>
 </template>
