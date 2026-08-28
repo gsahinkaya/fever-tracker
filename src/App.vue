@@ -216,8 +216,12 @@ watch(
           </template>
           <v-card min-width="280" max-width="360">
             <v-list density="comfortable">
-              <v-list-item v-for="(item, i) in [...incomingItems].reverse()" :key="i">
-                <v-list-item-title class="text-body-2">{{ item.text }}</v-list-item-title>
+              <v-list-item v-for="(item, i) in [...incomingItems].reverse()" :key="i" class="py-2">
+                <v-list-item-title
+                  class="text-body-2"
+                  style="white-space: normal; overflow-wrap: break-word"
+                  >{{ item.text }}</v-list-item-title
+                >
                 <v-list-item-subtitle>{{ relativeTime(item.at) }}</v-list-item-subtitle>
               </v-list-item>
             </v-list>
