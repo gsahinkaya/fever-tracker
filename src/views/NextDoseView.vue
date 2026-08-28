@@ -3,24 +3,21 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
-import { useNow } from '@/composables/useNow'
 import NextDoseCard from '@/components/NextDoseCard.vue'
 
 const { t } = useI18n()
 const store = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
-const now = useNow()
 
-// Only medications that (a) have actually been given at least once, so
-// there's a meaningful "next safe dose" to forecast, and (b) are still
-// within their waiting window — once it's already safe to give again,
-// the card has nothing left to tell the parent, so it drops off the list
-// instead of lingering with a "safe now" message no one needs anymore.
+// Only medications actually given at least once, so there's a meaningful
+// dose to report on — but unlike Home's old inline version, this dedicated
+// page keeps showing a medication once it's safe again too (NextDoseCard's
+// "ready" state), since a parent opening this page specifically wants to
+// know "can I give this now?", not just "how long until I can".
 const medicationsWithHistory = computed(() =>
-  medicationsStore.medications.filter((med) => {
-    const safeAt = store.nextSafeDoseAt(med.id, med.minIntervalHours)
-    return safeAt != null && safeAt > now.value
-  }),
+  medicationsStore.medications.filter(
+    (med) => store.nextSafeDoseAt(med.id, med.minIntervalHours) != null,
+  ),
 )
 </script>
 

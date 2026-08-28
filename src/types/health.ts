@@ -95,6 +95,10 @@ export interface SymptomEntry {
   takenAt: number
   type: SymptomType
   note?: string
+  // Firebase Storage download URL for an optional photo (a rash, e.g.) —
+  // set once the upload finishes, so a slow upload doesn't block the
+  // Firestore write that makes the entry show up for the family.
+  photoUrl?: string
   createdBy?: string
   createdByEmail?: string
 }
