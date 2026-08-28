@@ -165,20 +165,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       for (const child of children) {
         const birthDateStr = child.fields?.birthDate?.stringValue
-        if (!birthDateStr) continue
-        const birth = new Date(birthDateStr).getTime()
-        const completedIds = new Set(
-          (child.fields?.completedVaccineIds?.arrayValue?.values ?? [])
-            .map((v) => v.stringValue)
-            .filter((v): v is string => !!v),
-        )
+        let dueName: string | null = null
 
-        const due = VACCINATION_SCHEDULE.find((item) => {
-          if (completedIds.has(item.id)) return false
-          const dueAt = birth + item.ageDays * 86_400_000
-          return dueAt >= tomorrowStart && dueAt < tomorrowEnd
-        })
-        if (!due) continue
+        if (birthDateStr) {
+          const birth = new Date(birthDateStr).getTime()
+          const completedIds = new Set(
+            (child.fields?.completedVaccineIds?.arrayValue?.values ?? [])
+              .map((v) => v.stringValue)
+              .filter((v): v is string => !!v),
+          )
+          const due = VACCINATION_SCHEDULE.find((item) => {
+            if (completedIds.has(item.id)) return false
+            const dueAt = birth + item.ageDays * 86_400_000
+            return dueAt >= tomorrowStart && dueAt < tomorrowEnd
+          })
+          if (due) dueName = due.name
+        }
+
+        // Parent-added vaccines (outside the national schedule) have no
+        // birthDate dependency — a plain dueDate string set directly on the
+        // entry, checked the same "due tomorrow" way.
+        if (!dueName) {
+          const customVaccines = child.fields?.customVaccines?.arrayValue?.values ?? []
+          const dueCustom = customVaccines.find((v) => {
+            const fields = v.mapValue?.fields
+            if (!fields || fields.done?.booleanValue) return false
+            const dueDateStr = fields.dueDate?.stringValue
+            if (!dueDateStr) return false
+            const dueAt = new Date(dueDateStr).getTime()
+            return dueAt >= tomorrowStart && dueAt < tomorrowEnd
+          })
+          const customName = dueCustom?.mapValue?.fields?.name?.stringValue
+          if (customName) dueName = customName
+        }
+
+        if (!dueName) continue
 
         const childName = child.fields?.name?.stringValue ?? 'Çocuğun'
         const tokenLists = await Promise.all(
@@ -194,7 +215,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               projectId,
               token,
               'Kido',
-              `${childName} için yarın ${due.name} zamanı geliyor.`,
+              `${childName} için yarın ${dueName} zamanı geliyor.`,
             ),
           ),
         )
