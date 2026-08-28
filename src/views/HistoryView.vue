@@ -3,22 +3,25 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { useSymptomLogStore } from '@/stores/symptomLog'
 import CombinedTimelineList from '@/components/CombinedTimelineList.vue'
 
 const { t } = useI18n()
 const feverLogStore = useFeverLogStore()
 const feedingLogStore = useFeedingLogStore()
+const symptomLogStore = useSymptomLogStore()
 
 const showAll = ref(false)
 
-// The two stores' Firestore listeners have no time filter (see
-// feverLog.ts/feedingLog.ts recentEntries), so "tümünü göster" needs no
-// extra query — everything is already in memory, only the client-side
-// window changes.
+// The three stores' Firestore listeners have no time filter (see
+// feverLog.ts/feedingLog.ts/symptomLog.ts recentEntries), so "tümünü
+// göster" needs no extra query — everything is already in memory, only
+// the client-side window changes.
 const activity = computed(() => {
   const fever = showAll.value ? feverLogStore.entries : feverLogStore.recentEntries(48)
   const feeding = showAll.value ? feedingLogStore.entries : feedingLogStore.recentEntries(48)
-  return [...fever, ...feeding].sort((a, b) => b.takenAt - a.takenAt)
+  const symptoms = showAll.value ? symptomLogStore.entries : symptomLogStore.recentEntries(48)
+  return [...fever, ...feeding, ...symptoms].sort((a, b) => b.takenAt - a.takenAt)
 })
 </script>
 

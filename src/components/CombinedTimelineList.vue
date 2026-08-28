@@ -1,28 +1,38 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { LogEntry, FeedingEntry } from '@/types/health'
+import type { LogEntry, FeedingEntry, SymptomEntry } from '@/types/health'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { useSymptomLogStore } from '@/stores/symptomLog'
 import { feedingEntryTitle } from '@/lib/entryTitles'
 
-type CombinedEntry = LogEntry | FeedingEntry
+type CombinedEntry = LogEntry | FeedingEntry | SymptomEntry
 
 const { t } = useI18n()
 defineProps<{ entries: CombinedEntry[] }>()
 const feverLogStore = useFeverLogStore()
 const feedingLogStore = useFeedingLogStore()
+const symptomLogStore = useSymptomLogStore()
 
 const confirmTarget = ref<CombinedEntry | null>(null)
 
-const icons: Record<CombinedEntry['type'], string> = {
+const SYMPTOM_TYPES = new Set(['cough', 'vomiting', 'diarrhea', 'rash', 'runnyNose', 'other'])
+function isSymptom(entry: CombinedEntry): entry is SymptomEntry {
+  return SYMPTOM_TYPES.has(entry.type)
+}
+function isFeeding(entry: CombinedEntry): entry is FeedingEntry {
+  return entry.type === 'breastfeeding' || entry.type === 'bottle' || entry.type === 'solid'
+}
+
+const icons: Record<string, string> = {
   reading: 'mdi-thermometer',
   dose: 'mdi-pill',
   breastfeeding: 'mdi-mother-nurse',
   bottle: 'mdi-baby-bottle-outline',
   solid: 'mdi-food-apple-outline',
 }
-const colors: Record<CombinedEntry['type'], string> = {
+const colors: Record<string, string> = {
   reading: 'error',
   dose: 'primary',
   breastfeeding: 'secondary',
@@ -30,10 +40,20 @@ const colors: Record<CombinedEntry['type'], string> = {
   solid: 'success',
 }
 
+function iconFor(entry: CombinedEntry): string {
+  return isSymptom(entry) ? 'mdi-emoticon-sick-outline' : icons[entry.type]!
+}
+function colorFor(entry: CombinedEntry): string {
+  return isSymptom(entry) ? 'symptom' : colors[entry.type]!
+}
+
 function title(entry: CombinedEntry): string {
+  if (isSymptom(entry)) {
+    return t(`symptoms.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
+  }
   if (entry.type === 'reading') return `${entry.temperature.toFixed(1)} °C`
   if (entry.type === 'dose') return t('timeline.doseTitle', { name: entry.medicationName })
-  return feedingEntryTitle(entry)
+  return feedingEntryTitle(entry as FeedingEntry)
 }
 
 function timeLabel(ts: number) {
@@ -45,13 +65,11 @@ function timeLabel(ts: number) {
   })
 }
 
-function isFeeding(entry: CombinedEntry): entry is FeedingEntry {
-  return entry.type === 'breastfeeding' || entry.type === 'bottle' || entry.type === 'solid'
-}
-
 function confirmDelete() {
   if (!confirmTarget.value) return
-  if (isFeeding(confirmTarget.value)) {
+  if (isSymptom(confirmTarget.value)) {
+    symptomLogStore.removeEntry(confirmTarget.value.id)
+  } else if (isFeeding(confirmTarget.value)) {
     feedingLogStore.removeEntry(confirmTarget.value.id)
   } else {
     feverLogStore.removeEntry(confirmTarget.value.id)
@@ -64,8 +82,8 @@ function confirmDelete() {
   <v-list v-if="entries.length" lines="two">
     <v-list-item v-for="entry in entries" :key="entry.id">
       <template #prepend>
-        <v-avatar :color="colors[entry.type]" variant="tonal">
-          <v-icon :icon="icons[entry.type]" />
+        <v-avatar :color="colorFor(entry)" variant="tonal">
+          <v-icon :icon="iconFor(entry)" />
         </v-avatar>
       </template>
       <v-list-item-title>{{ title(entry) }}</v-list-item-title>
