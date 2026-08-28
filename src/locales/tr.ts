@@ -12,6 +12,8 @@ export default {
     settings: 'Ayarlar',
     notifications: 'Bildirimler',
     appName: 'Kido',
+    durationHoursMinutes: '{h} sa {m} dk',
+    durationMinutes: '{m} dk',
   },
   errors: {
     noActiveChild: 'Aktif çocuk seçilmedi',
@@ -37,7 +39,7 @@ export default {
       },
       {
         title: 'İlaç',
-        body: 'Bir doz ilaç verdiğinde buraya kaydet. Kido bir sonraki güvenli doz zamanını senin için hesaplayıp ana sayfada gösterir. İlaçlarım ekranında şurubun açılış ve son kullanma tarihini de kaydedebilir, süresi dolmadan önce uyarı alabilirsin.',
+        body: 'Bir doz ilaç verdiğinde buraya kaydet. Kido bir sonraki güvenli doz zamanını senin için hesaplayıp ana sayfada gösterir. İlaçlarım ekranında şurubun açılış ve son kullanma tarihini de kaydedebilir, süresi dolmadan önce uyarı alabilirsin. Antibiyotik gibi belirli bir süre kullanılması gereken ilaçlar için kür başlangıç/bitiş tarih-saatini de girebilir, kür boyunca ve kür bittiğinde hatırlatma alabilirsin.',
       },
       {
         title: 'Beslenme',
@@ -53,7 +55,7 @@ export default {
       },
       {
         title: 'Aşılar',
-        body: 'T.C. Sağlık Bakanlığı aşı takvimine göre çocuğunun geçmiş ve gelecek aşılarını görür, yapılanları işaretlersin. Sırası gelen bir aşı varsa Kido bir gün önceden bildirimle hatırlatır.',
+        body: 'T.C. Sağlık Bakanlığı aşı takvimine göre çocuğunun geçmiş ve gelecek aşılarını görür, yapılanları işaretlersin. Sırası gelen bir aşı varsa Kido bir gün önceden bildirimle hatırlatır. Ulusal takvimde olmayan bir aşı (seyahat aşısı, grip aşısı vb.) yaptırdıysan veya yaptıracaksan, "Özel Aşı Ekle" ile bunu da takip edebilirsin.',
       },
       {
         title: 'Büyüme',
@@ -269,6 +271,9 @@ export default {
     appearance: 'Görünüm',
     lightMode: 'Aydınlık',
     darkMode: 'Karanlık',
+    language: 'Dil',
+    languageTurkish: 'Türkçe',
+    languageEnglish: 'English',
     account: 'Hesap',
     logout: 'Çıkış Yap',
     childrenTitle: 'Çocuklarım',
@@ -453,6 +458,8 @@ export default {
       title: 'İlaç Verildi',
       tooEarly:
         'Son dozdan bu yana yeterli süre geçmedi. Güvenli zamana {remaining} kaldı. Yine de kaydedebilirsin, ama doktor/eczacına danış.',
+      beforeCourseStart: 'Bu ilacın kürü {date} tarihinde başlıyor, seçtiğin saat kür başlamadan önce.',
+      afterCourseEnd: 'Bu ilacın kürü {date} tarihinde sona erdi, seçtiğin saat kür bittikten sonra.',
       timeLabel: 'Saat',
       timeHint: 'Önceden verildiyse saati değiştirebilirsin',
       noMedTitle: 'Henüz ilaç eklenmedi',

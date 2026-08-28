@@ -6,6 +6,7 @@ import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import type { Medication } from '@/types/health'
+import { localeTag } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -119,7 +120,7 @@ function inventoryWarning(med: Medication): InventoryWarning | null {
       return {
         severity: 'error',
         text: t('medications.warnings.expired', {
-          date: new Date(med.expiryDate).toLocaleDateString('tr-TR'),
+          date: new Date(med.expiryDate).toLocaleDateString(localeTag()),
         }),
       }
     }
@@ -151,7 +152,7 @@ function inventoryWarning(med: Medication): InventoryWarning | null {
 }
 
 function dateTimeLabel(ts: number): string {
-  return new Date(ts).toLocaleString('tr-TR', {
+  return new Date(ts).toLocaleString(localeTag(), {
     day: '2-digit',
     month: 'short',
     hour: '2-digit',
@@ -317,22 +318,20 @@ async function confirmDelete() {
           <p class="text-caption text-medium-emphasis mb-2">
             {{ t('medications.dialog.courseSectionHint') }}
           </p>
-          <div class="d-flex ga-2">
-            <v-text-field
-              v-model="courseStartAt"
-              type="datetime-local"
-              :label="t('medications.dialog.courseStartLabel')"
-              variant="outlined"
-              density="comfortable"
-            />
-            <v-text-field
-              v-model="courseEndAt"
-              type="datetime-local"
-              :label="t('medications.dialog.courseEndLabel')"
-              variant="outlined"
-              density="comfortable"
-            />
-          </div>
+          <v-text-field
+            v-model="courseStartAt"
+            type="datetime-local"
+            :label="t('medications.dialog.courseStartLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+          <v-text-field
+            v-model="courseEndAt"
+            type="datetime-local"
+            :label="t('medications.dialog.courseEndLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
         </v-card-text>
         <v-card-actions>
           <v-spacer />

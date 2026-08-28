@@ -62,7 +62,9 @@ export function messageForSleepStart(who: string): string {
 export function formatDuration(durationMinutes: number): string {
   const h = Math.floor(durationMinutes / 60)
   const m = durationMinutes % 60
-  return h > 0 ? `${h} sa ${m} dk` : `${m} dk`
+  return h > 0
+    ? t('common.durationHoursMinutes', { h, m })
+    : t('common.durationMinutes', { m })
 }
 export function messageForSleepEnd(who: string, durationMinutes: number): string {
   return t('notifications.wokeUp', { who, duration: formatDuration(durationMinutes) })

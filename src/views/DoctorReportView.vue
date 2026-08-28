@@ -22,6 +22,7 @@ import {
 } from '@/data/whoGrowthStandards'
 import { percentileForMeasurement } from '@/lib/growthPercentile'
 import { VACCINATION_SCHEDULE } from '@/data/vaccinationSchedule'
+import { localeTag } from '@/lib/dateFormat'
 import type { FeverReading, FeedingEntry, SymptomEntry, DiaperEntry } from '@/types/health'
 import TemperatureChart from '@/components/chart/TemperatureChart.vue'
 
@@ -155,7 +156,7 @@ const childSummaryParts = computed(() => {
   const parts: string[] = []
   if (child.gender) parts.push(genderLabel(child.gender))
   if (child.birthDate) {
-    const formatted = new Date(child.birthDate).toLocaleDateString('tr-TR')
+    const formatted = new Date(child.birthDate).toLocaleDateString(localeTag())
     parts.push(`${formatted} (${ageLabel(child.birthDate)})`)
   }
   if (child.heightCm) parts.push(`${child.heightCm} cm`)
@@ -164,7 +165,7 @@ const childSummaryParts = computed(() => {
 })
 
 function timeLabel(ts: number) {
-  return new Date(ts).toLocaleString('tr-TR', {
+  return new Date(ts).toLocaleString(localeTag(), {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',
@@ -172,7 +173,7 @@ function timeLabel(ts: number) {
   })
 }
 
-const generatedAtLabel = new Date().toLocaleString('tr-TR', {
+const generatedAtLabel = new Date().toLocaleString(localeTag(), {
   day: '2-digit',
   month: '2-digit',
   year: 'numeric',
@@ -285,7 +286,7 @@ async function createPdf() {
             >
           </span>
           <span v-if="latestGrowth.headCircumferenceCm">
-            · {{ latestGrowth.headCircumferenceCm }} cm baş çevresi<template
+            · {{ latestGrowth.headCircumferenceCm }} cm {{ t('growth.headCircumferenceChartTitle') }}<template
               v-if="growthPercentileLabel(latestGrowth.headCircumferenceCm, headCircTable)"
             >
               ({{ growthPercentileLabel(latestGrowth.headCircumferenceCm, headCircTable) }}

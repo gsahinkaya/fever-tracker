@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { GrowthEntry } from '@/types/health'
 import { useGrowthLogStore } from '@/stores/growthLog'
+import { localeTag } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 defineProps<{ entries: GrowthEntry[] }>()
@@ -14,12 +15,14 @@ function title(entry: GrowthEntry): string {
   const parts: string[] = []
   if (entry.heightCm) parts.push(`${entry.heightCm} cm`)
   if (entry.weightKg) parts.push(`${entry.weightKg} kg`)
-  if (entry.headCircumferenceCm) parts.push(`${entry.headCircumferenceCm} cm (baş çevresi)`)
+  if (entry.headCircumferenceCm) {
+    parts.push(`${entry.headCircumferenceCm} cm (${t('growth.headCircumferenceChartTitle')})`)
+  }
   return parts.join(' · ')
 }
 
 function timeLabel(ts: number) {
-  return new Date(ts).toLocaleString('tr-TR', {
+  return new Date(ts).toLocaleString(localeTag(), {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',

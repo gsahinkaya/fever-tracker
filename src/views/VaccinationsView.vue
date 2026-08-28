@@ -7,6 +7,7 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useNow } from '@/composables/useNow'
 import { VACCINATION_SCHEDULE } from '@/data/vaccinationSchedule'
 import type { CustomVaccine } from '@/types/family'
+import { localeTag } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -47,7 +48,7 @@ const customRows = computed(() => {
 })
 
 const dueDateLabel = (dueAt: number) =>
-  new Date(dueAt).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  new Date(dueAt).toLocaleDateString(localeTag(), { day: '2-digit', month: '2-digit', year: 'numeric' })
 
 async function toggle(id: string, done: boolean) {
   const child = activeChild.value

@@ -9,6 +9,7 @@ import { useSleepLogStore } from '@/stores/sleepLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
 import { feedingEntryTitle } from '@/lib/entryTitles'
 import { formatDuration } from '@/lib/describeActivity'
+import { localeTag } from '@/lib/dateFormat'
 
 type CombinedEntry = LogEntry | FeedingEntry | SymptomEntry | SleepEntry | DiaperEntry
 
@@ -86,7 +87,7 @@ function title(entry: CombinedEntry): string {
 }
 
 function timeLabel(ts: number) {
-  return new Date(ts).toLocaleString('tr-TR', {
+  return new Date(ts).toLocaleString(localeTag(), {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',

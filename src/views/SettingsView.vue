@@ -12,6 +12,7 @@ import { useDiaperLogStore } from '@/stores/diaperLog'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
 import { useThemeStore } from '@/stores/theme'
+import { useLocaleStore } from '@/stores/locale'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -25,6 +26,7 @@ const diaperLogStore = useDiaperLogStore()
 const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
 const themeStore = useThemeStore()
+const localeStore = useLocaleStore()
 
 const inviteLink = computed(() =>
   authStore.familyId ? `${window.location.origin}/kayit?kod=${authStore.familyId}` : '',
@@ -94,6 +96,23 @@ async function logout() {
           <v-btn value="dark" prepend-icon="mdi-weather-night">{{
             t('settings.darkMode')
           }}</v-btn>
+        </v-btn-toggle>
+      </v-card-text>
+    </v-card>
+
+    <v-card variant="outlined" class="mb-6">
+      <v-card-title class="text-subtitle-1">{{ t('settings.language') }}</v-card-title>
+      <v-card-text>
+        <v-btn-toggle
+          :model-value="localeStore.locale"
+          color="primary"
+          variant="outlined"
+          density="comfortable"
+          mandatory
+          @update:model-value="localeStore.setLocale"
+        >
+          <v-btn value="tr">{{ t('settings.languageTurkish') }}</v-btn>
+          <v-btn value="en">{{ t('settings.languageEnglish') }}</v-btn>
         </v-btn-toggle>
       </v-card-text>
     </v-card>

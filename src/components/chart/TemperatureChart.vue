@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FeverReading } from '@/types/health'
+import { localeTag } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const props = defineProps<{ readings: FeverReading[] }>()
@@ -92,7 +93,7 @@ function onMove(evt: PointerEvent) {
 const hovered = computed(() => (hoverIndex.value != null ? sorted.value[hoverIndex.value] : null))
 
 function timeLabel(ts: number) {
-  return new Date(ts).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+  return new Date(ts).toLocaleTimeString(localeTag(), { hour: '2-digit', minute: '2-digit' })
 }
 </script>
 

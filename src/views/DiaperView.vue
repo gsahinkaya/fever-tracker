@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDiaperLogStore } from '@/stores/diaperLog'
 import AddDiaperDialog from '@/components/AddDiaperDialog.vue'
+import { localeTag } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const store = useDiaperLogStore()
@@ -19,7 +20,7 @@ const sorted = computed(() => {
 })
 
 function timeLabel(ts: number) {
-  return new Date(ts).toLocaleString('tr-TR', {
+  return new Date(ts).toLocaleString(localeTag(), {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',

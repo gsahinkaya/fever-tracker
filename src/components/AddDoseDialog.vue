@@ -5,6 +5,7 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useNow } from '@/composables/useNow'
 import { currentTimeString, resolveTakenAt } from '@/lib/time'
+import { localeTag } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
@@ -38,12 +39,39 @@ const remainingLabel = computed(() => {
   if (diff <= 0) return ''
   const h = Math.floor(diff / 3_600_000)
   const m = Math.floor((diff % 3_600_000) / 60_000)
-  return `${h} sa ${m} dk`
+  return t('common.durationHoursMinutes', { h, m })
 })
 
 const tooEarlyMessage = computed(() =>
   t('dialogs.addDose.tooEarly', { remaining: remainingLabel.value }),
 )
+
+function dateTimeLabel(ts: number): string {
+  return new Date(ts).toLocaleString(localeTag(), {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+// The time field only ever picks a moment on *today* (see resolveTakenAt),
+// so this catches the real mismatch case: logging a course medication's
+// dose today when its course hasn't started yet, or has already ended —
+// not a full backdating check across arbitrary past dates.
+const doseTakenAt = computed(() => resolveTakenAt(time.value).getTime())
+const courseWarning = computed(() => {
+  const med = selectedMedication.value
+  if (!med) return null
+  const takenAt = doseTakenAt.value
+  if (med.courseStartAt && takenAt < med.courseStartAt) {
+    return t('dialogs.addDose.beforeCourseStart', { date: dateTimeLabel(med.courseStartAt) })
+  }
+  if (med.courseEndAt && takenAt > med.courseEndAt) {
+    return t('dialogs.addDose.afterCourseEnd', { date: dateTimeLabel(med.courseEndAt) })
+  }
+  return null
+})
 
 function confirm() {
   if (!selectedMedication.value) return
@@ -80,6 +108,16 @@ function confirm() {
           {{ tooEarlyMessage }}
         </v-alert>
 
+        <v-alert
+          v-if="courseWarning"
+          type="warning"
+          variant="tonal"
+          density="comfortable"
+          class="mb-4"
+        >
+          {{ courseWarning }}
+        </v-alert>
+
         <v-text-field
           v-model="time"
           type="time"
@@ -94,7 +132,7 @@ function confirm() {
         <v-spacer />
         <v-btn variant="text" @click="model = false">{{ t('common.cancel') }}</v-btn>
         <v-btn
-          :color="isTooEarly ? 'warning' : 'primary'"
+          :color="isTooEarly || courseWarning ? 'warning' : 'primary'"
           variant="flat"
           size="large"
           @click="confirm"

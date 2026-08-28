@@ -10,7 +10,7 @@ interface Exchange {
   loading: boolean
 }
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const question = ref('')
 const exchanges = ref<Exchange[]>([])
 const listEl = ref<HTMLElement | null>(null)
@@ -37,7 +37,7 @@ async function ask() {
     const response = await fetch('/api/kido-sor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
-      body: JSON.stringify({ question: q }),
+      body: JSON.stringify({ question: q, language: locale.value }),
     })
     const data = await response.json()
     if (!response.ok) throw new Error(data.error || t('askKido.genericError'))

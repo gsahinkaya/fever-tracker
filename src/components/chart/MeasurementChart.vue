@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { localeTag } from '@/lib/dateFormat'
 
 // Generic single-series trend chart — same mark spec as TemperatureChart
 // (filled markers, area wash, edge-aware end-label, hover crosshair) but
@@ -107,7 +108,7 @@ function onMove(evt: PointerEvent) {
 const hovered = computed(() => (hoverIndex.value != null ? sorted.value[hoverIndex.value] : null))
 
 function timeLabel(ts: number) {
-  return new Date(ts).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' })
+  return new Date(ts).toLocaleDateString(localeTag(), { day: '2-digit', month: '2-digit' })
 }
 </script>
 

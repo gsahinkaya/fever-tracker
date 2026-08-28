@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import type { FeedingEntry } from '@/types/health'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { feedingEntryTitle } from '@/lib/entryTitles'
+import { localeTag } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 defineProps<{ entries: FeedingEntry[] }>()
@@ -25,7 +26,7 @@ const colors: Record<FeedingEntry['type'], string> = {
 const title = feedingEntryTitle
 
 function timeLabel(ts: number) {
-  return new Date(ts).toLocaleString('tr-TR', {
+  return new Date(ts).toLocaleString(localeTag(), {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',

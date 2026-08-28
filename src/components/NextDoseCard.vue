@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import type { Medication } from '@/types/health'
 import { useNow } from '@/composables/useNow'
+import { localeTag } from '@/lib/dateFormat'
 
 const props = defineProps<{ medication: Medication }>()
 
@@ -27,12 +28,12 @@ const remainingLabel = computed(() => {
   if (diff <= 0) return ''
   const h = Math.floor(diff / 3_600_000)
   const m = Math.floor((diff % 3_600_000) / 60_000)
-  return `${h} sa ${m.toString().padStart(2, '0')} dk`
+  return t('common.durationHoursMinutes', { h, m: m.toString().padStart(2, '0') })
 })
 
 const lastDoseLabel = computed(() => {
   if (!last.value) return ''
-  return new Date(last.value.takenAt).toLocaleTimeString('tr-TR', {
+  return new Date(last.value.takenAt).toLocaleTimeString(localeTag(), {
     hour: '2-digit',
     minute: '2-digit',
   })
