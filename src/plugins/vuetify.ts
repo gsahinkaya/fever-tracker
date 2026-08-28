@@ -55,6 +55,9 @@ export default createVuetify({
           // Symptom-log tile/actions — olive/lime, distinct from the pure
           // green "success" and the orange "warning" states.
           symptom: '#65A30D',
+          // Next-safe-dose tile/actions — neutral slate, distinct from
+          // "medication" teal right above it on Home.
+          nextdose: '#475569',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',
@@ -81,6 +84,7 @@ export default createVuetify({
           vaccine: '#D97706',
           activity: '#E879F9',
           symptom: '#A3E635',
+          nextdose: '#94A3B8',
           error: '#F97066',
           success: '#32D583',
           warning: '#FDB022',

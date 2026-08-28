@@ -72,6 +72,11 @@ const router = createRouter({
       component: () => import('../views/SymptomsView.vue'),
     },
     {
+      path: '/sonraki-doz',
+      name: 'next-dose',
+      component: () => import('../views/NextDoseView.vue'),
+    },
+    {
       path: '/giris',
       name: 'login',
       component: () => import('../views/LoginView.vue'),

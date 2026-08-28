@@ -425,6 +425,7 @@ export default {
     lastDose: 'Son doz: {time}',
     remaining: '{time} sonra güvenli',
     lastDoseInline: 'son doz {time}',
+    noWaitingDoses: 'Şu an bekleyen bir doz yok.',
   },
   notifications: {
     someone: 'Bir aile üyesi',
