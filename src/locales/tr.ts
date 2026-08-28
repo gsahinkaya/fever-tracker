@@ -367,6 +367,9 @@ export default {
     typeFeeding: 'Beslenme',
     typeSymptom: 'Semptom',
     noRecords: 'Son 7 günde kayıt yok',
+    deleteAria: 'Kaydı sil',
+    deleteConfirmTitle: 'Kaydı sil',
+    deleteConfirmBody: '{title} · {time} kaydı silinsin mi?',
     gender: {
       female: 'Kız',
       male: 'Erkek',

@@ -105,6 +105,35 @@ function feedingRowLabel(entry: FeedingEntry): string {
   return feedingEntryTitle(entry)
 }
 
+function rowTypeLabel(entry: CombinedRow): string {
+  if (entry.type === 'reading') return t('doctorReport.typeFever')
+  if (entry.type === 'dose') return t('doctorReport.typeMedication')
+  if (isSymptom(entry)) return t('doctorReport.typeSymptom')
+  return t('doctorReport.typeFeeding')
+}
+
+function rowValueLabel(entry: CombinedRow): string {
+  if (entry.type === 'reading') return `${entry.temperature.toFixed(1)} °C`
+  if (entry.type === 'dose') return entry.medicationName
+  if (isSymptom(entry)) return t(`symptoms.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
+  return feedingRowLabel(entry as FeedingEntry)
+}
+
+const confirmDeleteTarget = ref<CombinedRow | null>(null)
+
+function confirmDelete() {
+  const entry = confirmDeleteTarget.value
+  if (!entry) return
+  if (entry.type === 'reading' || entry.type === 'dose') {
+    store.removeEntry(entry.id)
+  } else if (isSymptom(entry)) {
+    symptomLogStore.removeEntry(entry.id)
+  } else {
+    feedingLogStore.removeEntry(entry.id)
+  }
+  confirmDeleteTarget.value = null
+}
+
 function genderLabel(gender: string): string {
   return gender === 'female' || gender === 'male' ? t(`doctorReport.gender.${gender}`) : gender
 }
@@ -283,41 +312,56 @@ async function createPdf() {
             <th>{{ t('doctorReport.columns.time') }}</th>
             <th>{{ t('doctorReport.columns.type') }}</th>
             <th>{{ t('doctorReport.columns.value') }}</th>
+            <th v-if="!generatingPdf" class="no-print" style="width: 1%"></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="entry in combinedRecent" :key="entry.id">
             <td>{{ timeLabel(entry.takenAt) }}</td>
-            <td>
-              {{
-                entry.type === 'reading'
-                  ? t('doctorReport.typeFever')
-                  : entry.type === 'dose'
-                    ? t('doctorReport.typeMedication')
-                    : isSymptom(entry)
-                      ? t('doctorReport.typeSymptom')
-                      : t('doctorReport.typeFeeding')
-              }}
-            </td>
-            <td>
-              {{
-                entry.type === 'reading'
-                  ? `${entry.temperature.toFixed(1)} °C`
-                  : entry.type === 'dose'
-                    ? entry.medicationName
-                    : isSymptom(entry)
-                      ? t(`symptoms.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
-                      : feedingRowLabel(entry as FeedingEntry)
-              }}
+            <td>{{ rowTypeLabel(entry) }}</td>
+            <td>{{ rowValueLabel(entry) }}</td>
+            <td v-if="!generatingPdf" class="no-print">
+              <v-btn
+                icon="mdi-delete-outline"
+                variant="text"
+                size="small"
+                :aria-label="t('doctorReport.deleteAria')"
+                @click="confirmDeleteTarget = entry"
+              />
             </td>
           </tr>
           <tr v-if="!combinedRecent.length">
-            <td colspan="3" class="text-center text-medium-emphasis py-4">
+            <td :colspan="generatingPdf ? 3 : 4" class="text-center text-medium-emphasis py-4">
               {{ t('doctorReport.noRecords') }}
             </td>
           </tr>
         </tbody>
       </v-table>
     </div>
+
+    <v-dialog
+      :model-value="!!confirmDeleteTarget"
+      max-width="360"
+      @update:model-value="(v: boolean) => !v && (confirmDeleteTarget = null)"
+    >
+      <v-card v-if="confirmDeleteTarget">
+        <v-card-title class="text-h6">{{ t('doctorReport.deleteConfirmTitle') }}</v-card-title>
+        <v-card-text>
+          {{
+            t('doctorReport.deleteConfirmBody', {
+              title: rowValueLabel(confirmDeleteTarget),
+              time: timeLabel(confirmDeleteTarget.takenAt),
+            })
+          }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="confirmDeleteTarget = null">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmDelete">{{
+            t('common.delete')
+          }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
