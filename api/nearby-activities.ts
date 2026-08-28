@@ -26,19 +26,22 @@ async function verifyFirebaseToken(idToken: string) {
 // this builds the actual Overpass query server-side.
 //
 // No OSM tag means "kid-friendly" — this list is a hand-picked judgment
-// call, not a real filter. amenity=theatre/tourism=museum were dropped:
-// both skew toward adult-oriented programming (opera houses, symphony
-// halls, fine-art/history museums) far more often than not, and OSM has
-// no sub-tag to tell those apart from the children's-theatre/science-museum
-// minority. leisure=playground is capped separately in the client (see
+// call, not a real filter. Theatre/museum were dropped once (skew adult:
+// opera houses, fine-art museums) then restored after user feedback that
+// it was cutting out well-known, worthwhile venues (e.g. a city cultural
+// center) — losing those false negatives mattered more than the
+// occasional adult-programming result. amusement_arcade (pool halls,
+// generic game rooms) was dropped instead as the actually low-value
+// category. leisure=playground is capped separately in the client (see
 // PLAYGROUND_LIMIT) since there are hundreds in any city.
 const CATEGORIES: { tag: string; value: string }[] = [
   { tag: 'amenity', value: 'cinema' },
+  { tag: 'amenity', value: 'theatre' },
   { tag: 'tourism', value: 'zoo' },
   { tag: 'tourism', value: 'aquarium' },
+  { tag: 'tourism', value: 'museum' },
   { tag: 'tourism', value: 'theme_park' },
   { tag: 'leisure', value: 'water_park' },
-  { tag: 'leisure', value: 'amusement_arcade' },
   { tag: 'leisure', value: 'bowling_alley' },
   { tag: 'leisure', value: 'playground' },
 ]

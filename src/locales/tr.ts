@@ -143,7 +143,7 @@ export default {
   nearbyActivities: {
     title: 'Yakındaki Etkinlikler',
     loading: 'Yakındaki yerler aranıyor, birkaç saniye sürebilir...',
-    sourceHint: 'Sinema, hayvanat bahçesi, akvaryum, lunapark, su parkı, oyun alanı/salonu gibi yerler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir.',
+    sourceHint: 'Sinema, tiyatro, müze, hayvanat bahçesi, akvaryum, lunapark, su parkı, oyun alanı gibi yerler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir.',
     empty: 'Bu bölgede kayıtlı bir etkinlik yeri bulunamadı.',
     retry: 'Tekrar Dene',
     callAria: 'Ara',

@@ -17,19 +17,23 @@ export interface NearbyActivity {
 
 // Overpass (OpenStreetMap) tag → Turkish label shown in the UI. No OSM tag
 // means "kid-friendly", so this list is a judgment call, not a real
-// filter — amenity=theatre/tourism=museum are deliberately excluded since
-// both skew adult (opera houses, fine-art museums) far more often than
-// not, with no sub-tag to separate out the children's-theatre/science-
-// museum minority. leisure=park is still excluded (hundreds per city,
-// not really a "thing to do"); leisure=playground is included but capped
-// separately (see PLAYGROUND_LIMIT) for the same reason.
+// filter. Theatre/museum were dropped once (skew adult: opera houses,
+// fine-art museums) then restored after user feedback that it was cutting
+// out well-known, worthwhile venues (e.g. a city cultural center) —
+// losing those false negatives mattered more than the occasional
+// adult-programming result. amusement_arcade (pool halls, generic game
+// rooms) was dropped instead as the actually low-value category.
+// leisure=park is still excluded (hundreds per city, not really a "thing
+// to do"); leisure=playground is included but capped separately (see
+// PLAYGROUND_LIMIT) for the same reason.
 const CATEGORIES: { tag: string; value: string; label: string }[] = [
   { tag: 'amenity', value: 'cinema', label: 'Sinema' },
+  { tag: 'amenity', value: 'theatre', label: 'Tiyatro' },
   { tag: 'tourism', value: 'zoo', label: 'Hayvanat Bahçesi' },
   { tag: 'tourism', value: 'aquarium', label: 'Akvaryum' },
+  { tag: 'tourism', value: 'museum', label: 'Müze' },
   { tag: 'tourism', value: 'theme_park', label: 'Lunapark' },
   { tag: 'leisure', value: 'water_park', label: 'Su Parkı' },
-  { tag: 'leisure', value: 'amusement_arcade', label: 'Oyun Salonu' },
   { tag: 'leisure', value: 'bowling_alley', label: 'Bowling' },
   { tag: 'leisure', value: 'playground', label: 'Oyun Alanı' },
 ]
