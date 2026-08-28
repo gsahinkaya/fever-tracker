@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { auth } from '@/firebase'
+import { getCurrentPosition } from '@/lib/geolocation'
 
 export interface DutyPharmacy {
   name: string
@@ -7,20 +8,6 @@ export interface DutyPharmacy {
   address: string
   phone: string
   loc: string
-}
-
-function getCurrentPosition(): Promise<GeolocationPosition> {
-  return new Promise((resolve, reject) => {
-    if (!('geolocation' in navigator)) {
-      reject(new Error('unsupported'))
-      return
-    }
-    navigator.geolocation.getCurrentPosition(resolve, reject, {
-      enableHighAccuracy: false,
-      timeout: 10_000,
-      maximumAge: 5 * 60_000,
-    })
-  })
 }
 
 // Free, no-API-key reverse geocoding — good enough for a one-off "where am

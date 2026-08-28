@@ -115,6 +115,7 @@ export default {
       askKido: "Kido'ya Sor",
       dutyPharmacy: 'Nöbetçi Eczane',
       vaccinations: 'Aşılar',
+      nearbyActivities: 'Yakındaki Etkinlikler',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
     last48h: 'Son 48 Saat',
@@ -136,6 +137,20 @@ export default {
       location: 'Konumun alınamadı. Konum servislerinin açık olduğundan emin ol.',
       geocode: 'Bulunduğun il/ilçe belirlenemedi.',
       fetch: 'Eczane bilgisi alınamadı, tekrar dene.',
+    },
+  },
+  nearbyActivities: {
+    title: 'Yakındaki Etkinlikler',
+    loading: 'Yakındaki yerler aranıyor, birkaç saniye sürebilir...',
+    sourceHint: 'Sinema, tiyatro, müze, hayvanat bahçesi gibi yerler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir.',
+    empty: 'Bu bölgede kayıtlı bir etkinlik yeri bulunamadı.',
+    retry: 'Tekrar Dene',
+    callAria: 'Ara',
+    mapAria: 'Haritada göster',
+    errors: {
+      permission: 'Yakındaki yerleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
+      location: 'Konumun alınamadı. Konum servislerinin açık olduğundan emin ol.',
+      fetch: 'Yer bilgisi alınamadı, tekrar dene.',
     },
   },
   vaccinations: {
