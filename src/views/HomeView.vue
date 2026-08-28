@@ -81,6 +81,12 @@ const medicationsWithHistory = computed(() =>
 
     <template v-else>
       <div class="d-flex flex-column mb-6" style="gap: 12px">
+        <v-btn block height="64" color="primary" variant="flat" rounded="lg" to="/gecmis">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-history" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.last48h') }}</span>
+          </div>
+        </v-btn>
         <v-btn
           block
           height="64"
@@ -147,12 +153,6 @@ const medicationsWithHistory = computed(() =>
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-drama-masks" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.nearbyActivities') }}</span>
-          </div>
-        </v-btn>
-        <v-btn block height="64" color="primary" variant="flat" rounded="lg" to="/gecmis">
-          <div class="d-flex align-center w-100">
-            <v-icon icon="mdi-history" size="26" class="mr-3" />
-            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.history') }}</span>
           </div>
         </v-btn>
       </div>

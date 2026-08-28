@@ -116,12 +116,14 @@ export default {
       dutyPharmacy: 'Nöbetçi Eczane',
       vaccinations: 'Aşılar',
       nearbyActivities: 'Yakındaki Etkinlikler',
-      history: 'Geçmiş',
+      last48h: 'Son 48 Saat',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
   },
   history: {
     title: 'Tüm Geçmiş',
+    last48h: 'Son 48 Saat',
+    viewAll: 'Tümünü Gör',
   },
   dutyPharmacy: {
     title: 'Nöbetçi Eczane',
@@ -141,7 +143,7 @@ export default {
   nearbyActivities: {
     title: 'Yakındaki Etkinlikler',
     loading: 'Yakındaki yerler aranıyor, birkaç saniye sürebilir...',
-    sourceHint: 'Sinema, tiyatro, müze, hayvanat bahçesi gibi yerler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir.',
+    sourceHint: 'Sinema, hayvanat bahçesi, akvaryum, lunapark, su parkı, oyun alanı/salonu gibi yerler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir.',
     empty: 'Bu bölgede kayıtlı bir etkinlik yeri bulunamadı.',
     retry: 'Tekrar Dene',
     callAria: 'Ara',
