@@ -25,11 +25,21 @@ const note = ref('')
 const openedAt = ref('')
 const expiryDate = ref('')
 const shelfLifeDaysAfterOpening = ref<number | null>(null)
-const courseStartDate = ref('')
-const courseEndDate = ref('')
+const courseStartAt = ref('')
+const courseEndAt = ref('')
 const confirmDeleteTarget = ref<Medication | null>(null)
 
 const DEFAULT_SHELF_LIFE_DAYS = 90
+
+// <input type="datetime-local"> wants/gives "YYYY-MM-DDTHH:mm" in the
+// user's own local time (no timezone suffix) — new Date(...) on that string
+// parses it as local time too, unlike a date-only string which parses as
+// UTC midnight, so this round-trips correctly through Timestamp math.
+function toDatetimeLocal(ts: number): string {
+  const d = new Date(ts)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
 
 function openAdd() {
   editingMedication.value = null
@@ -39,8 +49,8 @@ function openAdd() {
   openedAt.value = ''
   expiryDate.value = ''
   shelfLifeDaysAfterOpening.value = null
-  courseStartDate.value = ''
-  courseEndDate.value = ''
+  courseStartAt.value = ''
+  courseEndAt.value = ''
   showDialog.value = true
 }
 
@@ -54,8 +64,8 @@ function openEdit(medication: Medication) {
     : ''
   expiryDate.value = medication.expiryDate ?? ''
   shelfLifeDaysAfterOpening.value = medication.shelfLifeDaysAfterOpening ?? null
-  courseStartDate.value = medication.courseStartDate ?? ''
-  courseEndDate.value = medication.courseEndDate ?? ''
+  courseStartAt.value = medication.courseStartAt ? toDatetimeLocal(medication.courseStartAt) : ''
+  courseEndAt.value = medication.courseEndAt ? toDatetimeLocal(medication.courseEndAt) : ''
   showDialog.value = true
 }
 
@@ -70,8 +80,8 @@ async function save() {
     ...(openedAt.value ? { openedAt: new Date(openedAt.value).getTime() } : {}),
     ...(expiryDate.value ? { expiryDate: expiryDate.value } : {}),
     ...(shelfLifeDaysAfterOpening.value ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value } : {}),
-    ...(courseStartDate.value ? { courseStartDate: courseStartDate.value } : {}),
-    ...(courseEndDate.value ? { courseEndDate: courseEndDate.value } : {}),
+    ...(courseStartAt.value ? { courseStartAt: new Date(courseStartAt.value).getTime() } : {}),
+    ...(courseEndAt.value ? { courseEndAt: new Date(courseEndAt.value).getTime() } : {}),
   }
 
   if (editingMedication.value) {
@@ -140,8 +150,13 @@ function inventoryWarning(med: Medication): InventoryWarning | null {
   return null
 }
 
-function dateLabel(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })
+function dateTimeLabel(ts: number): string {
+  return new Date(ts).toLocaleString('tr-TR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 // A course medication (antibiotics being the classic case) only has one of
@@ -149,22 +164,22 @@ function dateLabel(dateStr: string): string {
 // the state the dose-interval reminder above needs to still be firing in),
 // or done — each phrased so the parent knows whether to keep going.
 function courseLabel(med: Medication): string | null {
-  if (!med.courseStartDate && !med.courseEndDate) return null
+  if (!med.courseStartAt && !med.courseEndAt) return null
   const now = Date.now()
-  if (med.courseStartDate && now < new Date(med.courseStartDate).getTime()) {
-    return t('medications.course.upcoming', { date: dateLabel(med.courseStartDate) })
+  if (med.courseStartAt && now < med.courseStartAt) {
+    return t('medications.course.upcoming', { date: dateTimeLabel(med.courseStartAt) })
   }
-  if (med.courseEndDate && now > new Date(med.courseEndDate).getTime() + 86_400_000) {
-    return t('medications.course.finished', { date: dateLabel(med.courseEndDate) })
+  if (med.courseEndAt && now > med.courseEndAt) {
+    return t('medications.course.finished', { date: dateTimeLabel(med.courseEndAt) })
   }
-  if (med.courseStartDate && med.courseEndDate) {
+  if (med.courseStartAt && med.courseEndAt) {
     return t('medications.course.active', {
-      start: dateLabel(med.courseStartDate),
-      end: dateLabel(med.courseEndDate),
+      start: dateTimeLabel(med.courseStartAt),
+      end: dateTimeLabel(med.courseEndAt),
     })
   }
-  if (med.courseEndDate) return t('medications.course.activeUntil', { date: dateLabel(med.courseEndDate) })
-  return t('medications.course.activeSince', { date: dateLabel(med.courseStartDate!) })
+  if (med.courseEndAt) return t('medications.course.activeUntil', { date: dateTimeLabel(med.courseEndAt) })
+  return t('medications.course.activeSince', { date: dateTimeLabel(med.courseStartAt!) })
 }
 
 async function confirmDelete() {
@@ -304,15 +319,15 @@ async function confirmDelete() {
           </p>
           <div class="d-flex ga-2">
             <v-text-field
-              v-model="courseStartDate"
-              type="date"
+              v-model="courseStartAt"
+              type="datetime-local"
               :label="t('medications.dialog.courseStartLabel')"
               variant="outlined"
               density="comfortable"
             />
             <v-text-field
-              v-model="courseEndDate"
-              type="date"
+              v-model="courseEndAt"
+              type="datetime-local"
               :label="t('medications.dialog.courseEndLabel')"
               variant="outlined"
               density="comfortable"

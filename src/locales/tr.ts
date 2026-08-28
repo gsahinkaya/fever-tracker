@@ -324,9 +324,9 @@ export default {
       expiryDateLabel: 'Son kullanma tarihi (opsiyonel)',
       shelfLifeLabel: 'Açıldıktan sonra kaç gün? (vars. 90)',
       courseSectionHint:
-        'Antibiyotik gibi belirli bir süre kullanılması gereken ilaçlar için kür başlangıç ve bitiş tarihini gir — kür boyunca doz hatırlatmaları alırsın, kür bittiğinde de haber veririz (hepsi opsiyonel).',
-      courseStartLabel: 'Kür başlangıç tarihi (opsiyonel)',
-      courseEndLabel: 'Kür bitiş tarihi (opsiyonel)',
+        'Antibiyotik gibi belirli bir süre kullanılması gereken ilaçlar için kür başlangıç ve bitiş tarih/saatini gir — kür boyunca doz hatırlatmaları alırsın, kür bittiğinde de haber veririz (hepsi opsiyonel).',
+      courseStartLabel: 'Kür başlangıcı (opsiyonel)',
+      courseEndLabel: 'Kür bitişi (opsiyonel)',
     },
     warnings: {
       expired: 'Son kullanma tarihi geçti ({date}). Yenisini almalısın.',

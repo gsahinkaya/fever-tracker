@@ -46,6 +46,7 @@ async function getGoogleAccessToken(scopes: string[]): Promise<string> {
 
 interface FirestoreValue {
   stringValue?: string
+  integerValue?: string
   booleanValue?: boolean
   arrayValue?: { values?: FirestoreValue[] }
   mapValue?: { fields?: Record<string, FirestoreValue> }
@@ -104,10 +105,11 @@ const SCOPES = [
 ]
 
 // Vercel Cron (see vercel.json) hits this once a day. It scans every
-// family's children for a medication whose courseStartDate or
-// courseEndDate (see types/health.ts Medication) is today, and pushes a
-// reminder to every member of that family — including while their app is
-// closed. The multiple-times-a-day "time for the next dose" reminder stays
+// family's children for a medication whose courseStartAt or courseEndAt
+// (see types/health.ts Medication — both precise timestamps, not just a
+// date) falls within today's UTC calendar day, and pushes a reminder to
+// every member of that family — including while their app is closed. The
+// multiple-times-a-day "time for the next dose" reminder stays
 // foreground-only (useDoseReminders) since a daily cron can't do hourly
 // granularity; this cron only covers the two day-level moments that matter
 // most for a fixed-length course like antibiotics: starting it and not
@@ -121,7 +123,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const projectId = getServiceAccount().project_id
   const accessToken = await getGoogleAccessToken(SCOPES)
-  const todayStr = new Date().toISOString().slice(0, 10)
+  const startOfToday = new Date()
+  startOfToday.setUTCHours(0, 0, 0, 0)
+  const todayStart = startOfToday.getTime()
+  const todayEnd = todayStart + 86_400_000
 
   let familiesChecked = 0
   let notificationsSent = 0
@@ -148,14 +153,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         )
 
         for (const med of medications) {
-          const startDate = med.fields?.courseStartDate?.stringValue
-          const endDate = med.fields?.courseEndDate?.stringValue
+          const startAt = med.fields?.courseStartAt?.integerValue
+          const endAt = med.fields?.courseEndAt?.integerValue
           const medName = med.fields?.name?.stringValue ?? 'İlaç'
 
+          const startsToday = startAt != null && Number(startAt) >= todayStart && Number(startAt) < todayEnd
+          const endsToday = endAt != null && Number(endAt) >= todayStart && Number(endAt) < todayEnd
+
           let body: string | null = null
-          if (startDate === todayStr) {
+          if (startsToday) {
             body = `${childName} için ${medName} kürü bugün başlıyor. Kür boyunca düzenli vermeyi unutma.`
-          } else if (endDate === todayStr) {
+          } else if (endsToday) {
             body = `${childName} için ${medName} kürü bugün sona eriyor. Kürü yarıda bırakmadığından emin ol.`
           }
           if (!body) continue

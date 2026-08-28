@@ -11,14 +11,16 @@ export interface Medication {
   expiryDate?: string
   shelfLifeDaysAfterOpening?: number
   // Course dates for medications that must run for a fixed period rather
-  // than indefinitely (antibiotics being the classic case) — both optional,
-  // plain YYYY-MM-DD strings like expiryDate since only the day matters.
-  // Drives both the in-app dose reminder (useDoseReminders) and the daily
-  // push cron (api/check-medication-courses.ts) that nudges when the course
+  // than indefinitely (antibiotics being the classic case) — both optional
+  // millisecond timestamps (like openedAt) rather than date-only strings,
+  // since a course reminder needs the actual clock time (e.g. "starts at
+  // 14:00") not just the day. Drives both the in-app dose reminder
+  // (useDoseReminders) and the daily push cron
+  // (api/check-medication-courses.ts) that nudges when the course
   // starts/ends, since a course that's never had a dose logged yet would
   // otherwise never trigger the interval-based reminder at all.
-  courseStartDate?: string
-  courseEndDate?: string
+  courseStartAt?: number
+  courseEndAt?: number
   // Who added this medication and when, so the other parent can be
   // notified — including catching up after reopening the app, which needs
   // a timestamp to compare against a "last seen" watermark. Optional

@@ -61,9 +61,11 @@ export default createVuetify({
           // Sleep-tracking tile/actions — deep night-blue, distinct from
           // "info"'s brighter blue and "pharmacy"'s indigo.
           sleep: '#1E3A8A',
-          // Diaper-tracking tile/actions — warm orange, distinct from
-          // "error" red and "vaccine"'s browner amber.
-          diaper: '#EA580C',
+          // Diaper-tracking tile/actions — rose/berry. An orange here read
+          // as nearly identical to "secondary" (feeding) right above it on
+          // Home, so this stays out of the whole orange/amber/brown family
+          // that secondary/vaccine/warning already occupy.
+          diaper: '#BE123C',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',
@@ -92,7 +94,7 @@ export default createVuetify({
           symptom: '#A3E635',
           nextdose: '#94A3B8',
           sleep: '#7DD3FC',
-          diaper: '#FB923C',
+          diaper: '#FB7185',
           error: '#F97066',
           success: '#32D583',
           warning: '#FDB022',

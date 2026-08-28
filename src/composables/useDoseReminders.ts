@@ -29,19 +29,18 @@ export function useDoseReminders() {
       // A finished course (antibiotics being the classic case) shouldn't
       // keep nagging for "next safe dose" once it's over, even though the
       // interval math would otherwise happily produce one.
-      if (med.courseEndDate && current > new Date(med.courseEndDate).getTime() + 86_400_000) return
+      if (med.courseEndAt && current > med.courseEndAt) return
 
       const last = store.lastDose(med.id)
       if (!last) {
         // No dose logged yet, so the interval-based reminder below has
         // nothing to anchor on — it would never fire on its own. If a
-        // course start date is set, prompt once per day from that date
+        // course start time is set, prompt once per day from that moment
         // onward so the very first dose isn't the one that gets forgotten.
-        if (med.courseStartDate) {
-          const startAt = new Date(med.courseStartDate).getTime()
+        if (med.courseStartAt) {
           const dayKey = new Date(current).toISOString().slice(0, 10)
           const key = `${med.id}:course-start:${dayKey}`
-          if (current >= startAt && !notifiedFor.has(key)) {
+          if (current >= med.courseStartAt && !notifiedFor.has(key)) {
             notifiedFor.add(key)
             new Notification(t('common.appName'), {
               body: t('notifications.courseStartReady', { name: med.name }),
