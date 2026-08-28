@@ -8,11 +8,15 @@ const { t } = useI18n()
 const store = useSymptomLogStore()
 
 const showAddDialog = ref(false)
+const showAll = ref(false)
 const confirmDeleteTarget = ref<{ id: string; type: string; takenAt: number } | null>(null)
 
-// Symptoms are logged sparingly (a handful over an illness), unlike fever/
-// feeding — show the full history rather than windowing to the last 48h.
-const sorted = computed(() => [...store.entries].sort((a, b) => b.takenAt - a.takenAt))
+// Same 48h-default-with-a-"tümünü gör"-escape-hatch as Ana Sayfa/Geçmiş,
+// for consistency across the app's log-style screens.
+const sorted = computed(() => {
+  const entries = showAll.value ? store.entries : store.recentEntries(48)
+  return [...entries].sort((a, b) => b.takenAt - a.takenAt)
+})
 
 function timeLabel(ts: number) {
   return new Date(ts).toLocaleString('tr-TR', {
@@ -57,6 +61,16 @@ function confirmDelete() {
       </div>
     </v-btn>
 
+    <div class="mb-2 d-flex align-center">
+      <span class="text-subtitle-2 text-medium-emphasis">{{
+        showAll ? t('symptoms.allHistory') : t('symptoms.last48h')
+      }}</span>
+      <v-spacer />
+      <v-btn v-if="!showAll" variant="text" size="small" color="symptom" @click="showAll = true">{{
+        t('symptoms.viewAll')
+      }}</v-btn>
+    </div>
+
     <v-list v-if="sorted.length" lines="two">
       <v-list-item v-for="entry in sorted" :key="entry.id">
         <template #prepend>
@@ -80,7 +94,9 @@ function confirmDelete() {
         </template>
       </v-list-item>
     </v-list>
-    <div v-else class="text-center text-medium-emphasis py-8">{{ t('symptoms.empty') }}</div>
+    <div v-else class="text-center text-medium-emphasis py-8">
+      {{ showAll ? t('symptoms.empty') : t('symptoms.emptyWindow') }}
+    </div>
 
     <AddSymptomDialog v-model="showAddDialog" />
 

@@ -170,7 +170,11 @@ export default {
   symptoms: {
     title: 'Semptomlar',
     addButton: 'Semptom Ekle',
+    last48h: 'Son 48 Saat',
+    allHistory: 'Tüm Geçmiş',
+    viewAll: 'Tümünü Gör',
     empty: 'Henüz semptom eklenmedi.',
+    emptyWindow: 'Son 48 saatte semptom kaydı yok.',
     deleteAria: 'Semptomu sil',
     deleteConfirmTitle: 'Semptomu sil',
     deleteConfirmBody: '{type} · {time} kaydı silinsin mi?',

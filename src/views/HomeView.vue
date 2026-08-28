@@ -68,6 +68,12 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.last48h') }}</span>
           </div>
         </v-btn>
+        <v-btn block height="64" color="nextdose" variant="flat" rounded="lg" to="/sonraki-doz">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-clock-check-outline" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">{{ t('home.nextSafeDose') }}</span>
+          </div>
+        </v-btn>
         <v-btn
           block
           height="64"
@@ -98,12 +104,6 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-pill" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.medication') }}</span>
-          </div>
-        </v-btn>
-        <v-btn block height="64" color="nextdose" variant="flat" rounded="lg" to="/sonraki-doz">
-          <div class="d-flex align-center w-100">
-            <v-icon icon="mdi-clock-check-outline" size="26" class="mr-3" />
-            <span class="text-body-1 font-weight-bold">{{ t('home.nextSafeDose') }}</span>
           </div>
         </v-btn>
         <v-btn block height="64" color="secondary" variant="flat" rounded="lg" to="/beslenme">
