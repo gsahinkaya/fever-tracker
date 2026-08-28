@@ -4,7 +4,6 @@ import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
-import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useAuthStore } from '@/stores/auth'
 import { useDoseReminders } from '@/composables/useDoseReminders'
 import { registerDeviceForPush } from '@/composables/usePushNotifications'
@@ -12,14 +11,12 @@ import { useNow } from '@/composables/useNow'
 import AddReadingDialog from '@/components/AddReadingDialog.vue'
 import AddDoseDialog from '@/components/AddDoseDialog.vue'
 import NextDoseCard from '@/components/NextDoseCard.vue'
-import CombinedTimelineList from '@/components/CombinedTimelineList.vue'
 import OnboardingWizard from '@/components/OnboardingWizard.vue'
 
 const { t } = useI18n()
 const store = useFeverLogStore()
 const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
-const feedingLogStore = useFeedingLogStore()
 const authStore = useAuthStore()
 const { requestPermission } = useDoseReminders()
 const now = useNow()
@@ -46,14 +43,6 @@ onMounted(async () => {
   }
 })
 
-// Fever/dose entries and feedings live in separate stores/collections, so
-// merge and re-sort by time to get one true "everything that happened"
-// timeline instead of whichever store's array got concatenated last.
-const recentActivity = computed(() =>
-  [...store.recentEntries(48), ...feedingLogStore.recentEntries(48)].sort(
-    (a, b) => b.takenAt - a.takenAt,
-  ),
-)
 const hasChildren = computed(() => childrenStore.children.length > 0)
 
 // Only medications that (a) have actually been given at least once, so
@@ -160,6 +149,12 @@ const medicationsWithHistory = computed(() =>
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.nearbyActivities') }}</span>
           </div>
         </v-btn>
+        <v-btn block height="64" color="primary" variant="flat" rounded="lg" to="/gecmis">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-history" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.history') }}</span>
+          </div>
+        </v-btn>
       </div>
 
       <template v-if="medicationsWithHistory.length">
@@ -172,17 +167,6 @@ const medicationsWithHistory = computed(() =>
           </v-col>
         </v-row>
       </template>
-
-      <div class="mb-2 d-flex align-center">
-        <span class="text-subtitle-2 text-medium-emphasis">{{ t('home.last48h') }}</span>
-        <v-spacer />
-        <v-btn variant="text" size="small" color="primary" to="/gecmis">{{
-          t('home.viewAllHistory')
-        }}</v-btn>
-      </div>
-      <v-card variant="outlined">
-        <CombinedTimelineList :entries="recentActivity" />
-      </v-card>
 
       <AddReadingDialog v-model="showReadingDialog" />
       <AddDoseDialog v-model="showDoseDialog" />

@@ -116,10 +116,9 @@ export default {
       dutyPharmacy: 'Nöbetçi Eczane',
       vaccinations: 'Aşılar',
       nearbyActivities: 'Yakındaki Etkinlikler',
+      history: 'Geçmiş',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
-    last48h: 'Son 48 Saat',
-    viewAllHistory: 'Tümünü Gör',
   },
   history: {
     title: 'Tüm Geçmiş',
