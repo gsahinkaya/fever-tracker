@@ -16,8 +16,15 @@ service cloud.firestore {
     }
 
     match /families/{familyId} {
-      // Any signed-in user may look up a family by its invite-code document id.
-      allow read: if request.auth != null;
+      // Any signed-in user may look up a family by its invite-code document
+      // id (getDoc — see stores/auth.ts, the only place the app ever reads
+      // this collection). Deliberately `get`, not `read` (`read` = get +
+      // list): a condition here that doesn't inspect `resource.data` holds
+      // for every document uniformly, so `allow read` would let anyone
+      // signed in run `getDocs(collection(db,'families'))` and enumerate
+      // every family (invite code, ownerUid, member uids) in the database —
+      // list is intentionally left ungranted.
+      allow get: if request.auth != null;
 
       allow create: if request.auth != null
         && request.resource.data.ownerUid == request.auth.uid

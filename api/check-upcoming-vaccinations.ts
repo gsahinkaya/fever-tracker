@@ -134,8 +134,11 @@ const SCOPES = [
 // and that hasn't been marked done, and pushes a reminder to every member
 // of that family — including while their app is closed.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Fails closed: a missing CRON_SECRET is a misconfiguration, not an
+  // excuse to let this endpoint (which pushes to every family in the
+  // database) sit open to whoever finds the URL.
   const cronSecret = process.env.CRON_SECRET
-  if (cronSecret && req.headers.authorization !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || req.headers.authorization !== `Bearer ${cronSecret}`) {
     res.status(401).json({ error: 'Unauthorized' })
     return
   }
