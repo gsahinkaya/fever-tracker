@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { defineStore } from 'pinia'
-import { addDoc, collection, deleteDoc, doc, orderBy, query, Timestamp, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, orderBy, query, Timestamp, updateDoc } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
 import { currentWhoLabel, messageForSleepEnd, messageForSleepStart } from '@/lib/describeActivity'
@@ -21,6 +21,8 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
     acknowledgeIncoming,
     requireContext,
     creatorFields,
+    recentEntries,
+    removeEntry,
   } = useWatermarkedFeed<SleepEntry>({
     storageKeyPrefix: 'ates-olcer:last-seen-sleep',
     buildQuery: (familyId, childId) =>
@@ -33,6 +35,7 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
         ...(data.endedAt ? { endedAt: (data.endedAt as Timestamp).toMillis() } : {}),
       }) as SleepEntry,
     sortKey: (entry) => entry.takenAt,
+    collection: sleepCollection,
   })
 
   // The most recent entry with no endedAt yet — there should only ever be
@@ -65,16 +68,6 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
       messageForSleepEnd(currentWhoLabel(), Math.round((endedAt - active.takenAt) / 60_000)),
       'entry-push',
     )
-  }
-
-  async function removeEntry(id: string) {
-    const { familyId, childId } = requireContext()
-    await deleteDoc(doc(sleepCollection(familyId, childId), id))
-  }
-
-  function recentEntries(hours: number): SleepEntry[] {
-    const cutoff = Date.now() - hours * 60 * 60 * 1000
-    return entries.value.filter((e) => e.takenAt >= cutoff)
   }
 
   return {

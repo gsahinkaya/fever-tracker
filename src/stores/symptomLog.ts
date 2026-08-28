@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { addDoc, collection, deleteDoc, doc, orderBy, query, Timestamp } from 'firebase/firestore'
+import { addDoc, collection, orderBy, query, Timestamp } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
 import { currentWhoLabel, messageForSymptom } from '@/lib/describeActivity'
@@ -20,6 +20,8 @@ export const useSymptomLogStore = defineStore('symptomLog', () => {
     acknowledgeIncoming,
     requireContext,
     creatorFields,
+    recentEntries,
+    removeEntry,
   } = useWatermarkedFeed<SymptomEntry>({
     storageKeyPrefix: 'ates-olcer:last-seen-symptoms',
     buildQuery: (familyId, childId) =>
@@ -27,6 +29,7 @@ export const useSymptomLogStore = defineStore('symptomLog', () => {
     mapDoc: (id, data) =>
       ({ ...data, id, takenAt: (data.takenAt as Timestamp).toMillis() }) as SymptomEntry,
     sortKey: (entry) => entry.takenAt,
+    collection: symptomsCollection,
   })
 
   async function addSymptom(type: SymptomType, note?: string, takenAt?: Date) {
@@ -39,16 +42,6 @@ export const useSymptomLogStore = defineStore('symptomLog', () => {
     }
     await addDoc(symptomsCollection(familyId, childId), payload)
     void notifyFamily(messageForSymptom(currentWhoLabel(), type), 'entry-push')
-  }
-
-  async function removeEntry(id: string) {
-    const { familyId, childId } = requireContext()
-    await deleteDoc(doc(symptomsCollection(familyId, childId), id))
-  }
-
-  function recentEntries(hours: number): SymptomEntry[] {
-    const cutoff = Date.now() - hours * 60 * 60 * 1000
-    return entries.value.filter((e) => e.takenAt >= cutoff)
   }
 
   return {

@@ -1,15 +1,5 @@
 import { defineStore } from 'pinia'
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  Timestamp,
-} from 'firebase/firestore'
+import { addDoc, collection, getDocs, limit, orderBy, query, Timestamp } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
 import { currentWhoLabel, messageForGrowth } from '@/lib/describeActivity'
@@ -30,6 +20,7 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     acknowledgeIncoming,
     requireContext,
     creatorFields,
+    removeEntry,
   } = useWatermarkedFeed<GrowthEntry>({
     storageKeyPrefix: 'ates-olcer:last-seen-growth',
     buildQuery: (familyId, childId) =>
@@ -37,6 +28,7 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     mapDoc: (id, data) =>
       ({ ...data, id, takenAt: (data.takenAt as Timestamp).toMillis() }) as GrowthEntry,
     sortKey: (entry) => entry.takenAt,
+    collection: growthCollection,
   })
 
   async function addGrowthEntry(
@@ -55,11 +47,6 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     }
     await addDoc(growthCollection(familyId, childId), payload)
     void notifyFamily(messageForGrowth(currentWhoLabel(), heightCm, weightKg), 'entry-push')
-  }
-
-  async function removeEntry(id: string) {
-    const { familyId, childId } = requireContext()
-    await deleteDoc(doc(growthCollection(familyId, childId), id))
   }
 
   // Called from the child profile form (both creating a new child and

@@ -1,5 +1,15 @@
 import { computed, ref, shallowRef } from 'vue'
-import { onSnapshot, type DocumentData, type Query } from 'firebase/firestore'
+import {
+  deleteDoc,
+  doc,
+  getDocs,
+  onSnapshot,
+  writeBatch,
+  type CollectionReference,
+  type DocumentData,
+  type Query,
+} from 'firebase/firestore'
+import { db } from '@/firebase'
 import { useAuthStore } from '@/stores/auth'
 import { loadLastSeen, saveLastSeen } from '@/lib/lastSeen'
 import { t } from '@/i18n'
@@ -13,14 +23,21 @@ interface CreatedByFields {
  * per-device "last seen" watermark so the bell/banner can tell what the
  * *other* parent added — including while this device was closed, not just
  * activity that arrives while a listener happens to already be live.
- * Shared by feverLog/feedingLog/medications, which otherwise duplicated
- * this exact listener + watermark + own-write-filtering logic.
+ * Shared by feverLog/feedingLog/growthLog/symptomLog/sleepLog/medications,
+ * which otherwise duplicated this exact listener + watermark +
+ * own-write-filtering logic.
  */
-export function useWatermarkedFeed<T extends CreatedByFields>(options: {
+export function useWatermarkedFeed<T extends CreatedByFields & { id: string }>(options: {
   storageKeyPrefix: string
   buildQuery: (familyId: string, childId: string) => Query<DocumentData>
   mapDoc: (id: string, data: DocumentData) => T
   sortKey: (item: T) => number
+  // Optional: the plain (unordered) collection backing buildQuery's query,
+  // needed to target/enumerate individual docs by id. Only stores that pass
+  // this get the generated removeEntry/recentEntries/clearAllEntries below —
+  // medications.ts manages its own doc paths since it addresses a specific
+  // child rather than always the active one.
+  collection?: (familyId: string, childId: string) => CollectionReference<DocumentData>
 }) {
   // shallowRef: items are always replaced wholesale from a fresh snapshot,
   // never mutated in place, and a generic T confuses Vue's deep-unwrap
@@ -94,6 +111,30 @@ export function useWatermarkedFeed<T extends CreatedByFields>(options: {
     return { familyId: authStore.familyId, childId: activeChildId.value }
   }
 
+  // Every store using this composable filters its own list to "the last N
+  // hours" for its default view — implemented once here against `sortKey`
+  // (which is always the same field the store calls `takenAt`) instead of
+  // five near-identical copies.
+  function recentEntries(hours: number): T[] {
+    const cutoff = Date.now() - hours * 60 * 60 * 1000
+    return items.value.filter((item) => options.sortKey(item) >= cutoff)
+  }
+
+  async function removeEntry(id: string) {
+    if (!options.collection) throw new Error('removeEntry requires options.collection')
+    const { familyId, childId } = requireContext()
+    await deleteDoc(doc(options.collection(familyId, childId), id))
+  }
+
+  async function clearAllEntries() {
+    if (!options.collection) throw new Error('clearAllEntries requires options.collection')
+    const { familyId, childId } = requireContext()
+    const snapshot = await getDocs(options.collection(familyId, childId))
+    const batch = writeBatch(db)
+    snapshot.docs.forEach((d) => batch.delete(d.ref))
+    await batch.commit()
+  }
+
   function creatorFields(): CreatedByFields & { createdByEmail?: string } {
     const authStore = useAuthStore()
     const uid = authStore.user?.uid
@@ -113,5 +154,8 @@ export function useWatermarkedFeed<T extends CreatedByFields>(options: {
     acknowledgeIncoming,
     requireContext,
     creatorFields,
+    recentEntries,
+    removeEntry,
+    clearAllEntries,
   }
 }

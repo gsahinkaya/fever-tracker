@@ -1,15 +1,5 @@
 import { defineStore } from 'pinia'
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  orderBy,
-  query,
-  Timestamp,
-  writeBatch,
-} from 'firebase/firestore'
+import { addDoc, collection, orderBy, query, Timestamp } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
 import { currentWhoLabel, messageForDose, messageForReading } from '@/lib/describeActivity'
@@ -30,6 +20,9 @@ export const useFeverLogStore = defineStore('feverLog', () => {
     acknowledgeIncoming,
     requireContext,
     creatorFields,
+    recentEntries,
+    removeEntry,
+    clearAllEntries,
   } = useWatermarkedFeed<LogEntry>({
     storageKeyPrefix: 'ates-olcer:last-seen-entries',
     buildQuery: (familyId, childId) =>
@@ -37,6 +30,7 @@ export const useFeverLogStore = defineStore('feverLog', () => {
     mapDoc: (id, data) =>
       ({ ...data, id, takenAt: (data.takenAt as Timestamp).toMillis() }) as LogEntry,
     sortKey: (entry) => entry.takenAt,
+    collection: entriesCollection,
   })
 
   async function addReading(temperature: number, note?: string, takenAt?: Date) {
@@ -65,19 +59,6 @@ export const useFeverLogStore = defineStore('feverLog', () => {
     void notifyFamily(messageForDose(currentWhoLabel(), medicationName), 'entry-push')
   }
 
-  async function removeEntry(id: string) {
-    const { familyId, childId } = requireContext()
-    await deleteDoc(doc(entriesCollection(familyId, childId), id))
-  }
-
-  async function clearAllEntries() {
-    const { familyId, childId } = requireContext()
-    const snapshot = await getDocs(entriesCollection(familyId, childId))
-    const batch = writeBatch(db)
-    snapshot.docs.forEach((d) => batch.delete(d.ref))
-    await batch.commit()
-  }
-
   function lastDose(medicationId: string): DoseEntry | undefined {
     return entries.value.find(
       (e): e is DoseEntry => e.type === 'dose' && e.medicationId === medicationId,
@@ -88,11 +69,6 @@ export const useFeverLogStore = defineStore('feverLog', () => {
     const last = lastDose(medicationId)
     if (!last) return null
     return last.takenAt + minIntervalHours * 60 * 60 * 1000
-  }
-
-  function recentEntries(hours: number): LogEntry[] {
-    const cutoff = Date.now() - hours * 60 * 60 * 1000
-    return entries.value.filter((e) => e.takenAt >= cutoff)
   }
 
   return {

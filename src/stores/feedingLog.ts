@@ -1,15 +1,5 @@
 import { defineStore } from 'pinia'
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  orderBy,
-  query,
-  Timestamp,
-  writeBatch,
-} from 'firebase/firestore'
+import { addDoc, collection, orderBy, query, Timestamp } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
 import {
@@ -35,6 +25,9 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
     acknowledgeIncoming,
     requireContext,
     creatorFields,
+    recentEntries,
+    removeEntry,
+    clearAllEntries,
   } = useWatermarkedFeed<FeedingEntry>({
     storageKeyPrefix: 'ates-olcer:last-seen-feedings',
     buildQuery: (familyId, childId) =>
@@ -42,6 +35,7 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
     mapDoc: (id, data) =>
       ({ ...data, id, takenAt: (data.takenAt as Timestamp).toMillis() }) as FeedingEntry,
     sortKey: (entry) => entry.takenAt,
+    collection: feedingsCollection,
   })
 
   async function addBreastfeeding(
@@ -84,24 +78,6 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
     }
     await addDoc(feedingsCollection(familyId, childId), payload)
     void notifyFamily(messageForSolidFood(currentWhoLabel()), 'entry-push')
-  }
-
-  async function removeEntry(id: string) {
-    const { familyId, childId } = requireContext()
-    await deleteDoc(doc(feedingsCollection(familyId, childId), id))
-  }
-
-  async function clearAllEntries() {
-    const { familyId, childId } = requireContext()
-    const snapshot = await getDocs(feedingsCollection(familyId, childId))
-    const batch = writeBatch(db)
-    snapshot.docs.forEach((d) => batch.delete(d.ref))
-    await batch.commit()
-  }
-
-  function recentEntries(hours: number): FeedingEntry[] {
-    const cutoff = Date.now() - hours * 60 * 60 * 1000
-    return entries.value.filter((e) => e.takenAt >= cutoff)
   }
 
   return {
