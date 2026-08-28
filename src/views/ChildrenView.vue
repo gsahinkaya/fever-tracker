@@ -60,15 +60,13 @@ async function save() {
   if (editingChild.value) {
     await childrenStore.updateChild(authStore.familyId, childId, data)
   }
-  // If this child has no growth history yet, seed one from whatever
-  // height/weight/head circumference was entered here — whether that's on
-  // first creation or a later edit — so Büyüme has a starting point
-  // instead of the parent re-entering the same numbers a second time.
-  // Once real Growth entries exist, this is a no-op (see
-  // seedInitialEntryIfNone) so it never overwrites a deliberately-dated
-  // measurement with today's date.
+  // Keep Büyüme in sync with whatever height/weight/head circumference was
+  // entered here — on first creation (no history yet) and on every later
+  // edit that actually changes a number (a real updated measurement), but
+  // not on a save that only touched the name/birthdate and left these
+  // fields as-is (see syncEntryFromProfile).
   if (heightCm.value || weightKg.value || headCircumferenceCm.value) {
-    await growthLogStore.seedInitialEntryIfNone(
+    await growthLogStore.syncEntryFromProfile(
       authStore.familyId,
       childId,
       heightCm.value ?? undefined,

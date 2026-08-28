@@ -24,15 +24,23 @@ async function verifyFirebaseToken(idToken: string) {
 // Kept in sync by hand with src/composables/useNearbyActivities.ts, which
 // can't import this file (see note above) — the client sends lat/lon only,
 // this builds the actual Overpass query server-side.
+//
+// No OSM tag means "kid-friendly" — this list is a hand-picked judgment
+// call, not a real filter. amenity=theatre/tourism=museum were dropped:
+// both skew toward adult-oriented programming (opera houses, symphony
+// halls, fine-art/history museums) far more often than not, and OSM has
+// no sub-tag to tell those apart from the children's-theatre/science-museum
+// minority. leisure=playground is capped separately in the client (see
+// PLAYGROUND_LIMIT) since there are hundreds in any city.
 const CATEGORIES: { tag: string; value: string }[] = [
   { tag: 'amenity', value: 'cinema' },
-  { tag: 'amenity', value: 'theatre' },
   { tag: 'tourism', value: 'zoo' },
   { tag: 'tourism', value: 'aquarium' },
-  { tag: 'tourism', value: 'museum' },
   { tag: 'tourism', value: 'theme_park' },
+  { tag: 'leisure', value: 'water_park' },
   { tag: 'leisure', value: 'amusement_arcade' },
   { tag: 'leisure', value: 'bowling_alley' },
+  { tag: 'leisure', value: 'playground' },
 ]
 const RADIUS_METERS = 10_000
 

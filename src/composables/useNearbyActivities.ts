@@ -15,21 +15,29 @@ export interface NearbyActivity {
   distanceKm: number
 }
 
-// Overpass (OpenStreetMap) tag → Turkish label shown in the UI. Deliberately
-// excludes generic tags like leisure=park/playground — there are hundreds
-// of those in any city and they'd drown out the actual "things to do"
-// results this screen is for.
+// Overpass (OpenStreetMap) tag → Turkish label shown in the UI. No OSM tag
+// means "kid-friendly", so this list is a judgment call, not a real
+// filter — amenity=theatre/tourism=museum are deliberately excluded since
+// both skew adult (opera houses, fine-art museums) far more often than
+// not, with no sub-tag to separate out the children's-theatre/science-
+// museum minority. leisure=park is still excluded (hundreds per city,
+// not really a "thing to do"); leisure=playground is included but capped
+// separately (see PLAYGROUND_LIMIT) for the same reason.
 const CATEGORIES: { tag: string; value: string; label: string }[] = [
   { tag: 'amenity', value: 'cinema', label: 'Sinema' },
-  { tag: 'amenity', value: 'theatre', label: 'Tiyatro' },
   { tag: 'tourism', value: 'zoo', label: 'Hayvanat Bahçesi' },
   { tag: 'tourism', value: 'aquarium', label: 'Akvaryum' },
-  { tag: 'tourism', value: 'museum', label: 'Müze' },
   { tag: 'tourism', value: 'theme_park', label: 'Lunapark' },
+  { tag: 'leisure', value: 'water_park', label: 'Su Parkı' },
   { tag: 'leisure', value: 'amusement_arcade', label: 'Oyun Salonu' },
   { tag: 'leisure', value: 'bowling_alley', label: 'Bowling' },
+  { tag: 'leisure', value: 'playground', label: 'Oyun Alanı' },
 ]
 const MAX_RESULTS = 30
+// Playgrounds are dense enough (often several per neighborhood) that
+// letting them compete on pure distance would crowd out the rarer,
+// higher-value results (a zoo, a water park) from the rest of the list.
+const PLAYGROUND_LIMIT = 5
 
 interface OverpassElement {
   type: 'node' | 'way'
@@ -89,12 +97,15 @@ export function useNearbyActivities() {
       if (!res.ok) throw new Error('fetch-failed')
       const data = (await res.json()) as { elements: OverpassElement[] }
 
-      activities.value = data.elements
+      const parsed = data.elements
         .map((el): NearbyActivity | null => {
           const tags = el.tags ?? {}
-          const name = tags.name
           const category = categoryFor(tags)
           const pos = el.type === 'node' ? { lat: el.lat!, lon: el.lon! } : el.center
+          // Most playgrounds carry no name in OSM (unlike a cinema/zoo,
+          // which is a real business) — fall back to the category label
+          // rather than dropping every unnamed one.
+          const name = tags.name ?? (category === 'Oyun Alanı' ? category : null)
           if (!name || !category || !pos) return null
           return {
             id: '',
@@ -111,7 +122,13 @@ export function useNearbyActivities() {
         })
         .filter((a): a is NearbyActivity => a !== null)
         .sort((a, b) => a.distanceKm - b.distanceKm)
-        .slice(0, MAX_RESULTS)
+
+      const playgrounds = parsed.filter((a) => a.category === 'Oyun Alanı').slice(0, PLAYGROUND_LIMIT)
+      const rest = parsed
+        .filter((a) => a.category !== 'Oyun Alanı')
+        .slice(0, MAX_RESULTS - playgrounds.length)
+      activities.value = [...rest, ...playgrounds]
+        .sort((a, b) => a.distanceKm - b.distanceKm)
         .map((a, i) => ({ ...a, id: String(i) }))
     } catch {
       error.value = 'fetch'

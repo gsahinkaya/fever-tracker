@@ -64,30 +64,38 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
 
   // Called from the child profile form (both creating a new child and
   // editing an existing one) whenever height/weight/head-circumference was
-  // entered there — but only actually writes a Growth entry if this child
-  // has none yet. Once real Growth entries exist, the profile form is just
-  // updating the child's own fields (see childrenStore.updateChild) and
-  // must NOT keep minting new dated entries every time a parent tweaks a
-  // number in Settings. Takes familyId/childId directly (not
-  // requireContext/activeChildId) since the edited child isn't necessarily
-  // the active one.
-  async function seedInitialEntryIfNone(
+  // entered there. Writes a new dated Growth entry when there's none yet
+  // (first-ever numbers) OR when what was entered actually differs from
+  // the latest existing entry (a real updated measurement) — but not on
+  // every save, since the form re-submits the child's current values even
+  // when the parent only changed the name and never touched these fields.
+  // Takes familyId/childId directly (not requireContext/activeChildId)
+  // since the edited child isn't necessarily the active one.
+  async function syncEntryFromProfile(
     familyId: string,
     childId: string,
     heightCm?: number,
     weightKg?: number,
     headCircumferenceCm?: number,
   ) {
-    const existing = await getDocs(query(growthCollection(familyId, childId), limit(1)))
-    if (!existing.empty) return
-    const payload: Omit<GrowthEntry, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
-      takenAt: Timestamp.now(),
-      ...(heightCm ? { heightCm } : {}),
-      ...(weightKg ? { weightKg } : {}),
-      ...(headCircumferenceCm ? { headCircumferenceCm } : {}),
-      ...creatorFields(),
+    const existing = await getDocs(
+      query(growthCollection(familyId, childId), orderBy('takenAt', 'desc'), limit(1)),
+    )
+    const latest = existing.docs[0]?.data() as GrowthEntry | undefined
+    const changed =
+      (heightCm != null && heightCm !== latest?.heightCm) ||
+      (weightKg != null && weightKg !== latest?.weightKg) ||
+      (headCircumferenceCm != null && headCircumferenceCm !== latest?.headCircumferenceCm)
+    if (existing.empty || changed) {
+      const payload: Omit<GrowthEntry, 'id' | 'takenAt'> & { takenAt: Timestamp } = {
+        takenAt: Timestamp.now(),
+        ...(heightCm ? { heightCm } : {}),
+        ...(weightKg ? { weightKg } : {}),
+        ...(headCircumferenceCm ? { headCircumferenceCm } : {}),
+        ...creatorFields(),
+      }
+      await addDoc(growthCollection(familyId, childId), payload)
     }
-    await addDoc(growthCollection(familyId, childId), payload)
   }
 
   return {
@@ -99,6 +107,6 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
     acknowledgeIncoming,
     addGrowthEntry,
     removeEntry,
-    seedInitialEntryIfNone,
+    syncEntryFromProfile,
   }
 })
