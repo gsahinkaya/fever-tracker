@@ -41,7 +41,19 @@ function buildOverpassQuery(lat: number, lon: number): string {
     `node["${tag}"="${value}"](around:${RADIUS_METERS},${lat},${lon});`,
     `way["${tag}"="${value}"](around:${RADIUS_METERS},${lat},${lon});`,
   ]).join('\n  ')
-  return `[out:json][timeout:25];\n(\n  ${clauses}\n);\nout center tags;`
+  // Kept under maxDuration below with margin for network/cold-start
+  // overhead — a dense city center (many results across 8 categories) is
+  // the slow case this needs to survive without Vercel killing the
+  // function first.
+  return `[out:json][timeout:20];\n(\n  ${clauses}\n);\nout center tags;`
+}
+
+// Vercel's default serverless timeout (~10s) isn't enough for Overpass
+// under load in a dense city — this function was hitting it and returning
+// a hard 502 for exactly the users in busy areas who'd get the most value
+// from this feature. Hobby plan allows up to 60s.
+export const config = {
+  maxDuration: 30,
 }
 
 // This app talks to Overpass server-side (not directly from the browser,
