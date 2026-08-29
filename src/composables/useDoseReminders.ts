@@ -26,6 +26,21 @@ export function useDoseReminders() {
     if (!('Notification' in window) || Notification.permission !== 'granted') return
 
     medicationsStore.medications.forEach((med) => {
+      // A one-time alarm, independent of dose history/course dates — fires
+      // exactly once (keyed by the alarm's own value, so editing it to a
+      // new time naturally re-arms without needing any reset elsewhere).
+      if (med.reminderAt) {
+        const key = `${med.id}:reminder:${med.reminderAt}`
+        if (current >= med.reminderAt && !notifiedFor.has(key)) {
+          notifiedFor.add(key)
+          new Notification(t('common.appName'), {
+            body: t('notifications.reminderReady', { name: med.name }),
+            icon: '/icon-192.png',
+            tag: key,
+          })
+        }
+      }
+
       // A finished course (antibiotics being the classic case) shouldn't
       // keep nagging for "next safe dose" once it's over, even though the
       // interval math would otherwise happily produce one.

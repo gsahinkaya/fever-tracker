@@ -77,6 +77,23 @@ async function listDocuments(
   return data.documents ?? []
 }
 
+// Marks a single boolean field on a medication doc so the next poll (this
+// endpoint is meant to be hit every few minutes — see
+// .github/workflows/medication-reminders.yml) doesn't re-send the same
+// push. `documentName` is the doc's full resource name, e.g.
+// ".../documents/families/X/children/Y/medications/Z" (med.name as-is).
+async function markNotified(
+  accessToken: string,
+  documentName: string,
+  field: string,
+): Promise<void> {
+  await fetch(`https://firestore.googleapis.com/v1/${documentName}?updateMask.fieldPaths=${field}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: { [field]: { booleanValue: true } } }),
+  })
+}
+
 async function sendPush(
   accessToken: string,
   projectId: string,
@@ -104,16 +121,52 @@ const SCOPES = [
   'https://www.googleapis.com/auth/firebase.messaging',
 ]
 
-// Vercel Cron (see vercel.json) hits this once a day. It scans every
-// family's children for a medication whose courseStartAt or courseEndAt
-// (see types/health.ts Medication — both precise timestamps, not just a
-// date) falls within today's UTC calendar day, and pushes a reminder to
-// every member of that family — including while their app is closed. The
-// multiple-times-a-day "time for the next dose" reminder stays
-// foreground-only (useDoseReminders) since a daily cron can't do hourly
-// granularity; this cron only covers the two day-level moments that matter
-// most for a fixed-length course like antibiotics: starting it and not
-// stopping it early.
+// How far back a course-start/end/alarm moment can be and still fire.
+// Two very different callers hit this same endpoint: Vercel's own daily
+// cron (see vercel.json — Hobby plan can't schedule more often than once a
+// day) as a guaranteed-to-catch-everything fallback, and a GitHub Actions
+// workflow polling every few minutes for near-real-time delivery once
+// configured (see .github/workflows/medication-reminders.yml). The window
+// has to comfortably outlast the slower caller's interval (24h) so nothing
+// falls through a gap if the fast poller is ever down, while the
+// notified-flag check below still guarantees each moment only ever fires
+// once regardless of how many times either caller overlaps.
+const RECENT_WINDOW_MS = 25 * 60 * 60 * 1000
+
+interface DueCheck {
+  fieldTs: string
+  fieldNotified: string
+  message: (childName: string, medName: string) => string
+}
+
+const COURSE_START: DueCheck = {
+  fieldTs: 'courseStartAt',
+  fieldNotified: 'courseStartNotified',
+  message: (childName, medName) =>
+    `${childName} için ${medName} kürünü başlatma zamanı geldi. Kür boyunca düzenli vermeyi unutma.`,
+}
+const COURSE_END: DueCheck = {
+  fieldTs: 'courseEndAt',
+  fieldNotified: 'courseEndNotified',
+  message: (childName, medName) =>
+    `${childName} için ${medName} kürü sona erdi. Kürü yarıda bırakmadığından emin ol.`,
+}
+const REMINDER: DueCheck = {
+  fieldTs: 'reminderAt',
+  fieldNotified: 'reminderNotified',
+  message: (childName, medName) => `${childName} için ${medName} hatırlatma zamanı geldi.`,
+}
+
+// Vercel Cron (see vercel.json) hits this once a day as a fallback; a
+// GitHub Actions workflow can hit it every few minutes for much closer to
+// real-time delivery (Vercel Hobby can't schedule cron more often than
+// daily — see the RECENT_WINDOW_MS comment). Each poll scans every
+// family's children's medications for a courseStartAt, courseEndAt, or
+// reminderAt (see types/health.ts Medication) that's due and not yet
+// notified, and pushes to every member of that family — including while
+// their app is closed. The multiple-times-a-day "time for the next dose"
+// reminder stays foreground-only (useDoseReminders) since it depends on
+// dose history, not a fixed timestamp.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Fails closed: a missing CRON_SECRET is a misconfiguration, not an
   // excuse to let this endpoint (which pushes to every family in the
@@ -126,10 +179,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const projectId = getServiceAccount().project_id
   const accessToken = await getGoogleAccessToken(SCOPES)
-  const startOfToday = new Date()
-  startOfToday.setUTCHours(0, 0, 0, 0)
-  const todayStart = startOfToday.getTime()
-  const todayEnd = todayStart + 86_400_000
+  const now = Date.now()
+  const windowStart = now - RECENT_WINDOW_MS
 
   let familiesChecked = 0
   let notificationsSent = 0
@@ -156,20 +207,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         )
 
         for (const med of medications) {
-          const startAt = med.fields?.courseStartAt?.integerValue
-          const endAt = med.fields?.courseEndAt?.integerValue
           const medName = med.fields?.name?.stringValue ?? 'İlaç'
 
-          const startsToday = startAt != null && Number(startAt) >= todayStart && Number(startAt) < todayEnd
-          const endsToday = endAt != null && Number(endAt) >= todayStart && Number(endAt) < todayEnd
-
-          let body: string | null = null
-          if (startsToday) {
-            body = `${childName} için ${medName} kürü bugün başlıyor. Kür boyunca düzenli vermeyi unutma.`
-          } else if (endsToday) {
-            body = `${childName} için ${medName} kürü bugün sona eriyor. Kürü yarıda bırakmadığından emin ol.`
-          }
-          if (!body) continue
+          const due = [COURSE_START, COURSE_END, REMINDER].find((check) => {
+            const ts = med.fields?.[check.fieldTs]?.integerValue
+            if (ts == null || med.fields?.[check.fieldNotified]?.booleanValue) return false
+            const value = Number(ts)
+            return value <= now && value > windowStart
+          })
+          if (!due) continue
 
           const tokenLists = await Promise.all(
             memberUids.map((uid) =>
@@ -178,9 +224,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           )
           const tokens = tokenLists.flat().map(docId)
           const results = await Promise.allSettled(
-            tokens.map((token) => sendPush(accessToken, projectId, token, 'Kido', body!)),
+            tokens.map((token) =>
+              sendPush(accessToken, projectId, token, 'Kido', due.message(childName, medName)),
+            ),
           )
           notificationsSent += results.filter((r) => r.status === 'fulfilled' && r.value).length
+          // Mark notified regardless of whether any device tokens existed —
+          // otherwise a family with no registered devices yet would get
+          // this same "due" moment re-evaluated (harmlessly, just wasted
+          // work) on every single poll forever.
+          await markNotified(accessToken, med.name, due.fieldNotified)
         }
       }
     }

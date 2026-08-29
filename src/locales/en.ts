@@ -346,6 +346,9 @@ export default {
         'For medications that need to be taken for a fixed period, like antibiotics, enter the course start and end date/time — you\'ll get dose reminders throughout the course, and we\'ll let you know when it ends too (all optional).',
       courseStartLabel: 'Course start (optional)',
       courseEndLabel: 'Course end (optional)',
+      reminderSectionHint:
+        'Set a specific date and time if you want a one-time reminder for this medication (optional).',
+      reminderLabel: 'Reminder time (optional)',
     },
     warnings: {
       expired: 'Expiry date has passed ({date}). You should get a new one.',
@@ -361,6 +364,7 @@ export default {
       activeUntil: 'Course in progress · until {date}',
       finished: 'Course finished ({date})',
     },
+    reminderLabel: 'Reminder: {date}',
     deleteConfirm: {
       title: 'Delete medication',
       body: '{name} will be deleted. Past records are unaffected, this medication just won\'t be selectable for new dose entries.',
@@ -527,6 +531,7 @@ export default {
     someone: 'A family member',
     doseReady: 'It\'s time for a safe dose of {name}.',
     courseStartReady: 'It\'s time to start the {name} course.',
+    reminderReady: 'Your reminder for {name} is due now.',
     addedReading: '{who} added a {temp}° reading',
     gaveMedication: '{who} gave {name}',
     addedMedication: '{who} added the {name} medication',

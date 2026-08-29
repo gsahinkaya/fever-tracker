@@ -21,6 +21,20 @@ export interface Medication {
   // otherwise never trigger the interval-based reminder at all.
   courseStartAt?: number
   courseEndAt?: number
+  // Set once check-medication-courses.ts has actually sent the course
+  // start/end push for the *current* value of courseStartAt/courseEndAt —
+  // lets the cron poll frequently (every few minutes, via GitHub Actions;
+  // see .github/workflows) without re-sending the same push on every poll.
+  // Reset to false client-side (MedicationsView.vue save()) whenever the
+  // parent changes the course date to a new value.
+  courseStartNotified?: boolean
+  courseEndNotified?: boolean
+  // A one-time alarm independent of both the interval reminder and the
+  // course dates above — usable on any medication (not just a course) for
+  // "remind me to give this at a specific date/time" regardless of dose
+  // history. Same notified-flag pattern as the course fields.
+  reminderAt?: number
+  reminderNotified?: boolean
   // Who added this medication and when, so the other parent can be
   // notified — including catching up after reopening the app, which needs
   // a timestamp to compare against a "last seen" watermark. Optional

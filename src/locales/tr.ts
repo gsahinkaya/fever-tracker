@@ -348,6 +348,9 @@ export default {
         'Antibiyotik gibi belirli bir süre kullanılması gereken ilaçlar için kür başlangıç ve bitiş tarih/saatini gir — kür boyunca doz hatırlatmaları alırsın, kür bittiğinde de haber veririz (hepsi opsiyonel).',
       courseStartLabel: 'Kür başlangıcı (opsiyonel)',
       courseEndLabel: 'Kür bitişi (opsiyonel)',
+      reminderSectionHint:
+        'Bu ilaç için belirli bir tarih ve saatte tek seferlik hatırlatma almak istersen gir (opsiyonel).',
+      reminderLabel: 'Hatırlatma zamanı (opsiyonel)',
     },
     warnings: {
       expired: 'Son kullanma tarihi geçti ({date}). Yenisini almalısın.',
@@ -363,6 +366,7 @@ export default {
       activeUntil: 'Kür sürüyor · {date} tarihine kadar',
       finished: 'Kür tamamlandı ({date})',
     },
+    reminderLabel: 'Hatırlatma: {date}',
     deleteConfirm: {
       title: 'İlacı sil',
       body: '{name} silinecek. Geçmiş kayıtlar etkilenmez, sadece yeni doz girişinde bu ilaç artık seçilemez.',
@@ -529,6 +533,7 @@ export default {
     someone: 'Bir aile üyesi',
     doseReady: '{name} için güvenli doz zamanı geldi.',
     courseStartReady: '{name} kürüne başlama zamanı geldi.',
+    reminderReady: '{name} için ayarladığın hatırlatma zamanı geldi.',
     addedReading: '{who} {temp}° ölçüm ekledi',
     gaveMedication: '{who} {name} verdi',
     addedMedication: '{who} {name} ilacını ekledi',

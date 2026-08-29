@@ -29,6 +29,7 @@ const expiryDate = ref('')
 const shelfLifeDaysAfterOpening = ref<number | null>(null)
 const courseStartAt = ref('')
 const courseEndAt = ref('')
+const reminderAt = ref('')
 const confirmDeleteTarget = ref<Medication | null>(null)
 
 const DEFAULT_SHELF_LIFE_DAYS = 90
@@ -53,6 +54,7 @@ function openAdd() {
   shelfLifeDaysAfterOpening.value = null
   courseStartAt.value = ''
   courseEndAt.value = ''
+  reminderAt.value = ''
   showDialog.value = true
 }
 
@@ -68,12 +70,17 @@ function openEdit(medication: Medication) {
   shelfLifeDaysAfterOpening.value = medication.shelfLifeDaysAfterOpening ?? null
   courseStartAt.value = medication.courseStartAt ? toDatetimeLocal(medication.courseStartAt) : ''
   courseEndAt.value = medication.courseEndAt ? toDatetimeLocal(medication.courseEndAt) : ''
+  reminderAt.value = medication.reminderAt ? toDatetimeLocal(medication.reminderAt) : ''
   showDialog.value = true
 }
 
 async function save() {
   if (!name.value.trim() || !minIntervalHours.value || minIntervalHours.value <= 0) return
   if (!authStore.familyId || !feverLogStore.activeChildId) return
+
+  const newCourseStartAt = courseStartAt.value ? new Date(courseStartAt.value).getTime() : undefined
+  const newCourseEndAt = courseEndAt.value ? new Date(courseEndAt.value).getTime() : undefined
+  const newReminderAt = reminderAt.value ? new Date(reminderAt.value).getTime() : undefined
 
   const data = {
     name: name.value.trim(),
@@ -82,8 +89,22 @@ async function save() {
     ...(openedAt.value ? { openedAt: new Date(openedAt.value).getTime() } : {}),
     ...(expiryDate.value ? { expiryDate: expiryDate.value } : {}),
     ...(shelfLifeDaysAfterOpening.value ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value } : {}),
-    ...(courseStartAt.value ? { courseStartAt: new Date(courseStartAt.value).getTime() } : {}),
-    ...(courseEndAt.value ? { courseEndAt: new Date(courseEndAt.value).getTime() } : {}),
+    ...(newCourseStartAt ? { courseStartAt: newCourseStartAt } : {}),
+    ...(newCourseEndAt ? { courseEndAt: newCourseEndAt } : {}),
+    ...(newReminderAt ? { reminderAt: newReminderAt } : {}),
+    // Re-arm the background push (check-medication-courses.ts) whenever a
+    // course/alarm date is set to a genuinely new value — otherwise editing
+    // an already-fired date to a new one would never notify again, since
+    // the cron only sends once per *NotifiedFlag.
+    ...(newCourseStartAt && newCourseStartAt !== editingMedication.value?.courseStartAt
+      ? { courseStartNotified: false }
+      : {}),
+    ...(newCourseEndAt && newCourseEndAt !== editingMedication.value?.courseEndAt
+      ? { courseEndNotified: false }
+      : {}),
+    ...(newReminderAt && newReminderAt !== editingMedication.value?.reminderAt
+      ? { reminderNotified: false }
+      : {}),
   }
 
   if (editingMedication.value) {
@@ -175,6 +196,11 @@ function courseLabel(med: Medication): string | null {
   return t('medications.course.activeSince', { date: dateTimeLabel(med.courseStartAt!) })
 }
 
+function reminderLabel(med: Medication): string | null {
+  if (!med.reminderAt) return null
+  return t('medications.reminderLabel', { date: dateTimeLabel(med.reminderAt) })
+}
+
 const deleteBody = computed(() =>
   confirmDeleteTarget.value
     ? t('medications.deleteConfirm.body', { name: confirmDeleteTarget.value.name })
@@ -222,6 +248,9 @@ async function confirmDelete() {
           }}<span v-if="med.note"> · {{ med.note }}</span>
           <div v-if="courseLabel(med)" class="text-medium-emphasis mt-1">
             {{ courseLabel(med) }}
+          </div>
+          <div v-if="reminderLabel(med)" class="text-medium-emphasis mt-1">
+            {{ reminderLabel(med) }}
           </div>
           <div
             v-if="inventoryWarning(med)"
@@ -281,6 +310,17 @@ async function confirmDelete() {
             v-model="note"
             :label="t('medications.dialog.noteLabel')"
             :placeholder="t('medications.dialog.notePlaceholder')"
+            variant="outlined"
+            density="comfortable"
+          />
+          <v-divider class="mb-4" />
+          <p class="text-caption text-medium-emphasis mb-2">
+            {{ t('medications.dialog.reminderSectionHint') }}
+          </p>
+          <v-text-field
+            v-model="reminderAt"
+            type="datetime-local"
+            :label="t('medications.dialog.reminderLabel')"
             variant="outlined"
             density="comfortable"
           />
