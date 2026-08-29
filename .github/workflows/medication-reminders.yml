@@ -1,0 +1,16 @@
+name: Medication course/reminder push
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call check-medication-courses
+        run: |
+          curl --fail -sS \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://fever-tracker-nu.vercel.app/api/check-medication-courses"
