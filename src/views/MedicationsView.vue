@@ -74,13 +74,32 @@ function openEdit(medication: Medication) {
   showDialog.value = true
 }
 
+type CourseFieldKey = 'courseStartAt' | 'courseEndAt' | 'reminderAt'
+type NotifiedFieldKey = 'courseStartNotified' | 'courseEndNotified' | 'reminderNotified'
+
+// A course/reminder date only re-arms its own background-push "already
+// sent" flag (check-medication-courses.ts) when the parent actually
+// changes it to a new value — otherwise editing an unrelated field (say
+// the note) while an old, already-fired date is still set would wrongly
+// reset a flag that hasn't changed, and the cron would re-notify for
+// nothing new.
+function dateFieldWithNotifiedReset(
+  inputValue: string,
+  fieldKey: CourseFieldKey,
+  notifiedKey: NotifiedFieldKey,
+  oldValue: number | undefined,
+): Partial<Medication> {
+  if (!inputValue) return {}
+  const at = new Date(inputValue).getTime()
+  // fieldKey always gets a timestamp and notifiedKey always gets `false` —
+  // Partial<Record<...>> can't express that per-key split, so this cast
+  // just tells TS what's already true by construction.
+  return { [fieldKey]: at, ...(at !== oldValue ? { [notifiedKey]: false } : {}) } as Partial<Medication>
+}
+
 async function save() {
   if (!name.value.trim() || !minIntervalHours.value || minIntervalHours.value <= 0) return
   if (!authStore.familyId || !feverLogStore.activeChildId) return
-
-  const newCourseStartAt = courseStartAt.value ? new Date(courseStartAt.value).getTime() : undefined
-  const newCourseEndAt = courseEndAt.value ? new Date(courseEndAt.value).getTime() : undefined
-  const newReminderAt = reminderAt.value ? new Date(reminderAt.value).getTime() : undefined
 
   const data = {
     name: name.value.trim(),
@@ -89,22 +108,24 @@ async function save() {
     ...(openedAt.value ? { openedAt: new Date(openedAt.value).getTime() } : {}),
     ...(expiryDate.value ? { expiryDate: expiryDate.value } : {}),
     ...(shelfLifeDaysAfterOpening.value ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value } : {}),
-    ...(newCourseStartAt ? { courseStartAt: newCourseStartAt } : {}),
-    ...(newCourseEndAt ? { courseEndAt: newCourseEndAt } : {}),
-    ...(newReminderAt ? { reminderAt: newReminderAt } : {}),
-    // Re-arm the background push (check-medication-courses.ts) whenever a
-    // course/alarm date is set to a genuinely new value — otherwise editing
-    // an already-fired date to a new one would never notify again, since
-    // the cron only sends once per *NotifiedFlag.
-    ...(newCourseStartAt && newCourseStartAt !== editingMedication.value?.courseStartAt
-      ? { courseStartNotified: false }
-      : {}),
-    ...(newCourseEndAt && newCourseEndAt !== editingMedication.value?.courseEndAt
-      ? { courseEndNotified: false }
-      : {}),
-    ...(newReminderAt && newReminderAt !== editingMedication.value?.reminderAt
-      ? { reminderNotified: false }
-      : {}),
+    ...dateFieldWithNotifiedReset(
+      courseStartAt.value,
+      'courseStartAt',
+      'courseStartNotified',
+      editingMedication.value?.courseStartAt,
+    ),
+    ...dateFieldWithNotifiedReset(
+      courseEndAt.value,
+      'courseEndAt',
+      'courseEndNotified',
+      editingMedication.value?.courseEndAt,
+    ),
+    ...dateFieldWithNotifiedReset(
+      reminderAt.value,
+      'reminderAt',
+      'reminderNotified',
+      editingMedication.value?.reminderAt,
+    ),
   }
 
   if (editingMedication.value) {
