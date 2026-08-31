@@ -11,6 +11,7 @@ import { useGrowthLogStore } from '@/stores/growthLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
+import { useMedicationAlertsStore } from '@/stores/medicationAlerts'
 import { useThemeStore } from '@/stores/theme'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
@@ -20,6 +21,7 @@ import {
   describeFeeding,
   describeGrowth,
   describeMedication,
+  describeMedicationAlert,
   describeSleep,
   describeSymptom,
 } from '@/lib/describeActivity'
@@ -36,6 +38,7 @@ const growthLogStore = useGrowthLogStore()
 const symptomLogStore = useSymptomLogStore()
 const sleepLogStore = useSleepLogStore()
 const diaperLogStore = useDiaperLogStore()
+const medicationAlertsStore = useMedicationAlertsStore()
 useThemeStore()
 
 useEntryNotifications()
@@ -76,6 +79,10 @@ const incomingItems = computed(() =>
       at: entry.takenAt,
       text: describeDiaper(entry),
     })),
+    ...medicationAlertsStore.incomingEntries.map((entry) => ({
+      at: entry.takenAt,
+      text: describeMedicationAlert(entry),
+    })),
   ].sort((a, b) => a.at - b.at),
 )
 
@@ -114,6 +121,7 @@ function acknowledgeIncoming() {
   symptomLogStore.acknowledgeIncoming()
   sleepLogStore.acknowledgeIncoming()
   diaperLogStore.acknowledgeIncoming()
+  medicationAlertsStore.acknowledgeIncoming()
   bannerDismissed.value = false
 }
 
@@ -160,6 +168,7 @@ watch(
     symptomLogStore.watchChild(childId)
     sleepLogStore.watchChild(childId)
     diaperLogStore.watchChild(childId)
+    medicationAlertsStore.watchChild(childId)
     if (childId && authStore.familyId) {
       localStorage.setItem(`ates-olcer:active-child:${authStore.familyId}`, childId)
     }

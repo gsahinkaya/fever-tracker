@@ -6,6 +6,7 @@ import type {
   GrowthEntry,
   LogEntry,
   Medication,
+  MedicationAlertEntry,
   SleepEntry,
   SymptomEntry,
 } from '@/types/health'
@@ -115,4 +116,17 @@ export function describeSleep(entry: SleepEntry): string {
   const who = whoLabel(entry.createdByEmail)
   if (entry.endedAt == null) return messageForSleepStart(who)
   return messageForSleepEnd(who, Math.round((entry.endedAt - entry.takenAt) / 60_000))
+}
+
+// The only describeX here with no "who" — these are server-fired (a course
+// starting/ending or a one-time alarm becoming due), not something a family
+// member did, so there's no actor to name.
+export function describeMedicationAlert(entry: MedicationAlertEntry): string {
+  if (entry.kind === 'courseStart') {
+    return t('notifications.courseStartReady', { name: entry.medicationName })
+  }
+  if (entry.kind === 'courseEnd') {
+    return t('notifications.courseEndReady', { name: entry.medicationName })
+  }
+  return t('notifications.reminderReady', { name: entry.medicationName })
 }

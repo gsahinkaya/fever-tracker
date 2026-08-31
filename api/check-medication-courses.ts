@@ -94,6 +94,39 @@ async function markNotified(
   })
 }
 
+// Creates a medicationAlerts doc so this same moment also shows up in the
+// in-app bell/banner (App.vue via stores/medicationAlerts.ts) — a boolean
+// field flip on the medication doc (markNotified above) doesn't trigger
+// useWatermarkedFeed's "added" listener the bell relies on, only a genuinely
+// new document does. `createdBy` is a sentinel, never a real family
+// member's uid, which is exactly what makes that composable's "not my own
+// write" filter treat it as incoming for every member.
+async function createMedicationAlert(
+  accessToken: string,
+  projectId: string,
+  familyId: string,
+  childId: string,
+  takenAt: number,
+  medicationName: string,
+  kind: string,
+): Promise<void> {
+  await fetch(
+    `${baseUrl(projectId)}/families/${familyId}/children/${childId}/medicationAlerts`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fields: {
+          takenAt: { integerValue: String(takenAt) },
+          medicationName: { stringValue: medicationName },
+          kind: { stringValue: kind },
+          createdBy: { stringValue: 'kido-system' },
+        },
+      }),
+    },
+  )
+}
+
 async function sendPush(
   accessToken: string,
   projectId: string,
@@ -124,24 +157,31 @@ const SCOPES = [
 interface DueCheck {
   fieldTs: string
   fieldNotified: string
+  // Matches MedicationAlertKind in src/types/health.ts — kept as a plain
+  // string here rather than importing that type (see the top-of-file note
+  // on zero local imports).
+  kind: 'courseStart' | 'courseEnd' | 'reminder'
   message: (childName: string, medName: string) => string
 }
 
 const COURSE_START: DueCheck = {
   fieldTs: 'courseStartAt',
   fieldNotified: 'courseStartNotified',
+  kind: 'courseStart',
   message: (childName, medName) =>
     `${childName} için ${medName} kürünü başlatma zamanı geldi. Kür boyunca düzenli vermeyi unutma.`,
 }
 const COURSE_END: DueCheck = {
   fieldTs: 'courseEndAt',
   fieldNotified: 'courseEndNotified',
+  kind: 'courseEnd',
   message: (childName, medName) =>
     `${childName} için ${medName} kürü sona erdi. Kürü yarıda bırakmadığından emin ol.`,
 }
 const REMINDER: DueCheck = {
   fieldTs: 'reminderAt',
   fieldNotified: 'reminderNotified',
+  kind: 'reminder',
   message: (childName, medName) => `${childName} için ${medName} hatırlatma zamanı geldi.`,
 }
 
@@ -209,6 +249,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return Number(ts) <= now
           })
           if (!due) continue
+          const dueAt = Number(med.fields![due.fieldTs]!.integerValue)
 
           const tokenLists = await Promise.all(
             memberUids.map((uid) =>
@@ -225,8 +266,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           // Mark notified regardless of whether any device tokens existed —
           // otherwise a family with no registered devices yet would get
           // this same "due" moment re-evaluated (harmlessly, just wasted
-          // work) on every single poll forever.
-          await markNotified(accessToken, med.name, due.fieldNotified)
+          // work) on every single poll forever. The in-app bell entry is
+          // created unconditionally too, since a family member with the app
+          // open right now should see it even if push delivery had nothing
+          // to reach.
+          await Promise.all([
+            markNotified(accessToken, med.name, due.fieldNotified),
+            createMedicationAlert(accessToken, projectId, familyId, childId, dueAt, medName, due.kind),
+          ])
         }
       }
     }

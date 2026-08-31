@@ -138,6 +138,27 @@ export interface DiaperEntry {
   createdByEmail?: string
 }
 
+// A record of a medication course-start/course-end/reminder push that the
+// server (api/check-medication-courses.ts) already fired — created purely
+// so the same moment also shows up in the in-app bell/banner (App.vue),
+// which otherwise only reacts to a client writing a brand-new document via
+// useWatermarkedFeed's "added" listener. A boolean field flipping on an
+// existing medication doc (courseStartNotified etc.) doesn't trigger that,
+// so the server creates one of these instead — the only entry type in the
+// app whose `createdBy` is never a real family member's uid (a sentinel
+// value instead), which is what makes useWatermarkedFeed's "not my own
+// write" filter treat it as incoming for every member.
+export type MedicationAlertKind = 'courseStart' | 'courseEnd' | 'reminder'
+
+export interface MedicationAlertEntry {
+  id: string
+  takenAt: number
+  medicationName: string
+  kind: MedicationAlertKind
+  createdBy?: string
+  createdByEmail?: string
+}
+
 export interface SleepEntry {
   id: string
   // Kept as `takenAt` (matching every other entry type) so this can go

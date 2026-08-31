@@ -166,7 +166,7 @@ export default {
     },
   },
   nearbyActivities: {
-    title: 'Yakındaki Etkinlikler',
+    title: 'Yakındaki Etkinlik Alanları',
     loading: 'Yakındaki yerler aranıyor, birkaç saniye sürebilir...',
     sourceHint: 'Sinema, tiyatro, müze, hayvanat bahçesi, akvaryum, lunapark, su parkı, oyun alanı gibi yerler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir.',
     empty: 'Bu bölgede kayıtlı bir etkinlik yeri bulunamadı.',
@@ -537,6 +537,7 @@ export default {
     someone: 'Bir aile üyesi',
     doseReady: '{name} için güvenli doz zamanı geldi.',
     courseStartReady: '{name} kürüne başlama zamanı geldi.',
+    courseEndReady: '{name} kürü sona erdi.',
     reminderReady: '{name} için ayarladığın hatırlatma zamanı geldi.',
     addedReading: '{who} {temp}° ölçüm ekledi',
     gaveMedication: '{who} {name} verdi',

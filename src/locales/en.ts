@@ -164,7 +164,7 @@ export default {
     },
   },
   nearbyActivities: {
-    title: 'Nearby Activities',
+    title: 'Nearby Activity Venues',
     loading: 'Searching for nearby places, this may take a few seconds...',
     sourceHint: 'Places like cinemas, theaters, museums, zoos, aquariums, amusement parks, water parks and playgrounds are listed from OpenStreetMap community data; some places may be missing or outdated.',
     empty: 'No listed activity venue found in this area.',
@@ -535,6 +535,7 @@ export default {
     someone: 'A family member',
     doseReady: 'It\'s time for a safe dose of {name}.',
     courseStartReady: 'It\'s time to start the {name} course.',
+    courseEndReady: 'The {name} course has ended.',
     reminderReady: 'Your reminder for {name} is due now.',
     addedReading: '{who} added a {temp}° reading',
     gaveMedication: '{who} gave {name}',
