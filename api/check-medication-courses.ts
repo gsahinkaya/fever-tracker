@@ -121,18 +121,6 @@ const SCOPES = [
   'https://www.googleapis.com/auth/firebase.messaging',
 ]
 
-// How far back a course-start/end/alarm moment can be and still fire.
-// Two very different callers hit this same endpoint: Vercel's own daily
-// cron (see vercel.json — Hobby plan can't schedule more often than once a
-// day) as a guaranteed-to-catch-everything fallback, and a GitHub Actions
-// workflow polling every few minutes for near-real-time delivery once
-// configured (see .github/workflows/medication-reminders.yml). The window
-// has to comfortably outlast the slower caller's interval (24h) so nothing
-// falls through a gap if the fast poller is ever down, while the
-// notified-flag check below still guarantees each moment only ever fires
-// once regardless of how many times either caller overlaps.
-const RECENT_WINDOW_MS = 25 * 60 * 60 * 1000
-
 interface DueCheck {
   fieldTs: string
   fieldNotified: string
@@ -160,8 +148,8 @@ const REMINDER: DueCheck = {
 // Vercel Cron (see vercel.json) hits this once a day as a fallback; a
 // GitHub Actions workflow can hit it every few minutes for much closer to
 // real-time delivery (Vercel Hobby can't schedule cron more often than
-// daily — see the RECENT_WINDOW_MS comment). Each poll scans every
-// family's children's medications for a courseStartAt, courseEndAt, or
+// daily). Each poll scans every family's children's medications for a
+// courseStartAt, courseEndAt, or
 // reminderAt (see types/health.ts Medication) that's due and not yet
 // notified, and pushes to every member of that family — including while
 // their app is closed. The multiple-times-a-day "time for the next dose"
@@ -180,7 +168,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const projectId = getServiceAccount().project_id
   const accessToken = await getGoogleAccessToken(SCOPES)
   const now = Date.now()
-  const windowStart = now - RECENT_WINDOW_MS
 
   let familiesChecked = 0
   let notificationsSent = 0
@@ -209,11 +196,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         for (const med of medications) {
           const medName = med.fields?.name?.stringValue ?? 'İlaç'
 
+          // No lower bound on how overdue this can be — a late medical
+          // reminder is far better than a permanently silent one. A stray
+          // outage (the CRON_SECRET misconfiguration this endpoint shipped
+          // with initially, for example) would otherwise leave a moment
+          // stuck forever once it aged out of a fixed lookback window,
+          // since nothing else ever re-checks it. The notified flag alone
+          // guarantees each moment still only ever fires once.
           const due = [COURSE_START, COURSE_END, REMINDER].find((check) => {
             const ts = med.fields?.[check.fieldTs]?.integerValue
             if (ts == null || med.fields?.[check.fieldNotified]?.booleanValue) return false
-            const value = Number(ts)
-            return value <= now && value > windowStart
+            return Number(ts) <= now
           })
           if (!due) continue
 
