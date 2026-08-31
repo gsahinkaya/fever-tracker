@@ -251,6 +251,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           if (!due) continue
           const dueAt = Number(med.fields![due.fieldTs]!.integerValue)
 
+          // Kicked off now (not awaited yet) since it has no dependency on
+          // the token lookup/push fan-out below — it runs concurrently with
+          // that instead of adding a sequential round-trip after it.
+          const alertPromise = createMedicationAlert(
+            accessToken,
+            projectId,
+            familyId,
+            childId,
+            dueAt,
+            medName,
+            due.kind,
+          )
+
           const tokenLists = await Promise.all(
             memberUids.map((uid) =>
               listDocuments(accessToken, projectId, `users/${uid}/deviceTokens`),
@@ -270,10 +283,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           // created unconditionally too, since a family member with the app
           // open right now should see it even if push delivery had nothing
           // to reach.
-          await Promise.all([
-            markNotified(accessToken, med.name, due.fieldNotified),
-            createMedicationAlert(accessToken, projectId, familyId, childId, dueAt, medName, due.kind),
-          ])
+          await Promise.all([markNotified(accessToken, med.name, due.fieldNotified), alertPromise])
         }
       }
     }
