@@ -83,6 +83,10 @@ export default {
         title: 'Invite a Family Member',
         body: 'Share an invite code or link from Settings to invite your partner, a parent, or a caregiver — you can track the same child together.',
       },
+      {
+        title: 'Add to Home Screen',
+        body: 'Kido isn\'t on the App Store/Play Store yet — it\'s a web app that runs in your browser. For notifications to actually work — this is required on iPhone — add Kido to your home screen: on iPhone, tap the share icon in Safari and choose "Add to Home Screen"; on Android, choose "Add to Home screen" from the browser menu. Otherwise reminders like medication/course alerts will never reach your phone.',
+      },
     ],
   },
   auth: {

@@ -25,6 +25,7 @@ const stepMeta = [
   { icon: 'mdi-drama-masks', color: 'activity' },
   { icon: 'mdi-bell-alert', color: 'primary' },
   { icon: 'mdi-account-multiple-plus-outline', color: 'primary' },
+  { icon: 'mdi-home-plus-outline', color: 'nextdose' },
 ]
 
 const steps = computed(() => tm('onboarding.steps') as unknown as { title: string; body: string }[])

@@ -85,6 +85,10 @@ export default {
         title: 'Aile Üyesi Davet Et',
         body: "Ayarlar'dan bir davet kodu veya linki paylaşarak eşini, anne-babanı ya da bakıcını davet edebilir, aynı çocuğu birlikte takip edebilirsiniz.",
       },
+      {
+        title: 'Ana Ekrana Ekle',
+        body: "Kido henüz App Store/Play Store'da değil, tarayıcı üzerinden çalışan bir uygulama. Bildirimlerin düzgün çalışması için — özellikle iPhone'da bu şart — Kido'yu ana ekranına eklemelisin: iPhone'da Safari'de paylaş ikonuna dokun ve \"Ana Ekrana Ekle\"yi seç; Android'de tarayıcı menüsünden \"Ana ekrana ekle\"yi seç. Aksi halde ilaç/kür hatırlatmaları gibi bildirimler telefonuna hiç ulaşmaz.",
+      },
     ],
   },
   auth: {
