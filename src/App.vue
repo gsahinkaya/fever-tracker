@@ -182,7 +182,7 @@ watch(
       <template #prepend>
         <RouterLink to="/" class="ml-2 d-flex" style="text-decoration: none">
           <v-avatar color="white" size="36">
-            <AlfredMark :size="26" />
+            <AlfredMark :height="26" />
           </v-avatar>
         </RouterLink>
       </template>

@@ -6,7 +6,7 @@ const props = withDefaults(defineProps<{ height?: number }>(), { height: 40 })
 
 <template>
   <span class="alfred-logo d-inline-flex align-center" :style="{ gap: props.height * 0.25 + 'px' }">
-    <AlfredMark :size="height * 1.15" />
+    <AlfredMark :height="height * 1.15" />
     <span class="d-flex flex-column">
       <span class="alfred-logo__text" :style="{ fontSize: props.height * 0.75 + 'px' }">Alfred</span>
       <span class="alfred-logo__tagline" :style="{ fontSize: props.height * 0.26 + 'px' }"
