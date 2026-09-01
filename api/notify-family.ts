@@ -2,12 +2,12 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createRemoteJWKSet, importPKCS8, jwtVerify, SignJWT } from 'jose'
 
 // This file deliberately has zero local imports (see the comment at the top
-// of kido-sor.ts) — every attempt at sharing this logic via a local module
+// of ask-alfred.ts) — every attempt at sharing this logic via a local module
 // (api/_lib, a project-root server/ dir) crashed both functions with
 // FUNCTION_INVOCATION_FAILED / ERR_MODULE_NOT_FOUND on Vercel's real
 // deploy, despite type-checking and bundling fine locally with @vercel/ncc.
 
-// --- Firebase ID token verification (duplicated from kido-sor.ts) ---
+// --- Firebase ID token verification (duplicated from ask-alfred.ts) ---
 const JWKS = createRemoteJWKSet(
   new URL(
     'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com',

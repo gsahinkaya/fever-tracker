@@ -16,8 +16,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.png'],
       manifest: {
-        name: 'Kido',
-        short_name: 'Kido',
+        name: 'Alfred',
+        short_name: 'Alfred',
         description: 'Ebeveynler için offline-first ateş ve ilaç takip asistanı',
         theme_color: '#5F07EF',
         background_color: '#fcfcfc',

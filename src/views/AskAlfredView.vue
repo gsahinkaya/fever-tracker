@@ -34,16 +34,16 @@ async function ask() {
 
   try {
     const idToken = await auth.currentUser?.getIdToken()
-    const response = await fetch('/api/kido-sor', {
+    const response = await fetch('/api/ask-alfred', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
       body: JSON.stringify({ question: q, language: locale.value }),
     })
     const data = await response.json()
-    if (!response.ok) throw new Error(data.error || t('askKido.genericError'))
+    if (!response.ok) throw new Error(data.error || t('askAlfred.genericError'))
     exchanges.value[idx]!.answer = data.answer
   } catch (err) {
-    exchanges.value[idx]!.error = err instanceof Error ? err.message : t('askKido.genericError')
+    exchanges.value[idx]!.error = err instanceof Error ? err.message : t('askAlfred.genericError')
   } finally {
     exchanges.value[idx]!.loading = false
     await scrollToBottom()
@@ -61,13 +61,13 @@ async function ask() {
         :aria-label="t('common.back')"
         @click="$router.back()"
       />
-      <span class="text-h6 ml-2">{{ t('askKido.title') }}</span>
+      <span class="text-h6 ml-2">{{ t('askAlfred.title') }}</span>
     </div>
 
     <div v-if="!exchanges.length" class="text-center text-medium-emphasis py-8">
       <v-icon icon="mdi-chat-question-outline" size="40" color="success" class="mb-2" />
       <p class="text-body-2">
-        {{ t('askKido.emptyBody') }}
+        {{ t('askAlfred.emptyBody') }}
       </p>
     </div>
 
@@ -95,7 +95,7 @@ async function ask() {
     <v-form class="d-flex ga-2" @submit.prevent="ask">
       <v-text-field
         v-model="question"
-        :label="t('askKido.inputLabel')"
+        :label="t('askAlfred.inputLabel')"
         variant="outlined"
         density="comfortable"
         hide-details
@@ -105,7 +105,7 @@ async function ask() {
     </v-form>
 
     <p class="text-caption text-medium-emphasis text-center mt-2">
-      {{ t('askKido.disclaimer') }}
+      {{ t('askAlfred.disclaimer') }}
     </p>
   </v-container>
 </template>

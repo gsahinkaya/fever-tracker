@@ -223,7 +223,7 @@ async function createPdf() {
 
     const datePart = new Date().toISOString().slice(0, 10)
     const namePart = activeChildName.value ? `-${activeChildName.value}` : ''
-    pdf.save(`kido-ozet-raporu${namePart}-${datePart}.pdf`)
+    pdf.save(`alfred-ozet-raporu${namePart}-${datePart}.pdf`)
   } finally {
     generatingPdf.value = false
   }

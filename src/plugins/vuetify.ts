@@ -43,7 +43,7 @@ export default createVuetify({
           // Growth tile/actions — kept distinct from every other tile color.
           growth: '#be185d',
           // Duty-pharmacy tile/actions — indigo, kept far from "success"
-          // green (Kido'ya Sor sits right above it on Home) so the two
+          // green (Alfred'e Sor sits right above it on Home) so the two
           // tiles read as different colors, not two shades of green.
           pharmacy: '#4338CA',
           // Vaccination tile/actions — warm amber-brown, distinct from the

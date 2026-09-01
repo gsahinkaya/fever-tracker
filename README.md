@@ -1,4 +1,4 @@
-# Kido
+# Alfred
 
 Offline-first PWA for families to track a child's fever, medication doses,
 feeding, and growth together — built so a parent can log something at 3am
@@ -10,12 +10,12 @@ the other parent finds out about it without having to ask.
 - **Ateş (Fever)** — log temperature readings, optionally backdated to when
   the measurement actually happened.
 - **İlaç (Medication)** — define medications with a safe re-dose interval;
-  Kido forecasts the next safe dose time and warns if you log one too early.
+  Alfred forecasts the next safe dose time and warns if you log one too early.
 - **Beslenme (Feeding)** — breastfeeding, bottle, and solid food entries.
 - **Büyüme (Growth)** — height/weight history with trend charts.
 - **Doktor Özet Raporu** — the last 48 hours of fever/medication history as a
   one-tap PDF download to bring to a doctor's visit.
-- **Kido'ya Sor** — free-form questions answered by Gemini, scoped to
+- **Alfred'e Sor** — free-form questions answered by Gemini, scoped to
   child-care topics, with a standing "see a real doctor for anything serious"
   disclaimer.
 - **Family sync** — every child can be shared with multiple family members
@@ -57,7 +57,7 @@ npm run dev
 |---|---|---|
 | `VITE_FIREBASE_*` | Client Firebase config | Firebase Console → Project Settings → General → your web app |
 | `VITE_FIREBASE_VAPID_KEY` | Web push public key | Firebase Console → Project Settings → Cloud Messaging → Web configuration → Generate key pair |
-| `GEMINI_API_KEY` | Server-only, `api/kido-sor.ts` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (free tier) |
+| `GEMINI_API_KEY` | Server-only, `api/ask-alfred.ts` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (free tier) |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | Server-only, `api/notify-family.ts` | Firebase Console → Project Settings → Service Accounts → Generate new private key (paste the full JSON as one line) |
 
 `VITE_`-prefixed variables are safe to expose (they end up in the client

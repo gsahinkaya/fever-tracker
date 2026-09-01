@@ -9,7 +9,7 @@ export default {
     back: 'Back',
     settings: 'Settings',
     notifications: 'Notifications',
-    appName: 'Kido',
+    appName: 'Alfred',
     durationHoursMinutes: '{h}h {m}m',
     durationMinutes: '{m}m',
   },
@@ -24,7 +24,7 @@ export default {
     stepLabel: '{current} / {total}',
     steps: [
       {
-        title: 'Welcome to Kido!',
+        title: 'Welcome to Alfred!',
         body: 'We make it easy for the whole family to track fever, medication and feeding together. Let\'s quickly show you how it works.',
       },
       {
@@ -37,7 +37,7 @@ export default {
       },
       {
         title: 'Medication',
-        body: 'Log it here whenever you give a dose. Kido calculates the next safe dose time for you and shows it on the home screen. In My Medications you can also track a syrup\'s opening and expiry date, and get warned before it runs out. For medications that run for a fixed period, like antibiotics, you can also set a course start/end date and time, and get reminders throughout the course and when it ends.',
+        body: 'Log it here whenever you give a dose. Alfred calculates the next safe dose time for you and shows it on the home screen. In My Medications you can also track a syrup\'s opening and expiry date, and get warned before it runs out. For medications that run for a fixed period, like antibiotics, you can also set a course start/end date and time, and get reminders throughout the course and when it ends.',
       },
       {
         title: 'Feeding',
@@ -49,11 +49,11 @@ export default {
       },
       {
         title: 'Sleep Tracking',
-        body: 'Tap start when your child falls asleep and stop when they wake up — Kido calculates the duration and lets the rest of the family know.',
+        body: 'Tap start when your child falls asleep and stop when they wake up — Alfred calculates the duration and lets the rest of the family know.',
       },
       {
         title: 'Vaccinations',
-        body: 'See your child\'s past and upcoming vaccines based on the national vaccination schedule, and mark off the ones already given. Kido reminds you a day ahead when one is coming up. If your child got (or is getting) a vaccine outside the national schedule — a travel vaccine, a flu shot — you can track it too with "Add Custom Vaccine".',
+        body: 'See your child\'s past and upcoming vaccines based on the national vaccination schedule, and mark off the ones already given. Alfred reminds you a day ahead when one is coming up. If your child got (or is getting) a vaccine outside the national schedule — a travel vaccine, a flu shot — you can track it too with "Add Custom Vaccine".',
       },
       {
         title: 'Growth',
@@ -64,8 +64,8 @@ export default {
         body: 'Download a one-tap PDF summary of fever, medication, feeding, growth and vaccination info to share with the doctor.',
       },
       {
-        title: 'Ask Kido',
-        body: 'You can ask Kido anything you\'re wondering about fever, medication or feeding.',
+        title: 'Ask Alfred',
+        body: 'You can ask Alfred anything you\'re wondering about fever, medication or feeding.',
       },
       {
         title: 'On-Duty Pharmacy',
@@ -85,7 +85,7 @@ export default {
       },
       {
         title: 'Add to Home Screen',
-        body: 'Kido isn\'t on the App Store/Play Store yet — it\'s a web app that runs in your browser. For notifications to actually work — this is required on iPhone — add Kido to your home screen: on iPhone, tap the share icon in Safari and choose "Add to Home Screen"; on Android, choose "Add to Home screen" from the browser menu. Otherwise reminders like medication/course alerts will never reach your phone.',
+        body: 'Alfred isn\'t on the App Store/Play Store yet — it\'s a web app that runs in your browser. For notifications to actually work — this is required on iPhone — add Alfred to your home screen: on iPhone, tap the share icon in Safari and choose "Add to Home Screen"; on Android, choose "Add to Home screen" from the browser menu. Otherwise reminders like medication/course alerts will never reach your phone.',
       },
     ],
   },
@@ -98,7 +98,7 @@ export default {
       registerLink: 'Sign up',
       error: 'Incorrect email or password.',
       intro:
-        "Kido is an assistant that lets your whole family share your child's fever, medication and feeding tracking. All records are stored on your device, so it works offline too and syncs automatically once you're back online. Log temperature readings, medication doses, and breastfeeding/bottle/solid food entries, track the next safe dose time; get notified when your partner or another family member adds something, and generate a summary report for the doctor.",
+        "Alfred is an assistant that lets your whole family share your child's fever, medication and feeding tracking. All records are stored on your device, so it works offline too and syncs automatically once you're back online. Log temperature readings, medication doses, and breastfeeding/bottle/solid food entries, track the next safe dose time; get notified when your partner or another family member adds something, and generate a summary report for the doctor.",
     },
     register: {
       heading: 'Create Account',
@@ -132,7 +132,7 @@ export default {
       feeding: 'Feeding',
       growth: 'Growth',
       report: 'Summary Report',
-      askKido: 'Ask Kido',
+      askAlfred: 'Ask Alfred',
       dutyPharmacy: 'On-Duty Pharmacy',
       vaccinations: 'Vaccinations',
       nearbyActivities: 'Nearby Activities',
@@ -296,7 +296,7 @@ export default {
     dangerZoneBody:
       'Permanently delete all fever, feeding, growth, symptom, sleep and diaper-change records for {name}. This cannot be undone.',
     deleteRecordsButton: "Delete {name}'s records",
-    footer: 'Kido stores all your data offline on your device and syncs it once you\'re back online.',
+    footer: 'Alfred stores all your data offline on your device and syncs it once you\'re back online.',
     confirmDialog: {
       title: 'Are you sure?',
       body: 'All records for {name} will be permanently deleted.',
@@ -443,11 +443,11 @@ export default {
       male: 'Boy',
     },
   },
-  askKido: {
-    title: 'Ask Kido',
-    emptyBody: 'You can ask Kido anything you\'re wondering about fever, medication or feeding.',
+  askAlfred: {
+    title: 'Ask Alfred',
+    emptyBody: 'You can ask Alfred anything you\'re wondering about fever, medication or feeding.',
     inputLabel: 'Ask something...',
-    disclaimer: 'Kido is not a substitute for a doctor; always consult a physician in serious situations.',
+    disclaimer: 'Alfred is not a substitute for a doctor; always consult a physician in serious situations.',
     genericError: 'Could not get a response, please try again.',
   },
   dialogs: {

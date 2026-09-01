@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import KidoMark from './KidoMark.vue'
+import AlfredMark from './AlfredMark.vue'
 
 const props = withDefaults(defineProps<{ height?: number }>(), { height: 40 })
 </script>
 
 <template>
-  <span class="kido-logo d-inline-flex align-center" :style="{ gap: props.height * 0.3 + 'px' }">
-    <KidoMark :size="height" />
-    <span class="kido-logo__text" :style="{ fontSize: props.height * 0.75 + 'px' }">kido</span>
+  <span class="alfred-logo d-inline-flex align-center" :style="{ gap: props.height * 0.3 + 'px' }">
+    <AlfredMark :size="height" />
+    <span class="alfred-logo__text" :style="{ fontSize: props.height * 0.75 + 'px' }">Alfred</span>
   </span>
 </template>
 
 <style scoped>
-.kido-logo__text {
+.alfred-logo__text {
   font-family:
     'Inter',
     system-ui,

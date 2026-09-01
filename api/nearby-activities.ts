@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createRemoteJWKSet, jwtVerify } from 'jose'
 
 // This file deliberately does NOT import from a shared local module — see
-// the comment at the top of kido-sor.ts for why: every attempt at sharing
+// the comment at the top of ask-alfred.ts for why: every attempt at sharing
 // this ~15-line check via a local module broke Vercel's per-file function
 // bundling in production even though it type-checked and bundled fine
 // locally with @vercel/ncc.
@@ -116,7 +116,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // policy) fixes it; curl from a regular machine never hit this
         // since curl always sends `Accept: */*`.
         Accept: 'application/json',
-        'User-Agent': 'Kido/1.0 (+https://fever-tracker-nu.vercel.app)',
+        'User-Agent': 'Alfred/1.0 (+https://fever-tracker-nu.vercel.app)',
       },
     })
     if (!overpassRes.ok) {

@@ -145,7 +145,7 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
         <v-btn block height="64" color="success" variant="flat" rounded="lg" to="/sor">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-chat-question-outline" size="26" class="mr-3" />
-            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.askKido') }}</span>
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.askAlfred') }}</span>
           </div>
         </v-btn>
         <v-btn block height="64" color="pharmacy" variant="flat" rounded="lg" to="/nobetci-eczane">

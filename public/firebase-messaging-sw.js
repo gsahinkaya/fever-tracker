@@ -21,7 +21,7 @@ const messaging = firebase.messaging()
 // shows a Notification via the active tab); this only fires for background/
 // closed-app pushes, which is the whole reason this file exists.
 messaging.onBackgroundMessage((payload) => {
-  const title = payload.notification?.title ?? 'Kido'
+  const title = payload.notification?.title ?? 'Alfred'
   const body = payload.notification?.body ?? ''
   self.registration.showNotification(title, {
     body,

@@ -58,8 +58,8 @@ const router = createRouter({
     },
     {
       path: '/sor',
-      name: 'ask-kido',
-      component: () => import('../views/AskKidoView.vue'),
+      name: 'ask-alfred',
+      component: () => import('../views/AskAlfredView.vue'),
     },
     {
       path: '/buyume',

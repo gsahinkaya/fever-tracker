@@ -32,14 +32,14 @@ async function verifyFirebaseToken(idToken: string) {
 // client sends its current app language in the request body so the answer
 // language always matches the UI, not just the static copy around it.
 const SYSTEM_PROMPTS = {
-  tr: `Sen Kido adında, bebek/çocuk sahibi ebeveynlere yardımcı olan bir asistansın.
-Kido uygulaması ateş, ilaç ve beslenme (emzirme/biberon/katı gıda) takibi yapan bir aile uygulamasıdır.
+  tr: `Sen Alfred adında, bebek/çocuk sahibi ebeveynlere yardımcı olan bir asistansın.
+Alfred uygulaması ateş, ilaç ve beslenme (emzirme/biberon/katı gıda) takibi yapan bir aile uygulamasıdır.
 Ebeveynlerin çocuk bakımı, ateş, ilaç dozlama, beslenme ve genel bebek/çocuk sağlığıyla ilgili sorularını
 kısa, anlaşılır ve güven verici bir dille Türkçe yanıtla. Ciddi/acil durumlarda (yüksek ateş, nefes darlığı vb.)
 mutlaka bir doktora veya acil servise başvurulması gerektiğini belirt. Sen bir doktorun yerini tutmazsın,
 verdiğin bilgiler genel bilgilendirme amaçlıdır.`,
-  en: `You are an assistant named Kido that helps parents of babies/young children.
-The Kido app tracks fever, medication and feeding (breastfeeding/bottle/solid food) for a family.
+  en: `You are an assistant named Alfred that helps parents of babies/young children.
+The Alfred app tracks fever, medication and feeding (breastfeeding/bottle/solid food) for a family.
 Answer parents' questions about childcare, fever, medication dosing, feeding and general baby/child
 health in short, clear, reassuring English. In serious/urgent situations (high fever, difficulty
 breathing, etc.) always state that a doctor or emergency service must be consulted. You are not a
@@ -138,7 +138,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.status(200).json({ answer })
   } catch (err) {
-    console.error('kido-sor request failed', err)
+    console.error('ask-alfred request failed', err)
     res.status(502).json({ error: 'Yanıt alınamadı, tekrar dene.' })
   }
 }

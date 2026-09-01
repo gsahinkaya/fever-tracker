@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createRemoteJWKSet, jwtVerify } from 'jose'
 
 // This file deliberately does NOT import from a shared local module — see
-// the comment at the top of kido-sor.ts for why: every attempt at sharing
+// the comment at the top of ask-alfred.ts for why: every attempt at sharing
 // this ~15-line check via a local module broke Vercel's per-file function
 // bundling in production even though it type-checked and bundled fine
 // locally with @vercel/ncc.
@@ -78,7 +78,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     res.status(200).json({ pharmacies: data.result ?? [] })
   } catch (err) {
-    console.error('nobetci-eczane request failed', err)
+    console.error('duty-pharmacy request failed', err)
     res.status(502).json({ error: 'Eczane bilgisi alınamadı, tekrar dene.' })
   }
 }

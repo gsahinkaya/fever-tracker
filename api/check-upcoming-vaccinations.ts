@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { importPKCS8, SignJWT } from 'jose'
 
 // This file deliberately has zero local imports (see the comment at the top
-// of kido-sor.ts) — every attempt at sharing logic via a local module broke
+// of ask-alfred.ts) — every attempt at sharing logic via a local module broke
 // Vercel's per-file function bundling in production even though it
 // type-checked and bundled fine locally with @vercel/ncc.
 //
@@ -217,7 +217,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               accessToken,
               projectId,
               token,
-              'Kido',
+              'Alfred',
               `${childName} için yarın ${dueName} zamanı geliyor.`,
             ),
           ),

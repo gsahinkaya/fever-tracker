@@ -58,7 +58,7 @@ export function useDutyPharmacies() {
     try {
       const idToken = await auth.currentUser?.getIdToken()
       const res = await fetch(
-        `/api/nobetci-eczane?il=${encodeURIComponent(il)}&ilce=${encodeURIComponent(ilce)}`,
+        `/api/duty-pharmacy?il=${encodeURIComponent(il)}&ilce=${encodeURIComponent(ilce)}`,
         { headers: idToken ? { Authorization: `Bearer ${idToken}` } : {} },
       )
       if (!res.ok) throw new Error('fetch-failed')

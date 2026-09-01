@@ -11,7 +11,7 @@ export default {
     back: 'Geri',
     settings: 'Ayarlar',
     notifications: 'Bildirimler',
-    appName: 'Kido',
+    appName: 'Alfred',
     durationHoursMinutes: '{h} sa {m} dk',
     durationMinutes: '{m} dk',
   },
@@ -26,7 +26,7 @@ export default {
     stepLabel: '{current} / {total}',
     steps: [
       {
-        title: "Kido'ya Hoş Geldin!",
+        title: "Alfred'e Hoş Geldin!",
         body: 'Ateş, ilaç ve beslenme takibini ailece kolayca yapmanı sağlıyoruz. Sana hızlıca nasıl çalıştığını gösterelim.',
       },
       {
@@ -39,7 +39,7 @@ export default {
       },
       {
         title: 'İlaç',
-        body: 'Bir doz ilaç verdiğinde buraya kaydet. Kido bir sonraki güvenli doz zamanını senin için hesaplayıp ana sayfada gösterir. İlaçlarım ekranında şurubun açılış ve son kullanma tarihini de kaydedebilir, süresi dolmadan önce uyarı alabilirsin. Antibiyotik gibi belirli bir süre kullanılması gereken ilaçlar için kür başlangıç/bitiş tarih-saatini de girebilir, kür boyunca ve kür bittiğinde hatırlatma alabilirsin.',
+        body: 'Bir doz ilaç verdiğinde buraya kaydet. Alfred bir sonraki güvenli doz zamanını senin için hesaplayıp ana sayfada gösterir. İlaçlarım ekranında şurubun açılış ve son kullanma tarihini de kaydedebilir, süresi dolmadan önce uyarı alabilirsin. Antibiyotik gibi belirli bir süre kullanılması gereken ilaçlar için kür başlangıç/bitiş tarih-saatini de girebilir, kür boyunca ve kür bittiğinde hatırlatma alabilirsin.',
       },
       {
         title: 'Beslenme',
@@ -51,11 +51,11 @@ export default {
       },
       {
         title: 'Uyku Takibi',
-        body: 'Çocuğun uykuya daldığında başlat, uyandığında bitir düğmesine bas — Kido süreyi hesaplar ve diğer aile üyelerine haber verir.',
+        body: 'Çocuğun uykuya daldığında başlat, uyandığında bitir düğmesine bas — Alfred süreyi hesaplar ve diğer aile üyelerine haber verir.',
       },
       {
         title: 'Aşılar',
-        body: 'T.C. Sağlık Bakanlığı aşı takvimine göre çocuğunun geçmiş ve gelecek aşılarını görür, yapılanları işaretlersin. Sırası gelen bir aşı varsa Kido bir gün önceden bildirimle hatırlatır. Ulusal takvimde olmayan bir aşı (seyahat aşısı, grip aşısı vb.) yaptırdıysan veya yaptıracaksan, "Özel Aşı Ekle" ile bunu da takip edebilirsin.',
+        body: 'T.C. Sağlık Bakanlığı aşı takvimine göre çocuğunun geçmiş ve gelecek aşılarını görür, yapılanları işaretlersin. Sırası gelen bir aşı varsa Alfred bir gün önceden bildirimle hatırlatır. Ulusal takvimde olmayan bir aşı (seyahat aşısı, grip aşısı vb.) yaptırdıysan veya yaptıracaksan, "Özel Aşı Ekle" ile bunu da takip edebilirsin.',
       },
       {
         title: 'Büyüme',
@@ -66,8 +66,8 @@ export default {
         body: 'Ateş, ilaç, beslenme, büyüme ve aşı bilgilerini içeren bir özeti tek dokunuşla PDF olarak indirip doktorla paylaşabilirsin.',
       },
       {
-        title: "Kido'ya Sor",
-        body: "Ateş, ilaç ya da beslenmeyle ilgili merak ettiğin bir şeyi Kido'ya sorabilirsin.",
+        title: "Alfred'e Sor",
+        body: "Ateş, ilaç ya da beslenmeyle ilgili merak ettiğin bir şeyi Alfred'e sorabilirsin.",
       },
       {
         title: 'Nöbetçi Eczane',
@@ -87,7 +87,7 @@ export default {
       },
       {
         title: 'Ana Ekrana Ekle',
-        body: "Kido henüz App Store/Play Store'da değil, tarayıcı üzerinden çalışan bir uygulama. Bildirimlerin düzgün çalışması için — özellikle iPhone'da bu şart — Kido'yu ana ekranına eklemelisin: iPhone'da Safari'de paylaş ikonuna dokun ve \"Ana Ekrana Ekle\"yi seç; Android'de tarayıcı menüsünden \"Ana ekrana ekle\"yi seç. Aksi halde ilaç/kür hatırlatmaları gibi bildirimler telefonuna hiç ulaşmaz.",
+        body: "Alfred henüz App Store/Play Store'da değil, tarayıcı üzerinden çalışan bir uygulama. Bildirimlerin düzgün çalışması için — özellikle iPhone'da bu şart — Alfred'i ana ekranına eklemelisin: iPhone'da Safari'de paylaş ikonuna dokun ve \"Ana Ekrana Ekle\"yi seç; Android'de tarayıcı menüsünden \"Ana ekrana ekle\"yi seç. Aksi halde ilaç/kür hatırlatmaları gibi bildirimler telefonuna hiç ulaşmaz.",
       },
     ],
   },
@@ -100,7 +100,7 @@ export default {
       registerLink: 'Kayıt ol',
       error: 'E-posta veya şifre hatalı.',
       intro:
-        'Kido, çocuğunun ateş, ilaç ve beslenme takibini ailece paylaşmanı sağlayan bir asistan. Tüm kayıtlar cihazında saklanır, bu yüzden internet olmadan da çalışır ve bağlantı geldiğinde otomatik senkronize olur. Ateş ölçümü, ilaç dozu ve emzirme/biberon/katı gıda girişlerini kaydet, güvenli doz zamanını takip et; eşin ya da diğer aile üyeleri bir şey ekleyince bildirim al ve doktor için özet rapor oluştur.',
+        'Alfred, çocuğunun ateş, ilaç ve beslenme takibini ailece paylaşmanı sağlayan bir asistan. Tüm kayıtlar cihazında saklanır, bu yüzden internet olmadan da çalışır ve bağlantı geldiğinde otomatik senkronize olur. Ateş ölçümü, ilaç dozu ve emzirme/biberon/katı gıda girişlerini kaydet, güvenli doz zamanını takip et; eşin ya da diğer aile üyeleri bir şey ekleyince bildirim al ve doktor için özet rapor oluştur.',
     },
     register: {
       heading: 'Hesap Oluştur',
@@ -134,7 +134,7 @@ export default {
       feeding: 'Beslenme',
       growth: 'Büyüme',
       report: 'Özet Rapor',
-      askKido: "Kido'ya Sor",
+      askAlfred: "Alfred'e Sor",
       dutyPharmacy: 'Nöbetçi Eczane',
       vaccinations: 'Aşılar',
       nearbyActivities: 'Yakındaki Etkinlikler',
@@ -298,7 +298,7 @@ export default {
     dangerZoneBody:
       '{name} için ateş, beslenme, büyüme, semptom, uyku ve bez değişimi kayıtlarının tümünü kalıcı olarak sil. Bu işlem geri alınamaz.',
     deleteRecordsButton: '{name} kayıtlarını sil',
-    footer: 'Kido, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.',
+    footer: 'Alfred, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.',
     confirmDialog: {
       title: 'Emin misin?',
       body: '{name} için tüm kayıtlar kalıcı olarak silinecek.',
@@ -445,11 +445,11 @@ export default {
       male: 'Erkek',
     },
   },
-  askKido: {
-    title: "Kido'ya Sor",
-    emptyBody: "Ateş, ilaç ya da beslenmeyle ilgili merak ettiğin bir şeyi Kido'ya sorabilirsin.",
+  askAlfred: {
+    title: "Alfred'e Sor",
+    emptyBody: "Ateş, ilaç ya da beslenmeyle ilgili merak ettiğin bir şeyi Alfred'e sorabilirsin.",
     inputLabel: 'Bir şey sor...',
-    disclaimer: 'Kido bir doktorun yerini tutmaz; ciddi durumlarda mutlaka bir hekime danış.',
+    disclaimer: 'Alfred bir doktorun yerini tutmaz; ciddi durumlarda mutlaka bir hekime danış.',
     genericError: 'Yanıt alınamadı, tekrar dene.',
   },
   dialogs: {

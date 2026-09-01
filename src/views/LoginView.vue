@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import KidoLogo from '@/components/KidoLogo.vue'
+import AlfredLogo from '@/components/AlfredLogo.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -31,7 +31,7 @@ async function submit() {
 <template>
   <v-container class="py-8" style="max-width: 420px">
     <div class="text-center mb-8">
-      <h1><KidoLogo :height="44" /></h1>
+      <h1><AlfredLogo :height="44" /></h1>
     </div>
 
     <v-form @submit.prevent="submit">

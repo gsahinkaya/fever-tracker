@@ -25,7 +25,7 @@ import {
   describeSleep,
   describeSymptom,
 } from '@/lib/describeActivity'
-import KidoMark from '@/components/KidoMark.vue'
+import AlfredMark from '@/components/AlfredMark.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -182,7 +182,7 @@ watch(
       <template #prepend>
         <RouterLink to="/" class="ml-2 d-flex" style="text-decoration: none">
           <v-avatar color="white" size="36">
-            <KidoMark :size="26" />
+            <AlfredMark :size="26" />
           </v-avatar>
         </RouterLink>
       </template>

@@ -120,7 +120,7 @@ async function createMedicationAlert(
           takenAt: { integerValue: String(takenAt) },
           medicationName: { stringValue: medicationName },
           kind: { stringValue: kind },
-          createdBy: { stringValue: 'kido-system' },
+          createdBy: { stringValue: 'alfred-system' },
         },
       }),
     },
@@ -272,7 +272,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const tokens = tokenLists.flat().map(docId)
           const results = await Promise.allSettled(
             tokens.map((token) =>
-              sendPush(accessToken, projectId, token, 'Kido', due.message(childName, medName)),
+              sendPush(accessToken, projectId, token, 'Alfred', due.message(childName, medName)),
             ),
           )
           notificationsSent += results.filter((r) => r.status === 'fulfilled' && r.value).length
