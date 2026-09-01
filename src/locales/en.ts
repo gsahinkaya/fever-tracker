@@ -98,7 +98,7 @@ export default {
       registerLink: 'Sign up',
       error: 'Incorrect email or password.',
       intro:
-        "Alfred is an assistant that lets your whole family share your child's fever, medication and feeding tracking. All records are stored on your device, so it works offline too and syncs automatically once you're back online. Log temperature readings, medication doses, and breastfeeding/bottle/solid food entries, track the next safe dose time; get notified when your partner or another family member adds something, and generate a summary report for the doctor.",
+        "Alfred, the assistant for life with kids: track fever, medication, feeding, growth, sleep and diapers together as a family. It follows the vaccination schedule, shows on-duty pharmacies and nearby activities, and you can ask Alfred anything you're wondering about. All records stay on your device and work offline; family members get notified when something's added, and you can generate a doctor summary report in one tap.",
     },
     register: {
       heading: 'Create Account',

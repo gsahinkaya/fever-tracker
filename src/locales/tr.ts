@@ -100,7 +100,7 @@ export default {
       registerLink: 'Kayıt ol',
       error: 'E-posta veya şifre hatalı.',
       intro:
-        'Alfred, çocuğunun ateş, ilaç ve beslenme takibini ailece paylaşmanı sağlayan bir asistan. Tüm kayıtlar cihazında saklanır, bu yüzden internet olmadan da çalışır ve bağlantı geldiğinde otomatik senkronize olur. Ateş ölçümü, ilaç dozu ve emzirme/biberon/katı gıda girişlerini kaydet, güvenli doz zamanını takip et; eşin ya da diğer aile üyeleri bir şey ekleyince bildirim al ve doktor için özet rapor oluştur.',
+        "Alfred, çocuklu hayatın asistanı: ateş, ilaç, beslenme, büyüme, uyku ve bez takibini ailece paylaşmanı sağlar. Aşı takvimini takip eder, nöbetçi eczane ve yakındaki etkinlikleri gösterir, merak ettiğin her şeyi Alfred'e sorabilirsin. Tüm kayıtlar cihazında saklanır, internetsiz de çalışır; aile üyeleri bir şey ekleyince bildirim alır, doktor için tek dokunuşla özet rapor oluşturursun.",
     },
     register: {
       heading: 'Hesap Oluştur',
