@@ -190,9 +190,7 @@ watch(
         <v-menu v-if="hasMultipleChildren" location="bottom">
           <template #activator="{ props: menuProps }">
             <div class="d-flex align-center" style="cursor: pointer" v-bind="menuProps">
-              <span class="text-subtitle-1 font-weight-bold">{{
-                activeChild?.name ?? t('common.appName')
-              }}</span>
+              <span class="text-subtitle-1 font-weight-bold">{{ activeChild?.name }}</span>
               <v-icon icon="mdi-chevron-down" size="18" class="ml-1" />
             </div>
           </template>
@@ -207,9 +205,7 @@ watch(
             </v-list-item>
           </v-list>
         </v-menu>
-        <span v-else class="text-subtitle-1 font-weight-bold">{{
-          activeChild?.name ?? t('common.appName')
-        }}</span>
+        <span v-else class="text-subtitle-1 font-weight-bold">{{ activeChild?.name }}</span>
       </v-app-bar-title>
       <template #append>
         <v-menu v-if="incomingItems.length" location="bottom end">

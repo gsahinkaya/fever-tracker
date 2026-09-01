@@ -11,7 +11,6 @@ withDefaults(defineProps<{ size?: number }>(), { size: 40 })
 <style scoped>
 .alfred-mark {
   display: block;
-  border-radius: 22%;
   object-fit: contain;
 }
 </style>
