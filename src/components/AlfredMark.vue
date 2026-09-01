@@ -5,7 +5,7 @@ withDefaults(defineProps<{ size?: number }>(), { size: 40 })
 </script>
 
 <template>
-  <img :src="alfredMark" :width="size" :height="size" alt="Alfred" class="alfred-mark" />
+  <img :src="alfredMark" :height="size" alt="Alfred" class="alfred-mark" />
 </template>
 
 <style scoped>
