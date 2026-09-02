@@ -291,6 +291,8 @@ export default {
     inviteTitle: 'Aile Üyesi Davet Et',
     inviteBody:
       'Bu kodu veya linki istediğin kişiyle paylaş — eşin, anne-baban ya da bakıcı olabilir. Kayıt olurken girdiğinde aynı çocukları görüp takip edebilir; istediğin kadar kişi ekleyebilirsin.',
+    membersTitle: 'Mevcut üyeler',
+    you: 'Sen',
     inviteCodeLabel: 'Davet kodu',
     inviteLinkLabel: 'Davet linki',
     copyLink: 'Linki Kopyala',

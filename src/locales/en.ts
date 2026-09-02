@@ -289,6 +289,8 @@ export default {
     inviteTitle: 'Invite a Family Member',
     inviteBody:
       'Share this code or link with whoever you want — your partner, a parent, or a caregiver. Once they enter it while signing up, they can see and track the same children; invite as many people as you like.',
+    membersTitle: 'Current members',
+    you: 'You',
     inviteCodeLabel: 'Invite code',
     inviteLinkLabel: 'Invite link',
     copyLink: 'Copy Link',

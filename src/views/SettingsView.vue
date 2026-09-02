@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useFamilyMembers } from '@/composables/useFamilyMembers'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
@@ -32,6 +33,9 @@ const inviteLink = computed(() =>
   authStore.familyId ? `${window.location.origin}/kayit?kod=${authStore.familyId}` : '',
 )
 const copied = ref(false)
+
+const { members: familyMembers, load: loadFamilyMembers } = useFamilyMembers()
+watch(() => authStore.familyId, loadFamilyMembers, { immediate: true })
 
 async function copyInvite() {
   try {
@@ -156,6 +160,31 @@ async function logout() {
     <v-card variant="outlined" class="mb-6">
       <v-card-title class="text-subtitle-1">{{ t('settings.inviteTitle') }}</v-card-title>
       <v-card-text>
+        <template v-if="familyMembers.length">
+          <p class="text-caption text-medium-emphasis text-uppercase mb-1">
+            {{ t('settings.membersTitle') }}
+          </p>
+          <v-list density="compact" class="mb-4 pa-0">
+            <v-list-item v-for="member in familyMembers" :key="member.uid" class="px-0">
+              <template #prepend>
+                <v-avatar color="primary" size="32" class="mr-3">
+                  <span class="text-body-2 text-white">{{
+                    (member.name || member.email || '?').charAt(0).toUpperCase()
+                  }}</span>
+                </v-avatar>
+              </template>
+              <v-list-item-title class="text-body-2 font-weight-bold">
+                {{ member.name || member.email }}
+                <span v-if="member.isSelf" class="text-medium-emphasis font-weight-regular">
+                  ({{ t('settings.you') }})</span
+                >
+              </v-list-item-title>
+              <v-list-item-subtitle v-if="member.name && member.email" class="text-caption">{{
+                member.email
+              }}</v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+        </template>
         <p class="text-body-2 text-medium-emphasis mb-2">
           {{ t('settings.inviteBody') }}
         </p>
