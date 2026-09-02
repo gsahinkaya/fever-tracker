@@ -192,26 +192,6 @@ watch(
         </RouterLink>
       </v-app-bar-title>
       <template #append>
-        <v-menu v-if="hasMultipleChildren" location="bottom end">
-          <template #activator="{ props: menuProps }">
-            <v-btn variant="text" class="text-none" append-icon="mdi-chevron-down" v-bind="menuProps">
-              {{ activeChild?.name }}
-            </v-btn>
-          </template>
-          <v-list density="comfortable">
-            <v-list-item
-              v-for="child in childrenStore.children"
-              :key="child.id"
-              :active="child.id === activeChild?.id"
-              @click="feverLogStore.watchChild(child.id)"
-            >
-              <v-list-item-title>{{ child.name }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-        <span v-else-if="activeChild" class="text-subtitle-1 font-weight-bold mr-2">{{
-          activeChild.name
-        }}</span>
         <v-menu v-if="incomingItems.length" location="bottom end">
           <template #activator="{ props: menuProps }">
             <v-badge :content="incomingItems.length" color="error" offset-x="6" offset-y="6">
@@ -252,6 +232,34 @@ watch(
     </v-app-bar>
 
     <v-main>
+      <v-sheet
+        v-if="!isAuthPage && activeChild"
+        color="surface"
+        class="d-flex align-center px-4 py-2 no-print"
+        style="border-bottom: 1px solid rgba(128, 128, 128, 0.16)"
+      >
+        <v-icon icon="mdi-account-circle-outline" size="18" class="mr-1 text-medium-emphasis" />
+        <v-menu v-if="hasMultipleChildren" location="bottom">
+          <template #activator="{ props: menuProps }">
+            <div class="d-flex align-center" style="cursor: pointer" v-bind="menuProps">
+              <span class="text-body-2 font-weight-bold">{{ activeChild.name }}</span>
+              <v-icon icon="mdi-chevron-down" size="16" class="ml-1" />
+            </div>
+          </template>
+          <v-list density="comfortable">
+            <v-list-item
+              v-for="child in childrenStore.children"
+              :key="child.id"
+              :active="child.id === activeChild?.id"
+              @click="feverLogStore.watchChild(child.id)"
+            >
+              <v-list-item-title>{{ child.name }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <span v-else class="text-body-2 font-weight-bold">{{ activeChild.name }}</span>
+      </v-sheet>
+
       <v-slide-y-transition>
         <v-alert
           v-if="showBanner"
