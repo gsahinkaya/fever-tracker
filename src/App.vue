@@ -238,11 +238,11 @@ watch(
         class="d-flex align-center px-4 py-2 no-print"
         style="border-bottom: 1px solid rgba(128, 128, 128, 0.16)"
       >
-        <v-icon icon="mdi-account-circle-outline" size="18" class="mr-1 text-medium-emphasis" />
+        <v-icon icon="mdi-baby-face-outline" size="20" class="mr-1 text-medium-emphasis" />
         <v-menu v-if="hasMultipleChildren" location="bottom">
           <template #activator="{ props: menuProps }">
             <div class="d-flex align-center" style="cursor: pointer" v-bind="menuProps">
-              <span class="text-body-2 font-weight-bold">{{ activeChild.name }}</span>
+              <span class="text-body-1 font-weight-bold">{{ activeChild.name }}</span>
               <v-icon icon="mdi-chevron-down" size="16" class="ml-1" />
             </div>
           </template>
@@ -257,7 +257,7 @@ watch(
             </v-list-item>
           </v-list>
         </v-menu>
-        <span v-else class="text-body-2 font-weight-bold">{{ activeChild.name }}</span>
+        <span v-else class="text-body-1 font-weight-bold">{{ activeChild.name }}</span>
       </v-sheet>
 
       <v-slide-y-transition>
