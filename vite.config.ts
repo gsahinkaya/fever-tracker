@@ -18,7 +18,7 @@ export default defineConfig({
       manifest: {
         name: 'Alfred',
         short_name: 'Alfred',
-        description: 'Ebeveynler için offline-first ateş ve ilaç takip asistanı',
+        description: 'Alfred - Çocuklu Hayatın Asistanı. Takip eder. Hatırlatır. Cevaplar. Hayatınızı kolaylaştırır.',
         theme_color: '#5F07EF',
         background_color: '#fcfcfc',
         display: 'standalone',
