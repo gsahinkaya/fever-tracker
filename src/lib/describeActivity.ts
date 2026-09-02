@@ -11,7 +11,7 @@ import type {
   SymptomEntry,
 } from '@/types/health'
 
-function whoLabel(email?: string): string {
+export function whoLabel(email?: string): string {
   return email?.split('@')[0] ?? t('notifications.someone')
 }
 

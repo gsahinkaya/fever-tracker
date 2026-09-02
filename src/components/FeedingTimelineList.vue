@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import type { FeedingEntry } from '@/types/health'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { feedingEntryTitle } from '@/lib/entryTitles'
+import { whoLabel } from '@/lib/describeActivity'
 import { shortDateTime as timeLabel } from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
@@ -50,7 +51,9 @@ function confirmDelete() {
         </v-avatar>
       </template>
       <v-list-item-title>{{ title(entry) }}</v-list-item-title>
-      <v-list-item-subtitle>{{ timeLabel(entry.takenAt) }}</v-list-item-subtitle>
+      <v-list-item-subtitle
+        >{{ timeLabel(entry.takenAt) }} · {{ whoLabel(entry.createdByEmail) }}</v-list-item-subtitle
+      >
       <template #append>
         <v-btn
           icon="mdi-delete-outline"

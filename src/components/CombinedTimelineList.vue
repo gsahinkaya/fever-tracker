@@ -8,7 +8,7 @@ import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
 import { feedingEntryTitle } from '@/lib/entryTitles'
-import { formatDuration } from '@/lib/describeActivity'
+import { formatDuration, whoLabel } from '@/lib/describeActivity'
 import { shortDateTime as timeLabel } from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
@@ -122,7 +122,9 @@ function confirmDelete() {
         </v-avatar>
       </template>
       <v-list-item-title>{{ title(entry) }}</v-list-item-title>
-      <v-list-item-subtitle>{{ timeLabel(entry.takenAt) }}</v-list-item-subtitle>
+      <v-list-item-subtitle
+        >{{ timeLabel(entry.takenAt) }} · {{ whoLabel(entry.createdByEmail) }}</v-list-item-subtitle
+      >
       <template #append>
         <v-btn
           icon="mdi-delete-outline"
