@@ -1,6 +1,7 @@
 import { t } from '@/i18n'
 import { useAuthStore } from '@/stores/auth'
 import type {
+  CalendarEvent,
   DiaperEntry,
   FeedingEntry,
   GrowthEntry,
@@ -66,6 +67,9 @@ export function messageForSymptom(who: string, type: string): string {
 export function messageForDiaper(who: string, type: string): string {
   return t('notifications.addedDiaper', { who, type: t(`diaper.types.${type}`) })
 }
+export function messageForCalendarEvent(who: string, title: string): string {
+  return t('notifications.addedCalendarEvent', { who, title })
+}
 export function messageForSleepStart(who: string): string {
   return t('notifications.startedSleep', { who })
 }
@@ -112,6 +116,10 @@ export function describeSymptom(entry: SymptomEntry): string {
 
 export function describeDiaper(entry: DiaperEntry): string {
   return messageForDiaper(whoLabel(entry.createdByEmail), entry.type)
+}
+
+export function describeCalendarEvent(entry: CalendarEvent): string {
+  return messageForCalendarEvent(whoLabel(entry.createdByEmail), entry.title)
 }
 
 // Only ever reflects the "just started" state in practice — the bell/

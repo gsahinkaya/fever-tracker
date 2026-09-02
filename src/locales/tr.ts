@@ -79,6 +79,10 @@ export default {
         body: 'Konumuna göre yakınındaki sinema, tiyatro, müze, oyun alanı gibi çocuk dostu mekanları listeler, tek dokunuşla arayabilir ya da yol tarifi alabilirsin.',
       },
       {
+        title: 'Takvim',
+        body: 'Doktor randevusu, doğum günü ya da başka bir özel günü takvime ekle — bir gün önceden hatırlatma bildirimi alırsın, istersen etkinliği telefonunun kendi takvimine de ekleyebilirsin.',
+      },
+      {
         title: 'Bildirimler',
         body: 'Eşin ya da aileden biri bir kayıt eklediğinde sağ üstteki zil ikonunda bunu görürsün, kimse birbirinden habersiz kalmaz.',
       },
@@ -143,6 +147,7 @@ export default {
       symptoms: 'Semptomlar',
       sleep: 'Uyku',
       diaper: 'Bez Değişimi',
+      calendar: 'Takvim',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
   },
@@ -271,6 +276,25 @@ export default {
       notePlaceholder: 'Örn. renk/kıvam farklıydı',
       timeLabel: 'Saat',
       timeHint: 'Önceden değiştirdiysen saati değiştirebilirsin',
+    },
+  },
+  calendar: {
+    title: 'Takvim',
+    addButton: 'Etkinlik Ekle',
+    upcoming: 'Yaklaşan',
+    past: 'Geçmiş',
+    empty: 'Henüz eklenmiş bir etkinlik yok.',
+    deleteAria: 'Etkinliği sil',
+    deleteConfirmTitle: 'Etkinliği sil',
+    deleteConfirmBody: '{title} · {date} etkinliği silinsin mi?',
+    addToPhoneCalendar: 'Telefon takvimine ekle',
+    reminderNote: 'Etkinlik gününden bir gün önce hatırlatma bildirimi gönderilir.',
+    dialog: {
+      title: 'Etkinlik Ekle',
+      titleLabel: 'Başlık',
+      titlePlaceholder: 'Örn. Doktor randevusu, doğum günü',
+      dateLabel: 'Tarih',
+      noteLabel: 'Not (opsiyonel)',
     },
   },
   settings: {
@@ -553,6 +577,7 @@ export default {
     startedSleep: '{who} uyku kaydı başlattı',
     wokeUp: '{who} uyandı ({duration})',
     addedDiaper: '{who} bez değişimi ekledi: {type}',
+    addedCalendarEvent: '{who} yeni bir etkinlik ekledi: {title}',
     milkTypes: {
       formula: 'mama',
       'breast-milk': 'anne sütü',

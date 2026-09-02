@@ -77,6 +77,10 @@ export default {
         body: 'Lists nearby kid-friendly places like cinemas, theaters, museums and playgrounds based on your location — call with one tap or get directions.',
       },
       {
+        title: 'Calendar',
+        body: "Add a doctor's appointment, a birthday, or any other special day to the calendar — you'll get a reminder notification one day ahead, and you can add the event to your phone's own calendar too.",
+      },
+      {
         title: 'Notifications',
         body: 'When your partner or another family member logs something, you\'ll see it in the bell icon at the top right — no one is left out of the loop.',
       },
@@ -141,6 +145,7 @@ export default {
       symptoms: 'Symptoms',
       sleep: 'Sleep',
       diaper: 'Diaper Change',
+      calendar: 'Calendar',
     },
     nextSafeDose: 'Next Safe Dose',
   },
@@ -269,6 +274,25 @@ export default {
       notePlaceholder: 'E.g. color/consistency was different',
       timeLabel: 'Time',
       timeHint: 'You can change the time if it was earlier',
+    },
+  },
+  calendar: {
+    title: 'Calendar',
+    addButton: 'Add Event',
+    upcoming: 'Upcoming',
+    past: 'Past',
+    empty: 'No events added yet.',
+    deleteAria: 'Delete event',
+    deleteConfirmTitle: 'Delete event',
+    deleteConfirmBody: 'Delete the {title} · {date} event?',
+    addToPhoneCalendar: 'Add to phone calendar',
+    reminderNote: "A reminder notification is sent one day before the event.",
+    dialog: {
+      title: 'Add Event',
+      titleLabel: 'Title',
+      titlePlaceholder: 'E.g. Doctor appointment, birthday',
+      dateLabel: 'Date',
+      noteLabel: 'Note (optional)',
     },
   },
   settings: {
@@ -551,6 +575,7 @@ export default {
     startedSleep: '{who} started a sleep entry',
     wokeUp: '{who} woke up ({duration})',
     addedDiaper: '{who} logged a diaper change: {type}',
+    addedCalendarEvent: '{who} added a new event: {title}',
     milkTypes: {
       formula: 'formula',
       'breast-milk': 'breast milk',

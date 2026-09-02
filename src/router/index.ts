@@ -37,6 +37,11 @@ const router = createRouter({
       component: () => import('../views/NearbyActivitiesView.vue'),
     },
     {
+      path: '/takvim',
+      name: 'calendar',
+      component: () => import('../views/CalendarView.vue'),
+    },
+    {
       path: '/ayarlar',
       name: 'settings',
       component: () => import('../views/SettingsView.vue'),

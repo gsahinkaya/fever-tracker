@@ -160,6 +160,12 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.nearbyActivities') }}</span>
           </div>
         </v-btn>
+        <v-btn block height="64" color="calendar" variant="flat" rounded="lg" to="/takvim">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-calendar-heart" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.calendar') }}</span>
+          </div>
+        </v-btn>
       </div>
 
       <AddReadingDialog v-model="showReadingDialog" />

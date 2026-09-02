@@ -66,6 +66,10 @@ export default createVuetify({
           // Home, so this stays out of the whole orange/amber/brown family
           // that secondary/vaccine/warning already occupy.
           diaper: '#BE123C',
+          // Calendar tile/actions — teal-green, distinct from every other
+          // tile hue (including "success" and "medication", the closest
+          // green/teal neighbors).
+          calendar: '#0F766E',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',
@@ -95,6 +99,7 @@ export default createVuetify({
           nextdose: '#94A3B8',
           sleep: '#7DD3FC',
           diaper: '#FB7185',
+          calendar: '#2DD4BF',
           error: '#F97066',
           success: '#32D583',
           warning: '#FDB022',

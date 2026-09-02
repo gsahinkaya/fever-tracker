@@ -86,6 +86,10 @@ service cloud.firestore {
       allow read, write: if isMember(familyId);
     }
 
+    match /families/{familyId}/children/{childId}/calendarEvents/{eventId} {
+      allow read, write: if isMember(familyId);
+    }
+
     // Written by the server (api/check-medication-courses.ts, using the
     // admin-authenticated service account, which bypasses rules) — the
     // client only ever reads these, but member-write stays allowed for

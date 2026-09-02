@@ -23,6 +23,7 @@ const stepMeta = [
   { icon: 'mdi-chat-question-outline', color: 'success' },
   { icon: 'mdi-mortar-pestle', color: 'pharmacy' },
   { icon: 'mdi-drama-masks', color: 'activity' },
+  { icon: 'mdi-calendar-heart', color: 'calendar' },
   { icon: 'mdi-bell-alert', color: 'primary' },
   { icon: 'mdi-account-multiple-plus-outline', color: 'primary' },
   { icon: 'mdi-home-plus-outline', color: 'nextdose' },

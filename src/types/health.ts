@@ -159,6 +159,28 @@ export interface MedicationAlertEntry {
   createdByEmail?: string
 }
 
+// A future-dated reminder (doctor appointment, a friend's birthday, any
+// other special day) — unlike every other entry type here, `date` looks
+// forward rather than logging something that already happened, and the
+// server (api/check-upcoming-calendar-events.ts) pushes a reminder the day
+// before, the same "due tomorrow" check used for vaccinations. `date` is a
+// plain YYYY-MM-DD string (like CustomVaccine.dueDate) rather than a
+// Firestore Timestamp — this is a day-granularity date, not a moment in
+// time, and a Timestamp would round-trip through UTC on every read/write
+// for no benefit.
+export interface CalendarEvent {
+  id: string
+  title: string
+  date: string
+  note?: string
+  createdBy?: string
+  createdByEmail?: string
+  // When the event was added (not `date`, which is when it's scheduled for)
+  // — drives the "did someone else just add this" bell/banner notification,
+  // same role as Medication.createdAt.
+  createdAt?: number
+}
+
 export interface SleepEntry {
   id: string
   // Kept as `takenAt` (matching every other entry type) so this can go

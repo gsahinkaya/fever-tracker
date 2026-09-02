@@ -12,11 +12,13 @@ import { useGrowthLogStore } from '@/stores/growthLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
+import { useCalendarEventsStore } from '@/stores/calendarEvents'
 import { useMedicationAlertsStore } from '@/stores/medicationAlerts'
 import { useThemeStore } from '@/stores/theme'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
 import {
+  describeCalendarEvent,
   describeDiaper,
   describeEntry,
   describeFeeding,
@@ -40,6 +42,7 @@ const growthLogStore = useGrowthLogStore()
 const symptomLogStore = useSymptomLogStore()
 const sleepLogStore = useSleepLogStore()
 const diaperLogStore = useDiaperLogStore()
+const calendarEventsStore = useCalendarEventsStore()
 const medicationAlertsStore = useMedicationAlertsStore()
 useThemeStore()
 
@@ -80,6 +83,10 @@ const incomingItems = computed(() =>
     ...diaperLogStore.incomingEntries.map((entry) => ({
       at: entry.takenAt,
       text: describeDiaper(entry),
+    })),
+    ...calendarEventsStore.incomingEvents.map((entry) => ({
+      at: entry.createdAt ?? 0,
+      text: describeCalendarEvent(entry),
     })),
     ...medicationAlertsStore.incomingEntries.map((entry) => ({
       at: entry.takenAt,
@@ -172,6 +179,7 @@ watch(
     symptomLogStore.watchChild(childId)
     sleepLogStore.watchChild(childId)
     diaperLogStore.watchChild(childId)
+    calendarEventsStore.watchChild(childId)
     medicationAlertsStore.watchChild(childId)
     if (childId && authStore.familyId) {
       localStorage.setItem(`ates-olcer:active-child:${authStore.familyId}`, childId)
