@@ -12,6 +12,7 @@ export default {
     settings: 'Ayarlar',
     notifications: 'Bildirimler',
     appName: 'Alfred',
+    appTagline: 'Çocuklu Hayatın Asistanı',
     durationHoursMinutes: '{h} sa {m} dk',
     durationMinutes: '{m} dk',
   },

@@ -187,12 +187,16 @@ watch(
         </RouterLink>
       </template>
       <v-app-bar-title>
-        <v-menu v-if="hasMultipleChildren" location="bottom">
+        <RouterLink to="/" class="d-block" style="text-decoration: none; color: inherit">
+          <span class="text-subtitle-1 font-weight-bold">{{ t('common.appName') }} - {{ t('common.appTagline') }}</span>
+        </RouterLink>
+      </v-app-bar-title>
+      <template #append>
+        <v-menu v-if="hasMultipleChildren" location="bottom end">
           <template #activator="{ props: menuProps }">
-            <div class="d-flex align-center" style="cursor: pointer" v-bind="menuProps">
-              <span class="text-subtitle-1 font-weight-bold">{{ activeChild?.name }}</span>
-              <v-icon icon="mdi-chevron-down" size="18" class="ml-1" />
-            </div>
+            <v-btn variant="text" class="text-none" append-icon="mdi-chevron-down" v-bind="menuProps">
+              {{ activeChild?.name }}
+            </v-btn>
           </template>
           <v-list density="comfortable">
             <v-list-item
@@ -205,9 +209,9 @@ watch(
             </v-list-item>
           </v-list>
         </v-menu>
-        <span v-else class="text-subtitle-1 font-weight-bold">{{ activeChild?.name }}</span>
-      </v-app-bar-title>
-      <template #append>
+        <span v-else-if="activeChild" class="text-subtitle-1 font-weight-bold mr-2">{{
+          activeChild.name
+        }}</span>
         <v-menu v-if="incomingItems.length" location="bottom end">
           <template #activator="{ props: menuProps }">
             <v-badge :content="incomingItems.length" color="error" offset-x="6" offset-y="6">

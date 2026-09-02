@@ -10,6 +10,7 @@ export default {
     settings: 'Settings',
     notifications: 'Notifications',
     appName: 'Alfred',
+    appTagline: 'The Assistant for Life with Kids',
     durationHoursMinutes: '{h}h {m}m',
     durationMinutes: '{m}m',
   },
