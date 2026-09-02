@@ -40,3 +40,13 @@ export interface Family {
   ownerUid: string
   members: Record<string, true>
 }
+
+// A family member resolved from the family doc's member uids + each uid's
+// own users/{uid} profile — used to show a real name (not just an email
+// prefix) for "who logged this" across the app.
+export interface FamilyMember {
+  uid: string
+  name?: string
+  email?: string
+  isSelf: boolean
+}

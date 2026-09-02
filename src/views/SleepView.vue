@@ -2,14 +2,16 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSleepLogStore } from '@/stores/sleepLog'
+import { useFamilyMembersStore } from '@/stores/familyMembers'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { formatDuration } from '@/lib/describeActivity'
+import { formatDuration, whoNameLabel } from '@/lib/describeActivity'
 import { useNow } from '@/composables/useNow'
 import { use48hToggle } from '@/composables/use48hToggle'
 import { shortDateTime as timeLabel } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const store = useSleepLogStore()
+const familyMembersStore = useFamilyMembersStore()
 const now = useNow(30_000)
 
 const confirmDeleteTarget = ref<{ id: string; takenAt: number; endedAt?: number } | null>(null)
@@ -113,7 +115,10 @@ function confirmDelete() {
         <v-list-item-title>{{
           t('sleep.duration', { duration: formatDuration(Math.round((entry.endedAt! - entry.takenAt) / 60_000)) })
         }}</v-list-item-title>
-        <v-list-item-subtitle>{{ timeLabel(entry.takenAt) }}</v-list-item-subtitle>
+        <v-list-item-subtitle
+          >{{ timeLabel(entry.takenAt) }} ·
+          {{ whoNameLabel(familyMembersStore.members, entry.createdBy, entry.createdByEmail) }}</v-list-item-subtitle
+        >
         <template #append>
           <v-btn
             icon="mdi-delete-outline"

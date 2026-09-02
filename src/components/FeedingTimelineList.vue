@@ -3,14 +3,16 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FeedingEntry } from '@/types/health'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { useFamilyMembersStore } from '@/stores/familyMembers'
 import { feedingEntryTitle } from '@/lib/entryTitles'
-import { whoLabel } from '@/lib/describeActivity'
+import { whoNameLabel } from '@/lib/describeActivity'
 import { shortDateTime as timeLabel } from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const { t } = useI18n()
 defineProps<{ entries: FeedingEntry[] }>()
 const store = useFeedingLogStore()
+const familyMembersStore = useFamilyMembersStore()
 
 const confirmTarget = ref<FeedingEntry | null>(null)
 
@@ -52,7 +54,8 @@ function confirmDelete() {
       </template>
       <v-list-item-title>{{ title(entry) }}</v-list-item-title>
       <v-list-item-subtitle
-        >{{ timeLabel(entry.takenAt) }} · {{ whoLabel(entry.createdByEmail) }}</v-list-item-subtitle
+        >{{ timeLabel(entry.takenAt) }} ·
+        {{ whoNameLabel(familyMembersStore.members, entry.createdBy, entry.createdByEmail) }}</v-list-item-subtitle
       >
       <template #append>
         <v-btn

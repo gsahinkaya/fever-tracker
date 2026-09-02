@@ -295,10 +295,10 @@ export default {
     inviteLinkLabel: 'Invite link',
     copyLink: 'Copy Link',
     copied: 'Copied',
-    dangerZone: 'Danger Zone',
+    dangerZone: 'Reset Data',
     dangerZoneBody:
       'Permanently delete all fever, feeding, growth, symptom, sleep and diaper-change records for {name}. This cannot be undone.',
-    deleteRecordsButton: "Delete {name}'s records",
+    deleteRecordsButton: "Reset {name}'s data",
     footer: 'Alfred stores all your data offline on your device and syncs it once you\'re back online.',
     confirmDialog: {
       title: 'Are you sure?',

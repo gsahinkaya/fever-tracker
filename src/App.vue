@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
+import { useFamilyMembersStore } from '@/stores/familyMembers'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
@@ -31,6 +32,7 @@ const { t } = useI18n()
 const route = useRoute()
 const authStore = useAuthStore()
 const childrenStore = useChildrenStore()
+const familyMembersStore = useFamilyMembersStore()
 const feverLogStore = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
 const feedingLogStore = useFeedingLogStore()
@@ -145,6 +147,8 @@ watch(
   (familyId) => childrenStore.watchFamily(familyId),
   { immediate: true },
 )
+
+watch(() => authStore.familyId, familyMembersStore.load, { immediate: true })
 
 watch(
   () => childrenStore.children,

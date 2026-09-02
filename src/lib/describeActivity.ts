@@ -10,9 +10,18 @@ import type {
   SleepEntry,
   SymptomEntry,
 } from '@/types/health'
+import type { FamilyMember } from '@/types/family'
 
 export function whoLabel(email?: string): string {
   return email?.split('@')[0] ?? t('notifications.someone')
+}
+
+// Prefers the family member's actual name (collected at registration) over
+// the createdByEmail-derived fallback above — used in the entry tables so
+// "who did this" reads as a real name rather than an email prefix.
+export function whoNameLabel(members: FamilyMember[], uid?: string, email?: string): string {
+  const name = uid ? members.find((m) => m.uid === uid)?.name : undefined
+  return name || whoLabel(email)
 }
 
 // For messages built right after *this* device's own write (the push-family

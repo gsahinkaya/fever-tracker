@@ -2,13 +2,16 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSymptomLogStore } from '@/stores/symptomLog'
+import { useFamilyMembersStore } from '@/stores/familyMembers'
 import AddSymptomDialog from '@/components/AddSymptomDialog.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { use48hToggle } from '@/composables/use48hToggle'
+import { whoNameLabel } from '@/lib/describeActivity'
 import { shortDateTime as timeLabel } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const store = useSymptomLogStore()
+const familyMembersStore = useFamilyMembersStore()
 
 const showAddDialog = ref(false)
 const confirmDeleteTarget = ref<{ id: string; type: string; takenAt: number } | null>(null)
@@ -79,7 +82,10 @@ function confirmDelete() {
           >{{ t(`symptoms.types.${entry.type}`)
           }}<span v-if="entry.note"> · {{ entry.note }}</span></v-list-item-title
         >
-        <v-list-item-subtitle>{{ timeLabel(entry.takenAt) }}</v-list-item-subtitle>
+        <v-list-item-subtitle
+          >{{ timeLabel(entry.takenAt) }} ·
+          {{ whoNameLabel(familyMembersStore.members, entry.createdBy, entry.createdByEmail) }}</v-list-item-subtitle
+        >
         <template #append>
           <v-btn
             icon="mdi-delete-outline"

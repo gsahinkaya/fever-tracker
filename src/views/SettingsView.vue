@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useFamilyMembers } from '@/composables/useFamilyMembers'
+import { useFamilyMembersStore } from '@/stores/familyMembers'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
@@ -34,8 +34,7 @@ const inviteLink = computed(() =>
 )
 const copied = ref(false)
 
-const { members: familyMembers, load: loadFamilyMembers } = useFamilyMembers()
-watch(() => authStore.familyId, loadFamilyMembers, { immediate: true })
+const familyMembersStore = useFamilyMembersStore()
 
 async function copyInvite() {
   try {
@@ -160,12 +159,12 @@ async function logout() {
     <v-card variant="outlined" class="mb-6">
       <v-card-title class="text-subtitle-1">{{ t('settings.inviteTitle') }}</v-card-title>
       <v-card-text>
-        <template v-if="familyMembers.length">
+        <template v-if="familyMembersStore.members.length">
           <p class="text-caption text-medium-emphasis text-uppercase mb-1">
             {{ t('settings.membersTitle') }}
           </p>
           <v-list density="compact" class="mb-4 pa-0">
-            <v-list-item v-for="member in familyMembers" :key="member.uid" class="px-0">
+            <v-list-item v-for="member in familyMembersStore.members" :key="member.uid" class="px-0">
               <template #prepend>
                 <v-avatar color="primary" size="32" class="mr-3">
                   <span class="text-body-2 text-white">{{

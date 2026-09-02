@@ -7,8 +7,9 @@ import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
+import { useFamilyMembersStore } from '@/stores/familyMembers'
 import { feedingEntryTitle } from '@/lib/entryTitles'
-import { formatDuration, whoLabel } from '@/lib/describeActivity'
+import { formatDuration, whoNameLabel } from '@/lib/describeActivity'
 import { shortDateTime as timeLabel } from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
@@ -21,6 +22,7 @@ const feedingLogStore = useFeedingLogStore()
 const symptomLogStore = useSymptomLogStore()
 const sleepLogStore = useSleepLogStore()
 const diaperLogStore = useDiaperLogStore()
+const familyMembersStore = useFamilyMembersStore()
 
 const confirmTarget = ref<CombinedEntry | null>(null)
 
@@ -123,7 +125,8 @@ function confirmDelete() {
       </template>
       <v-list-item-title>{{ title(entry) }}</v-list-item-title>
       <v-list-item-subtitle
-        >{{ timeLabel(entry.takenAt) }} · {{ whoLabel(entry.createdByEmail) }}</v-list-item-subtitle
+        >{{ timeLabel(entry.takenAt) }} ·
+        {{ whoNameLabel(familyMembersStore.members, entry.createdBy, entry.createdByEmail) }}</v-list-item-subtitle
       >
       <template #append>
         <v-btn

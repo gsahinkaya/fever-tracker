@@ -1,16 +1,13 @@
 import { ref } from 'vue'
+import { defineStore } from 'pinia'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '@/firebase'
-import type { UserProfile } from '@/types/family'
+import type { FamilyMember, UserProfile } from '@/types/family'
 
-export interface FamilyMember {
-  uid: string
-  name?: string
-  email?: string
-  isSelf: boolean
-}
-
-export function useFamilyMembers() {
+// A one-time fetch rather than onSnapshot (unlike stores/children.ts) —
+// family membership changes rarely enough that a live listener isn't worth
+// the extra open connection; SettingsView/App.vue re-load on familyId change.
+export const useFamilyMembersStore = defineStore('familyMembers', () => {
   const loading = ref(false)
   const members = ref<FamilyMember[]>([])
 
@@ -23,9 +20,8 @@ export function useFamilyMembers() {
       const uids = familySnap.exists() ? Object.keys(familySnap.data().members ?? {}) : []
       const selfUid = auth.currentUser?.uid
 
-      // Older/unowned members may still be denied by security rules if this
-      // deploy's rules haven't caught up yet — resolve individually so one
-      // denied read doesn't blank out the whole list.
+      // A member whose profile read is denied (e.g. Firestore rules not yet
+      // deployed) is resolved individually so it doesn't blank the whole list.
       const results = await Promise.allSettled(
         uids.map(async (uid) => {
           const snap = await getDoc(doc(db, 'users', uid))
@@ -44,4 +40,4 @@ export function useFamilyMembers() {
   }
 
   return { loading, members, load }
-}
+})

@@ -297,10 +297,10 @@ export default {
     inviteLinkLabel: 'Davet linki',
     copyLink: 'Linki Kopyala',
     copied: 'Kopyalandı',
-    dangerZone: 'Tehlikeli Bölge',
+    dangerZone: 'Bilgileri Sıfırla',
     dangerZoneBody:
       '{name} için ateş, beslenme, büyüme, semptom, uyku ve bez değişimi kayıtlarının tümünü kalıcı olarak sil. Bu işlem geri alınamaz.',
-    deleteRecordsButton: '{name} kayıtlarını sil',
+    deleteRecordsButton: '{name} bilgileri sıfırla',
     footer: 'Alfred, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.',
     confirmDialog: {
       title: 'Emin misin?',
