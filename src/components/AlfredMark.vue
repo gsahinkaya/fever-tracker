@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import alfredMark from '@/assets/alfred-mark.png'
+import alfredMark from '@/assets/alfred-mark.svg'
 
 withDefaults(defineProps<{ height?: number }>(), { height: 40 })
 </script>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <g id="Alfred-Logo-Mark" fill="none">
+    <!-- Koruyucu kalkan ve kalp formu -->
+    <path d="M 256,64 C 335,64 400,128 400,208 C 400,272 352,336 256,416 C 160,336 112,272 112,208 C 112,128 177,64 256,64 Z"
+          stroke="#5f07ef"
+          stroke-width="20"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+
+    <!-- Çocuk / bakım figürü -->
+    <circle cx="256" cy="160" r="30" fill="#5f07ef"/>
+
+    <!-- Şefkat ve kucaklama motifi -->
+    <path d="M 184,235 C 184,202 212,188 240,212 C 256,225 256,225 256,225 C 256,225 256,225 272,212 C 300,188 328,202 328,235 C 328,270 256,312 256,312 C 256,312 184,270 184,235 Z"
+          fill="#5f07ef"/>
+
+    <!-- Alfred asistan papyonu -->
+    <g transform="translate(256, 350)" fill="#5f07ef">
+      <rect x="-8" y="-8" width="16" height="16" rx="4"/>
+      <polygon points="-6,0 -28,-13 -28,13"/>
+      <polygon points="6,0 28,-13 28,13"/>
+    </g>
+  </g>
+</svg>
