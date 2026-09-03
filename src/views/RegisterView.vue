@@ -16,6 +16,10 @@ const RELATIONS: FamilyRelation[] = [
   'father',
   'grandmother',
   'grandfather',
+  'maternalAunt',
+  'paternalAunt',
+  'maternalUncle',
+  'paternalUncle',
   'caregiver',
   'other',
 ]

@@ -72,14 +72,11 @@ async function confirmRemoveMember() {
   removeMemberTarget.value = null
 }
 
-const RELATIONS: FamilyRelation[] = [
-  'mother',
-  'father',
-  'grandmother',
-  'grandfather',
-  'caregiver',
-  'other',
-]
+// Narrower than RegisterView's full list — this dialog exists specifically
+// so an owner can declare themselves a parent and unlock family-member
+// management (see firestore.rules), not as a general "fix your relation"
+// tool for every possible role.
+const EDIT_PROFILE_RELATIONS: FamilyRelation[] = ['mother', 'father']
 const showEditProfile = ref(false)
 const editName = ref('')
 const editRelation = ref<FamilyRelation | null>(null)
@@ -337,7 +334,9 @@ async function logout() {
           />
           <v-select
             v-model="editRelation"
-            :items="RELATIONS.map((r) => ({ value: r, title: t(`auth.register.relations.${r}`) }))"
+            :items="
+              EDIT_PROFILE_RELATIONS.map((r) => ({ value: r, title: t(`auth.register.relations.${r}`) }))
+            "
             :label="t('auth.register.relationLabel')"
             variant="outlined"
             density="comfortable"

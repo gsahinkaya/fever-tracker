@@ -24,7 +24,17 @@ export interface Child {
   customVaccines?: CustomVaccine[]
 }
 
-export type FamilyRelation = 'mother' | 'father' | 'grandmother' | 'grandfather' | 'caregiver' | 'other'
+export type FamilyRelation =
+  | 'mother'
+  | 'father'
+  | 'grandmother'
+  | 'grandfather'
+  | 'maternalAunt'
+  | 'paternalAunt'
+  | 'maternalUncle'
+  | 'paternalUncle'
+  | 'caregiver'
+  | 'other'
 
 export interface UserProfile {
   email: string
