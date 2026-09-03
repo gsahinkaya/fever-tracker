@@ -2,16 +2,11 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useCalendarEventsStore } from '@/stores/calendarEvents'
+import { todayDateString } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
 const store = useCalendarEventsStore()
-
-function todayString(): string {
-  const d = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
 
 const title = ref('')
 const date = ref('')
@@ -21,7 +16,7 @@ const note = ref('')
 watch(model, (open) => {
   if (open) {
     title.value = ''
-    date.value = todayString()
+    date.value = todayDateString()
     // Left blank by default (unlike the "log it now" dialogs elsewhere,
     // which default to the current time) — most calendar events are
     // all-day (a birthday, a "special day"), so a time is opt-in.

@@ -37,3 +37,13 @@ export function mediumDateTime(ts: number): string {
 export function plainDate(ts: number | string): string {
   return new Date(ts).toLocaleDateString(localeTag())
 }
+
+// Today as a YYYY-MM-DD string, computed from local date parts (not
+// toISOString, which is UTC and can land on the wrong day depending on the
+// viewer's timezone) — matches the value a native <input type="date">
+// produces, since it's used to default/compare against those fields.
+export function todayDateString(): string {
+  const d = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}

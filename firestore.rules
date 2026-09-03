@@ -48,9 +48,15 @@ service cloud.firestore {
       // before it existed has none) falls through to the "existing member"
       // clause below and simply can't touch `members` until they do.
       // Every other existing member may still update the doc, just not
-      // `members` itself. A non-member may only add their own uid (the
-      // invite-code join flow) — `members` is a nested map, so the diff
-      // must be taken on that map itself, not the document's top-level keys.
+      // `members` — and NOT `ownerUid` either: without that second
+      // exclusion a non-owner could self-promote (set ownerUid to their own
+      // uid in a write that leaves `members` alone, since that clause only
+      // checked `members`), then satisfy the first branch on a follow-up
+      // write and remove whoever they want, completely defeating the
+      // owner-only restriction above. A non-member may only add their own
+      // uid (the invite-code join flow) — `members` is a nested map, so the
+      // diff must be taken on that map itself, not the document's
+      // top-level keys.
       allow update: if request.auth != null && (
         (
           resource.data.ownerUid == request.auth.uid &&
@@ -59,7 +65,8 @@ service cloud.firestore {
         ) ||
         (
           isMember(familyId) &&
-          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['members'])
+          request.resource.data.ownerUid == resource.data.ownerUid &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['members', 'ownerUid'])
         ) ||
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members']) &&

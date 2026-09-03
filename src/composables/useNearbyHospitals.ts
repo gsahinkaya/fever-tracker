@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { getCurrentPosition, haversineKm } from '@/lib/geolocation'
+import { type OverpassElement, formatOverpassAddress, overpassPosition } from '@/lib/overpass'
 import { auth } from '@/firebase'
 
 export interface NearbyHospital {
@@ -14,24 +15,6 @@ export interface NearbyHospital {
 }
 
 const MAX_RESULTS = 30
-
-interface OverpassElement {
-  type: 'node' | 'way'
-  lat?: number
-  lon?: number
-  center?: { lat: number; lon: number }
-  tags?: Record<string, string>
-}
-
-function formatAddress(tags: Record<string, string>): string {
-  const parts = [
-    tags['addr:street'] &&
-      `${tags['addr:street']}${tags['addr:housenumber'] ? ' ' + tags['addr:housenumber'] : ''}`,
-    tags['addr:neighbourhood'],
-    tags['addr:district'],
-  ].filter((p): p is string => !!p)
-  return parts.join(', ')
-}
 
 export function useNearbyHospitals() {
   const loading = ref(false)
@@ -68,14 +51,14 @@ export function useNearbyHospitals() {
       hospitals.value = data.elements
         .map((el): NearbyHospital | null => {
           const tags = el.tags ?? {}
-          const pos = el.type === 'node' ? { lat: el.lat!, lon: el.lon! } : el.center
+          const pos = overpassPosition(el)
           if (!tags.name || !pos) return null
           return {
             id: '',
             name: tags.name,
             lat: pos.lat,
             lon: pos.lon,
-            address: formatAddress(tags),
+            address: formatOverpassAddress(tags),
             phone: tags.phone ?? tags['contact:phone'],
             emergency: tags.emergency === 'yes',
             distanceKm: haversineKm(lat, lon, pos.lat, pos.lon),

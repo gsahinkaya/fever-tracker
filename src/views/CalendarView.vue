@@ -6,7 +6,7 @@ import { useFamilyMembersStore } from '@/stores/familyMembers'
 import AddCalendarEventDialog from '@/components/AddCalendarEventDialog.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { whoNameLabel } from '@/lib/describeActivity'
-import { plainDate } from '@/lib/dateFormat'
+import { plainDate, todayDateString } from '@/lib/dateFormat'
 import { downloadCalendarEventIcs } from '@/lib/ics'
 import type { CalendarEvent } from '@/types/health'
 
@@ -17,12 +17,6 @@ const familyMembersStore = useFamilyMembersStore()
 const showAddDialog = ref(false)
 const confirmDeleteTarget = ref<CalendarEvent | null>(null)
 
-function todayString(): string {
-  const d = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
-
 // store.events is already ordered ascending by date (see the Firestore
 // query in stores/calendarEvents.ts) — same-day events aren't ordered by
 // time there (Firestore would need a composite index for a second orderBy
@@ -30,7 +24,7 @@ function todayString(): string {
 function byTime(a: CalendarEvent, b: CalendarEvent) {
   return (a.time ?? '').localeCompare(b.time ?? '')
 }
-const today = todayString()
+const today = todayDateString()
 const upcoming = computed(() => store.events.filter((e) => e.date >= today).sort(byTime))
 const past = computed(() =>
   store.events

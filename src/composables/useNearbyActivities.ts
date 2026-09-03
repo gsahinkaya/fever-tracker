@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { getCurrentPosition, haversineKm } from '@/lib/geolocation'
+import { type OverpassElement, formatOverpassAddress, overpassPosition } from '@/lib/overpass'
 import { auth } from '@/firebase'
 
 export interface NearbyActivity {
@@ -42,24 +43,6 @@ const MAX_RESULTS = 30
 // letting them compete on pure distance would crowd out the rarer,
 // higher-value results (a zoo, a water park) from the rest of the list.
 const PLAYGROUND_LIMIT = 5
-
-interface OverpassElement {
-  type: 'node' | 'way'
-  lat?: number
-  lon?: number
-  center?: { lat: number; lon: number }
-  tags?: Record<string, string>
-}
-
-function formatAddress(tags: Record<string, string>): string {
-  const parts = [
-    tags['addr:street'] &&
-      `${tags['addr:street']}${tags['addr:housenumber'] ? ' ' + tags['addr:housenumber'] : ''}`,
-    tags['addr:neighbourhood'],
-    tags['addr:district'],
-  ].filter((p): p is string => !!p)
-  return parts.join(', ')
-}
 
 function categoryFor(tags: Record<string, string>): string | null {
   for (const { tag, value, label } of CATEGORIES) {
@@ -105,7 +88,7 @@ export function useNearbyActivities() {
         .map((el): NearbyActivity | null => {
           const tags = el.tags ?? {}
           const category = categoryFor(tags)
-          const pos = el.type === 'node' ? { lat: el.lat!, lon: el.lon! } : el.center
+          const pos = overpassPosition(el)
           // Most playgrounds carry no name in OSM (unlike a cinema/zoo,
           // which is a real business) — fall back to the category label
           // rather than dropping every unnamed one.
@@ -117,7 +100,7 @@ export function useNearbyActivities() {
             category,
             lat: pos.lat,
             lon: pos.lon,
-            address: formatAddress(tags),
+            address: formatOverpassAddress(tags),
             phone: tags.phone ?? tags['contact:phone'],
             website: tags.website ?? tags['contact:website'],
             openingHours: tags.opening_hours,
