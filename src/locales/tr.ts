@@ -317,6 +317,7 @@ export default {
     languageTurkish: 'Türkçe',
     languageEnglish: 'English',
     account: 'Hesap',
+    editProfile: 'Düzenle',
     logout: 'Çıkış Yap',
     childrenTitle: 'Çocuklarım',
     childrenCount: '{count} çocuk kayıtlı',

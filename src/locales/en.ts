@@ -315,6 +315,7 @@ export default {
     languageTurkish: 'Türkçe',
     languageEnglish: 'English',
     account: 'Account',
+    editProfile: 'Edit',
     logout: 'Log Out',
     childrenTitle: 'My Children',
     childrenCount: '{count} children registered',

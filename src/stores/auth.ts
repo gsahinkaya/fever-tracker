@@ -106,6 +106,19 @@ export const useAuthStore = defineStore('auth', () => {
     if (profile.value) profile.value.hasSeenOnboarding = true
   }
 
+  // Settings' "edit profile" — accounts created before `relation` existed
+  // (or anyone who skipped it at registration) have no way to set it
+  // otherwise, and the family-owner "may remove a member" rule requires it.
+  async function updateProfile(data: Pick<UserProfile, 'name' | 'relation'>) {
+    if (!user.value) return
+    const payload = {
+      ...(data.name ? { name: data.name } : {}),
+      ...(data.relation ? { relation: data.relation } : {}),
+    }
+    await updateDoc(doc(db, 'users', user.value.uid), payload)
+    if (profile.value) Object.assign(profile.value, payload)
+  }
+
   async function logout() {
     await firebaseSignOut(auth)
   }
@@ -120,5 +133,6 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     markOnboardingSeen,
+    updateProfile,
   }
 })

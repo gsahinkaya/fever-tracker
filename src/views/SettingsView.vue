@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useFamilyMembersStore } from '@/stores/familyMembers'
+import type { FamilyRelation } from '@/types/family'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
@@ -53,8 +54,15 @@ const activeChildName = computed(
 )
 const showClearConfirm = ref(false)
 
+// Mirrors firestore.rules: only the owner may remove a member, and only
+// once they've actually declared themselves a parent — matters here mainly
+// because `relation` is optional and accounts created before it existed
+// (or anyone who skipped it) don't have one set yet.
 const isFamilyOwner = computed(
-  () => !!authStore.user && familyMembersStore.ownerUid === authStore.user.uid,
+  () =>
+    !!authStore.user &&
+    familyMembersStore.ownerUid === authStore.user.uid &&
+    (authStore.profile?.relation === 'mother' || authStore.profile?.relation === 'father'),
 )
 
 const removeMemberTarget = ref<{ uid: string; label: string } | null>(null)
@@ -62,6 +70,30 @@ async function confirmRemoveMember() {
   if (!removeMemberTarget.value || !authStore.familyId) return
   await familyMembersStore.removeMember(authStore.familyId, removeMemberTarget.value.uid)
   removeMemberTarget.value = null
+}
+
+const RELATIONS: FamilyRelation[] = [
+  'mother',
+  'father',
+  'grandmother',
+  'grandfather',
+  'caregiver',
+  'other',
+]
+const showEditProfile = ref(false)
+const editName = ref('')
+const editRelation = ref<FamilyRelation | null>(null)
+function openEditProfile() {
+  editName.value = authStore.profile?.name ?? ''
+  editRelation.value = authStore.profile?.relation ?? null
+  showEditProfile.value = true
+}
+async function saveProfile() {
+  await authStore.updateProfile({
+    name: editName.value.trim() || undefined,
+    relation: editRelation.value || undefined,
+  })
+  showEditProfile.value = false
 }
 
 async function clearAll() {
@@ -146,6 +178,7 @@ async function logout() {
         <div class="text-body-2 text-medium-emphasis">{{ authStore.profile?.email }}</div>
       </v-card-text>
       <v-card-actions>
+        <v-btn variant="text" @click="openEditProfile">{{ t('settings.editProfile') }}</v-btn>
         <v-spacer />
         <v-btn variant="text" @click="logout">{{ t('settings.logout') }}</v-btn>
       </v-card-actions>
@@ -288,6 +321,32 @@ async function logout() {
           <v-btn color="error" variant="flat" @click="confirmRemoveMember">{{
             t('common.delete')
           }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="showEditProfile" max-width="360">
+      <v-card>
+        <v-card-title class="text-h6">{{ t('settings.editProfile') }}</v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="editName"
+            :label="t('auth.register.nameLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+          <v-select
+            v-model="editRelation"
+            :items="RELATIONS.map((r) => ({ value: r, title: t(`auth.register.relations.${r}`) }))"
+            :label="t('auth.register.relationLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="showEditProfile = false">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="primary" variant="flat" @click="saveProfile">{{ t('common.save') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

@@ -42,12 +42,21 @@ service cloud.firestore {
       // The owner may update anything, including removing another member —
       // the one action an invited-but-not-owning member (e.g. a caregiver)
       // must not have, so they can't remove the person who invited them.
-      // Any other existing member may still update the doc, just not
+      // Also requires the owner to have actually declared themselves a
+      // parent (relation on their own users/{uid} doc) — an owner who
+      // hasn't set this yet (the field is optional; every account created
+      // before it existed has none) falls through to the "existing member"
+      // clause below and simply can't touch `members` until they do.
+      // Every other existing member may still update the doc, just not
       // `members` itself. A non-member may only add their own uid (the
       // invite-code join flow) — `members` is a nested map, so the diff
       // must be taken on that map itself, not the document's top-level keys.
       allow update: if request.auth != null && (
-        resource.data.ownerUid == request.auth.uid ||
+        (
+          resource.data.ownerUid == request.auth.uid &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.relation
+            in ['mother', 'father']
+        ) ||
         (
           isMember(familyId) &&
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['members'])
