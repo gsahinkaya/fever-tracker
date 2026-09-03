@@ -294,6 +294,8 @@ export default {
       titleLabel: 'Başlık',
       titlePlaceholder: 'Örn. Doktor randevusu, doğum günü',
       dateLabel: 'Tarih',
+      timeLabel: 'Saat (opsiyonel)',
+      timeHint: 'Boş bırakırsan tüm gün süren bir etkinlik olur',
       noteLabel: 'Not (opsiyonel)',
     },
   },

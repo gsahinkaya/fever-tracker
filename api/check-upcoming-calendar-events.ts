@@ -159,10 +159,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         for (const event of dueEvents) {
           const title = event.fields?.title?.stringValue ?? 'Etkinlik'
+          const time = event.fields?.time?.stringValue
+          const body = time
+            ? `${childName} için yarın saat ${time}: ${title}`
+            : `${childName} için yarın: ${title}`
           const results = await Promise.allSettled(
-            tokens.map((token) =>
-              sendPush(accessToken, projectId, token, 'Alfred', `${childName} için yarın: ${title}`),
-            ),
+            tokens.map((token) => sendPush(accessToken, projectId, token, 'Alfred', body)),
           )
           notificationsSent += results.filter((r) => r.status === 'fulfilled' && r.value).length
         }

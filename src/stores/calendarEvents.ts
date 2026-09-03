@@ -41,12 +41,13 @@ export const useCalendarEventsStore = defineStore('calendarEvents', () => {
     collection: calendarEventsCollection,
   })
 
-  async function addEvent(title: string, date: string, note?: string) {
+  async function addEvent(title: string, date: string, time?: string, note?: string) {
     const { familyId, childId } = requireContext()
     const payload: Omit<CalendarEvent, 'id' | 'createdAt'> & { createdAt: Timestamp } = {
       title,
       date,
       createdAt: Timestamp.now(),
+      ...(time ? { time } : {}),
       ...(note ? { note } : {}),
       ...creatorFields(),
     }

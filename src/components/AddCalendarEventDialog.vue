@@ -15,19 +15,24 @@ function todayString(): string {
 
 const title = ref('')
 const date = ref('')
+const time = ref('')
 const note = ref('')
 
 watch(model, (open) => {
   if (open) {
     title.value = ''
     date.value = todayString()
+    // Left blank by default (unlike the "log it now" dialogs elsewhere,
+    // which default to the current time) — most calendar events are
+    // all-day (a birthday, a "special day"), so a time is opt-in.
+    time.value = ''
     note.value = ''
   }
 })
 
 function save() {
   if (!title.value.trim() || !date.value) return
-  store.addEvent(title.value.trim(), date.value, note.value.trim() || undefined)
+  store.addEvent(title.value.trim(), date.value, time.value || undefined, note.value.trim() || undefined)
   model.value = false
 }
 </script>
@@ -45,13 +50,24 @@ function save() {
           density="comfortable"
           autofocus
         />
-        <v-text-field
-          v-model="date"
-          type="date"
-          :label="t('calendar.dialog.dateLabel')"
-          variant="outlined"
-          density="comfortable"
-        />
+        <div class="d-flex ga-2">
+          <v-text-field
+            v-model="date"
+            type="date"
+            :label="t('calendar.dialog.dateLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+          <v-text-field
+            v-model="time"
+            type="time"
+            :label="t('calendar.dialog.timeLabel')"
+            :hint="t('calendar.dialog.timeHint')"
+            persistent-hint
+            variant="outlined"
+            density="comfortable"
+          />
+        </div>
         <v-text-field
           v-model="note"
           :label="t('calendar.dialog.noteLabel')"

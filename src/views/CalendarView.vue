@@ -24,11 +24,24 @@ function todayString(): string {
 }
 
 // store.events is already ordered ascending by date (see the Firestore
-// query in stores/calendarEvents.ts) — split, not re-sorted, into what's
-// still coming up vs what's already passed.
+// query in stores/calendarEvents.ts) — same-day events aren't ordered by
+// time there (Firestore would need a composite index for a second orderBy
+// field), so that tie-break happens here instead.
+function byTime(a: CalendarEvent, b: CalendarEvent) {
+  return (a.time ?? '').localeCompare(b.time ?? '')
+}
 const today = todayString()
-const upcoming = computed(() => store.events.filter((e) => e.date >= today))
-const past = computed(() => store.events.filter((e) => e.date < today).reverse())
+const upcoming = computed(() => store.events.filter((e) => e.date >= today).sort(byTime))
+const past = computed(() =>
+  store.events
+    .filter((e) => e.date < today)
+    .sort(byTime)
+    .reverse(),
+)
+
+function eventDateLabel(event: CalendarEvent): string {
+  return event.time ? `${plainDate(event.date)} ${event.time}` : plainDate(event.date)
+}
 
 const deleteBody = computed(() =>
   confirmDeleteTarget.value
@@ -92,7 +105,7 @@ function confirmDelete() {
             >{{ event.title }}<span v-if="event.note"> · {{ event.note }}</span></v-list-item-title
           >
           <v-list-item-subtitle
-            >{{ plainDate(event.date) }} ·
+            >{{ eventDateLabel(event) }} ·
             {{
               whoNameLabel(familyMembersStore.members, event.createdBy, event.createdByEmail)
             }}</v-list-item-subtitle
@@ -129,7 +142,7 @@ function confirmDelete() {
               >{{ event.title }}<span v-if="event.note"> · {{ event.note }}</span></v-list-item-title
             >
             <v-list-item-subtitle
-              >{{ plainDate(event.date) }} ·
+              >{{ eventDateLabel(event) }} ·
               {{
                 whoNameLabel(familyMembersStore.members, event.createdBy, event.createdByEmail)
               }}</v-list-item-subtitle

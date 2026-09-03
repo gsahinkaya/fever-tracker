@@ -292,6 +292,8 @@ export default {
       titleLabel: 'Title',
       titlePlaceholder: 'E.g. Doctor appointment, birthday',
       dateLabel: 'Date',
+      timeLabel: 'Time (optional)',
+      timeHint: 'Leave blank for an all-day event',
       noteLabel: 'Note (optional)',
     },
   },

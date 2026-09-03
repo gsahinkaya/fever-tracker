@@ -22,6 +22,27 @@ function dayAfter(dateStr: string): string {
   return `${next.getFullYear()}${pad(next.getMonth() + 1)}${pad(next.getDate())}`
 }
 
+// A floating (no trailing "Z", no TZID) local date-time — every consuming
+// calendar app interprets it in whatever timezone the device is already
+// in, which for the person opening a file they just downloaded onto their
+// own phone is exactly the timezone the date/time was picked in.
+function toIcsDateTime(dateStr: string, timeStr: string): string {
+  return `${dateStr.replace(/-/g, '')}T${timeStr.replace(':', '')}00`
+}
+
+// One hour after the given date+time — a plausible default duration for an
+// appointment when the event has no explicit end time of its own.
+function oneHourLater(dateStr: string, timeStr: string): { date: string; time: string } {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const [h, min] = timeStr.split(':').map(Number)
+  const end = new Date(y!, m! - 1, d!, h! + 1, min)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return {
+    date: `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(end.getDate())}`,
+    time: `${pad(end.getHours())}:${pad(end.getMinutes())}`,
+  }
+}
+
 function escapeIcsText(text: string): string {
   return text.replace(/([,;])/g, '\\$1').replace(/\n/g, '\\n')
 }
@@ -33,6 +54,19 @@ function nowStamp(): string {
 }
 
 export function downloadCalendarEventIcs(event: CalendarEvent) {
+  const timedLines = event.time
+    ? (() => {
+        const end = oneHourLater(event.date, event.time!)
+        return [
+          `DTSTART:${toIcsDateTime(event.date, event.time!)}`,
+          `DTEND:${toIcsDateTime(end.date, end.time)}`,
+        ]
+      })()
+    : [
+        `DTSTART;VALUE=DATE:${toIcsDate(event.date)}`,
+        `DTEND;VALUE=DATE:${dayAfter(event.date)}`,
+      ]
+
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -40,8 +74,7 @@ export function downloadCalendarEventIcs(event: CalendarEvent) {
     'BEGIN:VEVENT',
     `UID:${event.id}@alfred-app`,
     `DTSTAMP:${nowStamp()}`,
-    `DTSTART;VALUE=DATE:${toIcsDate(event.date)}`,
-    `DTEND;VALUE=DATE:${dayAfter(event.date)}`,
+    ...timedLines,
     `SUMMARY:${escapeIcsText(event.title)}`,
     ...(event.note ? [`DESCRIPTION:${escapeIcsText(event.note)}`] : []),
     'END:VEVENT',

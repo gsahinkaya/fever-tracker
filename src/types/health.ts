@@ -172,6 +172,11 @@ export interface CalendarEvent {
   id: string
   title: string
   date: string
+  // Optional HH:mm — a birthday or "special day" usually has none (an
+  // all-day event), while a doctor's appointment usually does. Kept
+  // separate from `date` rather than combined into one timestamp so an
+  // event can stay a plain day even without a time.
+  time?: string
   note?: string
   createdBy?: string
   createdByEmail?: string
