@@ -39,12 +39,19 @@ service cloud.firestore {
         && request.resource.data.members.keys().hasOnly([request.auth.uid])
         && request.resource.data.members[request.auth.uid] == true;
 
-      // Existing members can update freely. A non-member may only add their
-      // own uid to `members` (the invite-code join flow) — nothing else.
-      // `members` is a nested map, so the diff must be taken on that map
-      // itself, not on the document's top-level fields.
+      // The owner may update anything, including removing another member —
+      // the one action an invited-but-not-owning member (e.g. a caregiver)
+      // must not have, so they can't remove the person who invited them.
+      // Any other existing member may still update the doc, just not
+      // `members` itself. A non-member may only add their own uid (the
+      // invite-code join flow) — `members` is a nested map, so the diff
+      // must be taken on that map itself, not the document's top-level keys.
       allow update: if request.auth != null && (
-        isMember(familyId) ||
+        resource.data.ownerUid == request.auth.uid ||
+        (
+          isMember(familyId) &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['members'])
+        ) ||
         (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members']) &&
           request.resource.data.members.diff(resource.data.members).addedKeys().hasOnly([request.auth.uid]) &&

@@ -53,6 +53,10 @@ const activeChildName = computed(
 )
 const showClearConfirm = ref(false)
 
+const isFamilyOwner = computed(
+  () => !!authStore.user && familyMembersStore.ownerUid === authStore.user.uid,
+)
+
 const removeMemberTarget = ref<{ uid: string; label: string } | null>(null)
 async function confirmRemoveMember() {
   if (!removeMemberTarget.value || !authStore.familyId) return
@@ -199,7 +203,7 @@ async function logout() {
               }}</v-list-item-subtitle>
               <template #append>
                 <v-btn
-                  v-if="!member.isSelf"
+                  v-if="!member.isSelf && isFamilyOwner"
                   icon="mdi-account-remove-outline"
                   variant="text"
                   size="small"
