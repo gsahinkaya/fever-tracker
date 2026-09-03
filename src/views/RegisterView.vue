@@ -4,11 +4,21 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AlfredLogo from '@/components/AlfredLogo.vue'
+import type { FamilyRelation } from '@/types/family'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+
+const RELATIONS: FamilyRelation[] = [
+  'mother',
+  'father',
+  'grandmother',
+  'grandfather',
+  'caregiver',
+  'other',
+]
 
 const name = ref('')
 const email = ref('')
@@ -16,6 +26,7 @@ const phone = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const birthDate = ref('')
+const relation = ref<FamilyRelation | null>(null)
 const inviteCode = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
@@ -48,6 +59,7 @@ async function submit() {
       name: name.value || undefined,
       phone: phone.value || undefined,
       birthDate: birthDate.value || undefined,
+      relation: relation.value || undefined,
       inviteCode: inviteCode.value || undefined,
     })
     router.push('/cocuklar')
@@ -74,6 +86,13 @@ async function submit() {
         density="comfortable"
         autofocus
         required
+      />
+      <v-select
+        v-model="relation"
+        :items="RELATIONS.map((r) => ({ value: r, title: t(`auth.register.relations.${r}`) }))"
+        :label="t('auth.register.relationLabel')"
+        variant="outlined"
+        density="comfortable"
       />
       <v-text-field
         v-model="email"

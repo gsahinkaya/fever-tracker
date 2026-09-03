@@ -74,6 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
     name?: string
     phone?: string
     birthDate?: string
+    relation?: UserProfile['relation']
     inviteCode?: string
   }) {
     const cred = await createUserWithEmailAndPassword(auth, opts.email, opts.password)
@@ -89,6 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
       ...(opts.name ? { name: opts.name } : {}),
       ...(opts.phone ? { phone: opts.phone } : {}),
       ...(opts.birthDate ? { birthDate: opts.birthDate } : {}),
+      ...(opts.relation ? { relation: opts.relation } : {}),
     }
     await setDoc(doc(db, 'users', uid), userProfile)
     profile.value = userProfile

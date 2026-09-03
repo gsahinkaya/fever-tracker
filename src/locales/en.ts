@@ -108,6 +108,15 @@ export default {
     register: {
       heading: 'Create Account',
       nameLabel: 'Full name',
+      relationLabel: 'Your relation to the child (optional)',
+      relations: {
+        mother: 'Mother',
+        father: 'Father',
+        grandmother: 'Grandmother',
+        grandfather: 'Grandfather',
+        caregiver: 'Caregiver',
+        other: 'Other',
+      },
       emailLabel: 'Email',
       phoneLabel: 'Phone (optional)',
       passwordLabel: 'Password',
@@ -317,6 +326,10 @@ export default {
       'Share this code or link with whoever you want — your partner, a parent, or a caregiver. Once they enter it while signing up, they can see and track the same children; invite as many people as you like.',
     membersTitle: 'Current members',
     you: 'You',
+    removeMemberAria: 'Remove family member',
+    removeMemberConfirmTitle: 'Remove family member',
+    removeMemberConfirmBody:
+      "Remove {name} from this family? They'll lose access to your children's records, and can rejoin with an invite code.",
     inviteCodeLabel: 'Invite code',
     inviteLinkLabel: 'Invite link',
     copyLink: 'Copy Link',

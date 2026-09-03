@@ -53,6 +53,13 @@ const activeChildName = computed(
 )
 const showClearConfirm = ref(false)
 
+const removeMemberTarget = ref<{ uid: string; label: string } | null>(null)
+async function confirmRemoveMember() {
+  if (!removeMemberTarget.value || !authStore.familyId) return
+  await familyMembersStore.removeMember(authStore.familyId, removeMemberTarget.value.uid)
+  removeMemberTarget.value = null
+}
+
 async function clearAll() {
   await Promise.all([
     feverLogStore.clearAllEntries(),
@@ -128,6 +135,9 @@ async function logout() {
       <v-card-text>
         <div v-if="authStore.profile?.name" class="text-body-2 font-weight-bold">
           {{ authStore.profile.name }}
+          <span v-if="authStore.profile?.relation" class="text-medium-emphasis font-weight-regular">
+            · {{ t(`auth.register.relations.${authStore.profile.relation}`) }}</span
+          >
         </div>
         <div class="text-body-2 text-medium-emphasis">{{ authStore.profile?.email }}</div>
       </v-card-text>
@@ -177,6 +187,9 @@ async function logout() {
               </template>
               <v-list-item-title class="text-body-2 font-weight-bold">
                 {{ member.name || member.email }}
+                <span v-if="member.relation" class="text-medium-emphasis font-weight-regular">
+                  · {{ t(`auth.register.relations.${member.relation}`) }}</span
+                >
                 <span v-if="member.isSelf" class="text-medium-emphasis font-weight-regular">
                   ({{ t('settings.you') }})</span
                 >
@@ -184,6 +197,18 @@ async function logout() {
               <v-list-item-subtitle v-if="member.name && member.email" class="text-caption">{{
                 member.email
               }}</v-list-item-subtitle>
+              <template #append>
+                <v-btn
+                  v-if="!member.isSelf"
+                  icon="mdi-account-remove-outline"
+                  variant="text"
+                  size="small"
+                  :aria-label="t('settings.removeMemberAria')"
+                  @click="
+                    removeMemberTarget = { uid: member.uid, label: member.name || member.email || '' }
+                  "
+                />
+              </template>
             </v-list-item>
           </v-list>
         </template>
@@ -243,6 +268,22 @@ async function logout() {
           <v-spacer />
           <v-btn variant="text" @click="showClearConfirm = false">{{ t('common.cancel') }}</v-btn>
           <v-btn color="error" variant="flat" @click="clearAll">{{ t('common.delete') }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog :model-value="!!removeMemberTarget" max-width="360">
+      <v-card>
+        <v-card-title class="text-h6">{{ t('settings.removeMemberConfirmTitle') }}</v-card-title>
+        <v-card-text>{{
+          t('settings.removeMemberConfirmBody', { name: removeMemberTarget?.label ?? '' })
+        }}</v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="removeMemberTarget = null">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmRemoveMember">{{
+            t('common.delete')
+          }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

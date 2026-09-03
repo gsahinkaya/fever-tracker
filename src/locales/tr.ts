@@ -110,6 +110,15 @@ export default {
     register: {
       heading: 'Hesap Oluştur',
       nameLabel: 'Ad Soyad',
+      relationLabel: 'Çocukla ilişkin (opsiyonel)',
+      relations: {
+        mother: 'Anne',
+        father: 'Baba',
+        grandmother: 'Büyükanne',
+        grandfather: 'Büyükbaba',
+        caregiver: 'Bakıcı',
+        other: 'Diğer',
+      },
       emailLabel: 'E-posta',
       phoneLabel: 'Telefon (opsiyonel)',
       passwordLabel: 'Şifre',
@@ -319,6 +328,10 @@ export default {
       'Bu kodu veya linki istediğin kişiyle paylaş — eşin, anne-baban ya da bakıcı olabilir. Kayıt olurken girdiğinde aynı çocukları görüp takip edebilir; istediğin kadar kişi ekleyebilirsin.',
     membersTitle: 'Mevcut üyeler',
     you: 'Sen',
+    removeMemberAria: 'Aile üyesini kaldır',
+    removeMemberConfirmTitle: 'Aile üyesini kaldır',
+    removeMemberConfirmBody:
+      '{name} bu aileden çıkarılsın mı? Artık çocuklarının kayıtlarını göremez, tekrar davet kodu ile katılabilir.',
     inviteCodeLabel: 'Davet kodu',
     inviteLinkLabel: 'Davet linki',
     copyLink: 'Linki Kopyala',

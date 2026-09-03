@@ -24,12 +24,17 @@ export interface Child {
   customVaccines?: CustomVaccine[]
 }
 
+export type FamilyRelation = 'mother' | 'father' | 'grandmother' | 'grandfather' | 'caregiver' | 'other'
+
 export interface UserProfile {
   email: string
   familyId: string
   name?: string
   phone?: string
   birthDate?: string
+  // Who this account is to the children being tracked — shown next to
+  // their name in Settings' family member list, collected at registration.
+  relation?: FamilyRelation
   // Tracked on the account (not just a device) so the onboarding wizard
   // stays dismissed across devices/reinstalls once the user has seen it.
   hasSeenOnboarding?: boolean
@@ -48,5 +53,6 @@ export interface FamilyMember {
   uid: string
   name?: string
   email?: string
+  relation?: FamilyRelation
   isSelf: boolean
 }

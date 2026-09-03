@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { doc, getDoc } from 'firebase/firestore'
+import { deleteField, doc, getDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '@/firebase'
 import type { FamilyMember, UserProfile } from '@/types/family'
 
@@ -10,8 +10,10 @@ import type { FamilyMember, UserProfile } from '@/types/family'
 export const useFamilyMembersStore = defineStore('familyMembers', () => {
   const loading = ref(false)
   const members = ref<FamilyMember[]>([])
+  let lastFamilyId: string | null = null
 
   async function load(familyId: string | null) {
+    lastFamilyId = familyId
     members.value = []
     if (!familyId) return
     loading.value = true
@@ -26,7 +28,13 @@ export const useFamilyMembersStore = defineStore('familyMembers', () => {
         uids.map(async (uid) => {
           const snap = await getDoc(doc(db, 'users', uid))
           const profile = snap.exists() ? (snap.data() as UserProfile) : null
-          return { uid, name: profile?.name, email: profile?.email, isSelf: uid === selfUid }
+          return {
+            uid,
+            name: profile?.name,
+            email: profile?.email,
+            relation: profile?.relation,
+            isSelf: uid === selfUid,
+          }
         }),
       )
       const resolved: FamilyMember[] = []
@@ -39,5 +47,14 @@ export const useFamilyMembersStore = defineStore('familyMembers', () => {
     }
   }
 
-  return { loading, members, load }
+  // Only removes the uid from the family's `members` map — the other
+  // person's own users/{uid} profile is untouched (they can still see it
+  // and rejoin with a new invite code). Firestore rules let any existing
+  // member update the family doc freely, self-removal included.
+  async function removeMember(familyId: string, uid: string) {
+    await updateDoc(doc(db, 'families', familyId), { [`members.${uid}`]: deleteField() })
+    if (familyId === lastFamilyId) await load(familyId)
+  }
+
+  return { loading, members, load, removeMember }
 })
