@@ -31,7 +31,7 @@ async function submit() {
 <template>
   <v-container class="py-8" style="max-width: 420px">
     <div class="text-center mb-8">
-      <h1><AlfredLogo :height="44" /></h1>
+      <h1><AlfredLogo :height="56" /></h1>
     </div>
 
     <v-form @submit.prevent="submit">

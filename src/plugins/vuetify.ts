@@ -70,6 +70,12 @@ export default createVuetify({
           // tile hue (including "success" and "medication", the closest
           // green/teal neighbors).
           calendar: '#0F766E',
+          // Nearby-hospitals tile/actions — a plain medical blue, kept out
+          // of "error" red (a hospital tile reading as an error state would
+          // be actively confusing) and distinct enough from "pharmacy"
+          // (indigo), "sleep" (navy) and "info" (sky blue) to read as its
+          // own color next to them on Home.
+          hospital: '#1D4ED8',
           error: '#F04438',
           // Solid food / "safe now" confirmations.
           success: '#12B76A',
@@ -100,6 +106,7 @@ export default createVuetify({
           sleep: '#7DD3FC',
           diaper: '#FB7185',
           calendar: '#2DD4BF',
+          hospital: '#60A5FA',
           error: '#F97066',
           success: '#32D583',
           warning: '#FDB022',

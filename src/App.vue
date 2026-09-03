@@ -193,8 +193,8 @@ watch(
     <v-app-bar v-if="!isAuthPage" color="primary" elevation="2">
       <template #prepend>
         <RouterLink to="/" class="ml-2 d-flex" style="text-decoration: none">
-          <v-avatar color="white" size="36">
-            <AlfredMark :height="26" />
+          <v-avatar color="white" size="44">
+            <AlfredMark :height="32" />
           </v-avatar>
         </RouterLink>
       </template>

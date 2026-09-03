@@ -79,6 +79,10 @@ export default {
         body: 'Konumuna göre yakınındaki sinema, tiyatro, müze, oyun alanı gibi çocuk dostu mekanları listeler, tek dokunuşla arayabilir ya da yol tarifi alabilirsin.',
       },
       {
+        title: 'Yakındaki Hastaneler',
+        body: 'Konumuna göre en yakın hastaneleri listeler, tek dokunuşla arayabilir ya da yol tarifi alabilirsin.',
+      },
+      {
         title: 'Takvim',
         body: 'Doktor randevusu, doğum günü ya da başka bir özel günü takvime ekle — bir gün önceden hatırlatma bildirimi alırsın, istersen etkinliği telefonunun kendi takvimine de ekleyebilirsin.',
       },
@@ -156,6 +160,7 @@ export default {
       dutyPharmacy: 'Nöbetçi Eczane',
       vaccinations: 'Aşılar',
       nearbyActivities: 'Yakındaki Etkinlikler',
+      nearbyHospitals: 'Yakındaki Hastaneler',
       last48h: 'Son 48 Saat',
       symptoms: 'Semptomlar',
       sleep: 'Uyku',
@@ -196,6 +201,21 @@ export default {
       permission: 'Yakındaki yerleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
       location: 'Konumun alınamadı. Konum servislerinin açık olduğundan emin ol.',
       fetch: 'Yer bilgisi alınamadı, tekrar dene.',
+    },
+  },
+  nearbyHospitals: {
+    title: 'Yakındaki Hastaneler',
+    loading: 'Yakındaki hastaneler aranıyor, birkaç saniye sürebilir...',
+    sourceHint: 'Hastaneler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir. Acil bir durumda 112\'yi aramayı unutma.',
+    empty: 'Bu bölgede kayıtlı bir hastane bulunamadı.',
+    emergency: 'Acil Servis',
+    retry: 'Tekrar Dene',
+    callAria: 'Ara',
+    mapAria: 'Haritada göster',
+    errors: {
+      permission: 'Yakındaki hastaneleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
+      location: 'Konumun alınamadı. Konum servislerinin açık olduğundan emin ol.',
+      fetch: 'Hastane bilgisi alınamadı, tekrar dene.',
     },
   },
   vaccinations: {

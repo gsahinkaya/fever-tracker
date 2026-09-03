@@ -77,6 +77,10 @@ export default {
         body: 'Lists nearby kid-friendly places like cinemas, theaters, museums and playgrounds based on your location — call with one tap or get directions.',
       },
       {
+        title: 'Nearby Hospitals',
+        body: 'Lists the closest hospitals based on your location — call with one tap or get directions.',
+      },
+      {
         title: 'Calendar',
         body: "Add a doctor's appointment, a birthday, or any other special day to the calendar — you'll get a reminder notification one day ahead, and you can add the event to your phone's own calendar too.",
       },
@@ -154,6 +158,7 @@ export default {
       dutyPharmacy: 'On-Duty Pharmacy',
       vaccinations: 'Vaccinations',
       nearbyActivities: 'Nearby Activities',
+      nearbyHospitals: 'Nearby Hospitals',
       last48h: 'Last 48 Hours',
       symptoms: 'Symptoms',
       sleep: 'Sleep',
@@ -194,6 +199,21 @@ export default {
       permission: 'Location permission is needed to show nearby places. Allow it in your browser settings and try again.',
       location: 'Could not get your location. Make sure location services are turned on.',
       fetch: 'Could not load place info, please try again.',
+    },
+  },
+  nearbyHospitals: {
+    title: 'Nearby Hospitals',
+    loading: 'Searching for nearby hospitals, this may take a few seconds...',
+    sourceHint: "Hospitals are listed from OpenStreetMap community data; some places may be missing or outdated. In an emergency, call 112.",
+    empty: 'No listed hospital found in this area.',
+    emergency: 'Emergency Room',
+    retry: 'Try Again',
+    callAria: 'Call',
+    mapAria: 'Show on map',
+    errors: {
+      permission: 'Location permission is needed to show nearby hospitals. Allow it in your browser settings and try again.',
+      location: 'Could not get your location. Make sure location services are turned on.',
+      fetch: 'Could not load hospital info, please try again.',
     },
   },
   vaccinations: {

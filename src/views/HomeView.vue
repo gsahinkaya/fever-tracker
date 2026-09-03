@@ -154,6 +154,12 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.dutyPharmacy') }}</span>
           </div>
         </v-btn>
+        <v-btn block height="64" color="hospital" variant="flat" rounded="lg" to="/hastaneler">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-hospital-building" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.nearbyHospitals') }}</span>
+          </div>
+        </v-btn>
         <v-btn block height="64" color="activity" variant="flat" rounded="lg" to="/etkinlikler">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-drama-masks" size="26" class="mr-3" />

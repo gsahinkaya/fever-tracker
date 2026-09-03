@@ -42,6 +42,11 @@ const router = createRouter({
       component: () => import('../views/CalendarView.vue'),
     },
     {
+      path: '/hastaneler',
+      name: 'nearby-hospitals',
+      component: () => import('../views/NearbyHospitalsView.vue'),
+    },
+    {
       path: '/ayarlar',
       name: 'settings',
       component: () => import('../views/SettingsView.vue'),
