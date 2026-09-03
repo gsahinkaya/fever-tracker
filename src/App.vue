@@ -190,11 +190,11 @@ watch(
 
 <template>
   <v-app>
-    <v-app-bar v-if="!isAuthPage" color="primary" elevation="2">
+    <v-app-bar v-if="!isAuthPage" color="primary" elevation="2" height="72">
       <template #prepend>
         <RouterLink to="/" class="ml-2 d-flex" style="text-decoration: none">
-          <v-avatar color="white" size="44">
-            <AlfredMark :height="32" />
+          <v-avatar color="white" size="56">
+            <AlfredMark :height="42" />
           </v-avatar>
         </RouterLink>
       </template>

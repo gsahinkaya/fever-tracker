@@ -78,7 +78,7 @@ async function submit() {
 <template>
   <v-container class="py-8" style="max-width: 420px">
     <div class="text-center mb-8">
-      <h1><AlfredLogo :height="52" /></h1>
+      <h1><AlfredLogo :height="64" /></h1>
       <p class="text-subtitle-1 mt-3 mb-0">{{ t('auth.register.heading') }}</p>
     </div>
 
