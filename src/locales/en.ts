@@ -96,6 +96,10 @@ export default {
         title: 'Add to Home Screen',
         body: 'Alfred isn\'t on the App Store/Play Store yet — it\'s a web app that runs in your browser. For notifications to actually work — this is required on iPhone — add Alfred to your home screen: on iPhone, tap the share icon in Safari and choose "Add to Home Screen"; on Android, choose "Add to Home screen" from the browser menu. Otherwise reminders like medication/course alerts will never reach your phone.',
       },
+      {
+        title: 'Emergency',
+        body: "Tap the red Emergency button in Settings (after a confirmation step) to call 112 and send your family an emergency alert with your location.",
+      },
     ],
   },
   auth: {

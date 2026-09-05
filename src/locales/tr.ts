@@ -98,6 +98,10 @@ export default {
         title: 'Ana Ekrana Ekle',
         body: "Alfred henüz App Store/Play Store'da değil, tarayıcı üzerinden çalışan bir uygulama. Bildirimlerin düzgün çalışması için — özellikle iPhone'da bu şart — Alfred'i ana ekranına eklemelisin: iPhone'da Safari'de paylaş ikonuna dokun ve \"Ana Ekrana Ekle\"yi seç; Android'de tarayıcı menüsünden \"Ana ekrana ekle\"yi seç. Aksi halde ilaç/kür hatırlatmaları gibi bildirimler telefonuna hiç ulaşmaz.",
       },
+      {
+        title: 'Acil Durum',
+        body: "Ayarlar'daki kırmızı Acil Durum butonuna basarsan (bir onay adımından sonra) 112 aranır ve aile üyelerine konumunla birlikte acil durum bildirimi gönderilir.",
+      },
     ],
   },
   auth: {
