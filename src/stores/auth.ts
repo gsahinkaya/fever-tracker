@@ -10,6 +10,7 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '@/firebase'
 import type { UserProfile } from '@/types/family'
+import { t } from '@/i18n'
 
 const INVITE_CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no ambiguous chars (0/O, 1/I)
 
@@ -35,7 +36,7 @@ async function createFamily(ownerUid: string): Promise<string> {
       return code
     }
   }
-  throw new Error('Davet kodu oluşturulamadı, tekrar dene.')
+  throw new Error(t('auth.register.errors.inviteCodeCreateFailed'))
 }
 
 async function joinFamily(inviteCode: string, uid: string): Promise<string> {
@@ -43,7 +44,7 @@ async function joinFamily(inviteCode: string, uid: string): Promise<string> {
   const familyRef = doc(db, 'families', code)
   const snap = await getDoc(familyRef)
   if (!snap.exists()) {
-    throw new Error('Davet kodu bulunamadı. Kodu kontrol edip tekrar dene.')
+    throw new Error(t('auth.register.errors.inviteCodeNotFound'))
   }
   await updateDoc(familyRef, { [`members.${uid}`]: true })
   return code
