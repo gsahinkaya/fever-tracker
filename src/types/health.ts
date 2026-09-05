@@ -1,3 +1,5 @@
+import type { CalendarRepeat } from '@/lib/calendarRecurrence'
+
 export interface Medication {
   id: string
   name: string
@@ -190,7 +192,7 @@ export interface CalendarEvent {
   // the next occurrence is computed from it. Kept in sync by hand with
   // api/check-upcoming-calendar-events.ts, which can't import this file
   // (see the note at the top of that file for why).
-  repeat?: 'weekly' | 'monthly'
+  repeat?: CalendarRepeat
   createdBy?: string
   createdByEmail?: string
   // When the event was added (not `date`, which is when it's scheduled for)

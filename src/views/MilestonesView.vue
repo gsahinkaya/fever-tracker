@@ -22,7 +22,6 @@ const activeChild = computed(
 const ageGroups = computed(() => {
   const child = activeChild.value
   if (!child?.birthDate) return []
-  const birth = new Date(child.birthDate).getTime()
   const completed = new Set(child.completedMilestoneIds ?? [])
   const byAge = new Map<number, (typeof DEVELOPMENTAL_MILESTONES)[number][]>()
   for (const item of DEVELOPMENTAL_MILESTONES) {
@@ -31,7 +30,6 @@ const ageGroups = computed(() => {
   }
   return Array.from(byAge.entries()).map(([ageMonths, items]) => ({
     ageMonths,
-    dueAt: birth + ageMonths * 30.436875 * 86_400_000,
     items: items.map((item) => ({ ...item, done: completed.has(item.id) })),
   }))
 })

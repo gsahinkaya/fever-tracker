@@ -7,6 +7,7 @@ import { useChildrenStore } from '@/stores/children'
 import { useNow } from '@/composables/useNow'
 import { currentTimeString, resolveTakenAt } from '@/lib/time'
 import { assessFeverTriage } from '@/lib/feverTriage'
+import { ageInMonths } from '@/lib/age'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
@@ -47,11 +48,9 @@ const tooEarlyMessage = computed(() =>
 const activeChildBirthDate = computed(
   () => childrenStore.children.find((c) => c.id === store.activeChildId)?.birthDate,
 )
-const ageMonths = computed(() => {
-  const birthDate = activeChildBirthDate.value
-  if (!birthDate) return null
-  return (Date.now() - new Date(birthDate).getTime()) / (30.436875 * 86_400_000)
-})
+const ageMonths = computed(() =>
+  activeChildBirthDate.value ? ageInMonths(activeChildBirthDate.value) : null,
+)
 const triage = computed(() =>
   temperature.value != null && temperature.value > 0
     ? assessFeverTriage(temperature.value, ageMonths.value)

@@ -1,5 +1,15 @@
 import { t } from '@/i18n'
 
+// Average days per month (365.2425/12) — used wherever an age needs to be a
+// continuous number (WHO percentile lookups, fever triage thresholds, an
+// entry's age-at-the-time for a growth chart's x-axis) rather than the
+// whole-calendar-months ageLabel below produces for display text.
+const MS_PER_MONTH = 30.436875 * 86_400_000
+
+export function ageInMonths(birthDate: string, atMillis: number = Date.now()): number {
+  return (atMillis - new Date(birthDate).getTime()) / MS_PER_MONTH
+}
+
 export function ageLabel(birthDate?: string): string {
   if (!birthDate) return ''
   const birth = new Date(birthDate)

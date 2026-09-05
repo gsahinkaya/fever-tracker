@@ -15,6 +15,7 @@ import {
   weightBoys,
   weightGirls,
 } from '@/data/whoGrowthStandards'
+import { ageInMonths } from '@/lib/age'
 
 const { t } = useI18n()
 const store = useGrowthLogStore()
@@ -51,10 +52,7 @@ const activeChild = computed(
 // boys/girls tables) — without either, fall back to the plain trend chart.
 const canShowPercentiles = computed(() => !!activeChild.value?.birthDate && !!activeChild.value?.gender)
 
-const ageMonthsAt = (takenAt: number) => {
-  const birth = new Date(activeChild.value!.birthDate!).getTime()
-  return (takenAt - birth) / (30.436875 * 86_400_000)
-}
+const ageMonthsAt = (takenAt: number) => ageInMonths(activeChild.value!.birthDate!, takenAt)
 
 const heightAgePoints = computed(() =>
   canShowPercentiles.value

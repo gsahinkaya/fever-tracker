@@ -10,7 +10,7 @@ import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useChildrenStore } from '@/stores/children'
-import { ageLabel } from '@/lib/age'
+import { ageInMonths, ageLabel } from '@/lib/age'
 import { feedingEntryTitle } from '@/lib/entryTitles'
 import {
   headCircBoys,
@@ -67,10 +67,9 @@ const activeChild = computed(
 )
 const activeChildName = computed(() => activeChild.value?.name ?? '')
 
-const ageMonthsNow = computed(() => {
-  if (!activeChild.value?.birthDate) return null
-  return (Date.now() - new Date(activeChild.value.birthDate).getTime()) / (30.436875 * 86_400_000)
-})
+const ageMonthsNow = computed(() =>
+  activeChild.value?.birthDate ? ageInMonths(activeChild.value.birthDate) : null,
+)
 
 // Latest growth reading, not the child profile's own fields — those are
 // kept in sync with it (see AddGrowthDialog) but the entry carries the date.
