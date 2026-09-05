@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<{ height?: number }>(), { height: 40 })
 <style scoped>
 .alfred-logo__text {
   font-family:
+    'Poppins',
     'Inter',
     system-ui,
     -apple-system,
@@ -32,6 +33,7 @@ const props = withDefaults(defineProps<{ height?: number }>(), { height: 40 })
 
 .alfred-logo__tagline {
   font-family:
+    'Poppins',
     'Inter',
     system-ui,
     -apple-system,

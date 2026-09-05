@@ -43,9 +43,15 @@ body {
    Body S, Body XS, Button L/M/S, Chip/Tag. Component-level rules come
    first so the more specific utility classes below still win when both
    land on the same element (e.g. a card-title with an explicit
-   text-h6). */
+   text-h6).
+
+   Headings/titles use Poppins (rounder, more "brand") while body copy,
+   buttons and chips stay on Inter (tuned for small-size legibility) — the
+   base .v-application rule above sets Inter everywhere, these override it
+   for the heading-level selectors only. */
 .v-application .v-card-title,
 .v-application .v-toolbar-title {
+  font-family: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-size: 18px;
   font-weight: 500;
   line-height: 25px;
@@ -55,6 +61,7 @@ body {
 .v-application .text-h4,
 .v-application .text-h5,
 .v-application .text-h6 {
+  font-family: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-size: 20px;
   font-weight: 800;
   line-height: 27px;
@@ -63,6 +70,7 @@ body {
 
 .v-application .text-subtitle-1,
 .v-application .text-subtitle-2 {
+  font-family: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-size: 18px;
   font-weight: 500;
   line-height: 25px;
