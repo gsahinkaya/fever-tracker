@@ -62,6 +62,7 @@ function numberField(v?: FirestoreValue): number | undefined {
 interface FirestoreDocument {
   name: string
   fields?: Record<string, FirestoreValue>
+  updateTime?: string
 }
 
 function docId(doc: FirestoreDocument): string {
@@ -87,22 +88,53 @@ async function listDocuments(
   return data.documents ?? []
 }
 
-// Patches a single field on a medication doc so the next poll (this
-// endpoint is meant to be hit every few minutes — see
-// .github/workflows/medication-reminders.yml) doesn't re-send the same
-// push. `documentName` is the doc's full resource name, e.g.
-// ".../documents/families/X/children/Y/medications/Z" (med.name as-is).
+// Patches a single field on a medication doc so a later poll doesn't
+// re-send the same push. `documentName` is the doc's full resource name,
+// e.g. ".../documents/families/X/children/Y/medications/Z" (med.name
+// as-is).
+//
+// `ifUnchangedSince`, when given, makes this a conditional write
+// (currentDocument.updateTime) instead of an unconditional one — needed
+// because this endpoint has two independent triggers that can run
+// concurrently (a GitHub Actions poll every 15 min, and vercel.json's own
+// daily cron as a fallback in case that workflow ever stops firing, e.g.
+// GitHub disabling a schedule after 60 days of repo inactivity — their
+// schedules coincide exactly at 0:00/:15/:30/:45, including the daily
+// cron's 07:00 UTC slot). Without a precondition, two overlapping
+// invocations can both read the same medication as "not yet notified"
+// before either has written back, and both send — this is the actual
+// cause of the double/triple-notification reports.
+//
+// Returns whether the write landed (false means it lost the race — someone
+// else's write already changed the document's updateTime, so the caller
+// should skip sending) and, on success, the patched document's fresh
+// updateTime (the PATCH response body is the updated document) so a
+// caller chaining a second conditional write to the same document in this
+// same request — course start/end/reminder and next-dose can both be due
+// for one medication in one poll — uses the up-to-date value instead of
+// the now-stale one that would make its own write spuriously lose the
+// "race" against itself.
 async function patchField(
   accessToken: string,
   documentName: string,
   field: string,
   value: FirestoreValue,
-): Promise<void> {
-  await fetch(`https://firestore.googleapis.com/v1/${documentName}?updateMask.fieldPaths=${field}`, {
-    method: 'PATCH',
-    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fields: { [field]: value } }),
-  })
+  ifUnchangedSince?: string,
+): Promise<{ ok: boolean; updateTime?: string }> {
+  const precondition = ifUnchangedSince
+    ? `&currentDocument.updateTime=${encodeURIComponent(ifUnchangedSince)}`
+    : ''
+  const res = await fetch(
+    `https://firestore.googleapis.com/v1/${documentName}?updateMask.fieldPaths=${field}${precondition}`,
+    {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: { [field]: value } }),
+    },
+  )
+  if (!res.ok) return { ok: false }
+  const updated = (await res.json().catch(() => null)) as { updateTime?: string } | null
+  return { ok: true, updateTime: updated?.updateTime }
 }
 
 // Creates a medicationAlerts doc so this same moment also shows up in the
@@ -196,26 +228,49 @@ const REMINDER: DueCheck = {
   message: (childName, medName) => `${childName} için ${medName} hatırlatma zamanı geldi.`,
 }
 
-// Sends one push, records the medicationAlerts doc (so it also shows up in
-// the in-app bell), and patches whatever field marks this exact moment as
-// already-notified — shared by the fixed-timestamp checks (course start/
-// end, the one-time reminder alarm) and the recurring next-dose check
-// below, which otherwise duplicated this token-lookup/push/mark sequence
-// three-and-then-four ways.
+// Claims this exact moment first (a conditional write, so at most one
+// concurrent invocation wins it — see patchField's comment on why this
+// endpoint needs that), then sends one push and records the
+// medicationAlerts doc (so it also shows up in the in-app bell) only if
+// the claim actually landed. Shared by the fixed-timestamp checks (course
+// start/end, the one-time reminder alarm) and the recurring next-dose
+// check below, which otherwise duplicated this claim/token-lookup/push
+// sequence three-and-then-four ways.
 async function pushAndMark(
   accessToken: string,
   projectId: string,
   memberUids: string[],
   familyId: string,
   childId: string,
+  childName: string,
   dueAt: number,
   medName: string,
   kind: 'courseStart' | 'courseEnd' | 'reminder' | 'nextDose',
   message: string,
   documentName: string,
+  documentUpdateTime: string | undefined,
   notifiedField: string,
   notifiedValue: FirestoreValue,
-): Promise<number> {
+): Promise<{ sent: number; updateTime?: string }> {
+  // Mark notified regardless of whether any device tokens existed —
+  // otherwise a family with no registered devices yet would get this same
+  // "due" moment re-evaluated (harmlessly, just wasted work) on every
+  // single poll forever.
+  const claim = await patchField(
+    accessToken,
+    documentName,
+    notifiedField,
+    notifiedValue,
+    documentUpdateTime,
+  )
+  // Lost the race to a concurrent invocation — it already handled this
+  // moment. Still hand back the original updateTime unchanged, since we
+  // didn't write anything.
+  if (!claim.ok) return { sent: 0, updateTime: documentUpdateTime }
+
+  // The in-app bell entry is created unconditionally (not gated on token
+  // lookup below) since a family member with the app open right now should
+  // see it even if push delivery had nothing to reach.
   const alertPromise = createMedicationAlert(
     accessToken,
     projectId,
@@ -230,16 +285,13 @@ async function pushAndMark(
   )
   const tokens = tokenLists.flat().map(docId)
   const results = await Promise.allSettled(
-    tokens.map((token) => sendPush(accessToken, projectId, token, 'Alfred', message)),
+    tokens.map((token) => sendPush(accessToken, projectId, token, childName, message)),
   )
-  // Mark notified regardless of whether any device tokens existed —
-  // otherwise a family with no registered devices yet would get this same
-  // "due" moment re-evaluated (harmlessly, just wasted work) on every
-  // single poll forever. The in-app bell entry is created unconditionally
-  // too, since a family member with the app open right now should see it
-  // even if push delivery had nothing to reach.
-  await Promise.all([patchField(accessToken, documentName, notifiedField, notifiedValue), alertPromise])
-  return results.filter((r) => r.status === 'fulfilled' && r.value).length
+  await alertPromise
+  return {
+    sent: results.filter((r) => r.status === 'fulfilled' && r.value).length,
+    updateTime: claim.updateTime,
+  }
 }
 
 // Vercel Cron (see vercel.json) hits this once a day as a fallback; a
@@ -318,6 +370,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           // stuck forever once it aged out of a fixed lookback window,
           // since nothing else ever re-checks it. The notified flag alone
           // guarantees each moment still only ever fires once.
+          // Threaded through both checks below (course/reminder, then
+          // next-dose) rather than each reading med.updateTime directly —
+          // if the first one actually wrote, the document's real
+          // updateTime has moved on, and the second conditional write
+          // needs the fresh value or it would spuriously "lose the race"
+          // against its own sibling write.
+          let medUpdateTime = med.updateTime
+
           const due = [COURSE_START, COURSE_END, REMINDER].find((check) => {
             const ts = med.fields?.[check.fieldTs]?.integerValue
             if (ts == null || med.fields?.[check.fieldNotified]?.booleanValue) return false
@@ -325,20 +385,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           })
           if (due) {
             const dueAt = Number(med.fields![due.fieldTs]!.integerValue)
-            notificationsSent += await pushAndMark(
+            const result = await pushAndMark(
               accessToken,
               projectId,
               memberUids,
               familyId,
               childId,
+              childName,
               dueAt,
               medName,
               due.kind,
               due.message(childName, medName),
               med.name,
+              medUpdateTime,
               due.fieldNotified,
               { booleanValue: true },
             )
+            notificationsSent += result.sent
+            medUpdateTime = result.updateTime
           }
 
           // The multiple-times-a-day "time for the next dose" reminder —
@@ -369,20 +433,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           if (safeAt > now) continue
           if (med.fields?.nextDoseNotifiedFor?.stringValue === lastDoseId) continue
 
-          notificationsSent += await pushAndMark(
+          const nextDoseResult = await pushAndMark(
             accessToken,
             projectId,
             memberUids,
             familyId,
             childId,
+            childName,
             safeAt,
             medName,
             'nextDose',
             `${childName} için ${medName} vermek üzere güvenli doz zamanı geldi.`,
             med.name,
+            medUpdateTime,
             'nextDoseNotifiedFor',
             { stringValue: lastDoseId },
           )
+          notificationsSent += nextDoseResult.sent
         }
       }
     }

@@ -217,7 +217,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               accessToken,
               projectId,
               token,
-              'Alfred',
+              childName,
               `${childName} için yarın ${dueName} zamanı geliyor.`,
             ),
           ),
