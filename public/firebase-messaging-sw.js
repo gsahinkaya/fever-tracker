@@ -15,6 +15,17 @@ firebase.initializeApp({
   appId: '1:1048644595682:web:4be74e66fccb0ae9fc53bb',
 })
 
+// Without this, a new version of this file sits "waiting" until every open
+// tab/installed-PWA instance fully closes — which for a backgrounded PWA can
+// be effectively forever. The stale, already-running SW keeps handling
+// pushes in the meantime with whatever code it was loaded with; if the
+// server payload shape has since changed (as it did when the notification
+// field was dropped below), the old handler's `payload.notification?.title
+// ?? 'Alfred'` fallback fires and shows a bare "Alfred" notification with
+// no body. Claiming control immediately closes that skew window.
+self.addEventListener('install', () => self.skipWaiting())
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()))
+
 const messaging = firebase.messaging()
 
 // Foreground messages are handled in-app (useEntryNotifications already

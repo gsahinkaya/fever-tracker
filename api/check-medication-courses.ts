@@ -232,6 +232,11 @@ interface DueCheck {
   // string here rather than importing that type (see the top-of-file note
   // on zero local imports).
   kind: 'courseStart' | 'courseEnd' | 'reminder'
+  // The notification's title — carries the "who/what" (child + medication)
+  // so it's readable at a glance on a lock screen, which can truncate or
+  // hide the body entirely. No app name in it: the notification's own icon
+  // already identifies which app it's from.
+  title: (childName: string, medName: string) => string
   message: (childName: string, medName: string) => string
 }
 
@@ -239,6 +244,7 @@ const COURSE_START: DueCheck = {
   fieldTs: 'courseStartAt',
   fieldNotified: 'courseStartNotified',
   kind: 'courseStart',
+  title: (childName, medName) => `${childName} için ${medName} kürü başlıyor`,
   message: (childName, medName) =>
     `${childName} için ${medName} kürünü başlatma zamanı geldi. Kür boyunca düzenli vermeyi unutma.`,
 }
@@ -246,6 +252,7 @@ const COURSE_END: DueCheck = {
   fieldTs: 'courseEndAt',
   fieldNotified: 'courseEndNotified',
   kind: 'courseEnd',
+  title: (childName, medName) => `${childName} için ${medName} kürü bitti`,
   message: (childName, medName) =>
     `${childName} için ${medName} kürü sona erdi. Kürü yarıda bırakmadığından emin ol.`,
 }
@@ -253,6 +260,7 @@ const REMINDER: DueCheck = {
   fieldTs: 'reminderAt',
   fieldNotified: 'reminderNotified',
   kind: 'reminder',
+  title: (childName, medName) => `${childName} için ${medName} hatırlatması`,
   message: (childName, medName) => `${childName} için ${medName} hatırlatma zamanı geldi.`,
 }
 
@@ -270,11 +278,11 @@ async function pushAndMark(
   memberUids: string[],
   familyId: string,
   childId: string,
-  childName: string,
   dueAt: number,
   medName: string,
   medicationId: string,
   kind: 'courseStart' | 'courseEnd' | 'reminder' | 'nextDose',
+  title: string,
   message: string,
   documentName: string,
   documentUpdateTime: string | undefined,
@@ -318,7 +326,7 @@ async function pushAndMark(
   const quickDose: QuickDose | undefined =
     kind !== 'courseEnd' ? { childId, medicationId, medicationName: medName } : undefined
   const results = await Promise.allSettled(
-    tokens.map((token) => sendPush(accessToken, projectId, token, childName, message, quickDose)),
+    tokens.map((token) => sendPush(accessToken, projectId, token, title, message, quickDose)),
   )
   await alertPromise
   return {
@@ -424,11 +432,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               memberUids,
               familyId,
               childId,
-              childName,
               dueAt,
               medName,
               docId(med),
               due.kind,
+              due.title(childName, medName),
               due.message(childName, medName),
               med.name,
               medUpdateTime,
@@ -473,11 +481,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             memberUids,
             familyId,
             childId,
-            childName,
             safeAt,
             medName,
             docId(med),
             'nextDose',
+            `${childName} için ${medName} zamanı`,
             `${childName} için ${medName} vermek üzere güvenli doz zamanı geldi.`,
             med.name,
             medUpdateTime,
