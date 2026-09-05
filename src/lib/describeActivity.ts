@@ -145,5 +145,8 @@ export function describeMedicationAlert(entry: MedicationAlertEntry): string {
   if (entry.kind === 'courseEnd') {
     return t('notifications.courseEndReady', { name: entry.medicationName })
   }
+  if (entry.kind === 'nextDose') {
+    return t('notifications.doseReady', { name: entry.medicationName })
+  }
   return t('notifications.reminderReady', { name: entry.medicationName })
 }

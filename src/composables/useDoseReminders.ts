@@ -4,9 +4,11 @@ import { useMedicationsStore } from '@/stores/medications'
 import { t } from '@/i18n'
 import { useNow } from './useNow'
 
-// Foreground-only reminder: notifies while this tab/PWA is open and in memory.
-// Real background/lock-screen alarms require a server-pushed notification
-// (Firebase Cloud Messaging) — see NEXT-STEPS notes once Firebase is wired up.
+// Foreground-only reminder: notifies while this tab/PWA is open and in
+// memory. api/check-medication-courses.ts runs the same next-dose interval
+// check server-side (polled every few minutes) so a closed app/PWA still
+// gets a push — this one is what drives the in-app "next safe dose" banner
+// while the app is actually open, which a push notification can't do.
 const notifiedFor = new Set<string>()
 
 // Every reminder kind below (one-time alarm, course start, next-dose) is the

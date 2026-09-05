@@ -35,6 +35,13 @@ export interface Medication {
   // history. Same notified-flag pattern as the course fields.
   reminderAt?: number
   reminderNotified?: boolean
+  // Server-side counterpart to useDoseReminders' foreground-only "time for
+  // the next dose" check (api/check-medication-courses.ts) — since that
+  // reminder recurs every minIntervalHours rather than firing once, a
+  // boolean can't track it; this instead holds the id of the dose entry
+  // it was last sent for, so a newly-logged dose (a new id) naturally
+  // re-arms it for the next interval.
+  nextDoseNotifiedFor?: string
   // Who added this medication and when, so the other parent can be
   // notified — including catching up after reopening the app, which needs
   // a timestamp to compare against a "last seen" watermark. Optional
@@ -148,7 +155,7 @@ export interface DiaperEntry {
 // app whose `createdBy` is never a real family member's uid (a sentinel
 // value instead), which is what makes useWatermarkedFeed's "not my own
 // write" filter treat it as incoming for every member.
-export type MedicationAlertKind = 'courseStart' | 'courseEnd' | 'reminder'
+export type MedicationAlertKind = 'courseStart' | 'courseEnd' | 'reminder' | 'nextDose'
 
 export interface MedicationAlertEntry {
   id: string
