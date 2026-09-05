@@ -168,6 +168,16 @@ export default {
       calendar: 'Takvim',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
+    emergency: {
+      button: 'Acil Durum',
+      confirmTitle: 'Acil Durum',
+      confirmBody:
+        '112 aranacak ve aile üyelerine konumunla birlikte acil durum bildirimi gönderilecek. Devam edilsin mi?',
+      confirmAction: 'Evet, 112\'yi Ara',
+      locationLabel: 'Konum',
+      notificationTitle: '🚨 Acil Durum',
+      notificationBody: '{who} acil durum butonuna bastı ve 112\'yi arıyor!',
+    },
   },
   history: {
     title: 'Tüm Geçmiş',

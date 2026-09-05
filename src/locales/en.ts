@@ -166,6 +166,16 @@ export default {
       calendar: 'Calendar',
     },
     nextSafeDose: 'Next Safe Dose',
+    emergency: {
+      button: 'Emergency',
+      confirmTitle: 'Emergency',
+      confirmBody:
+        "This will call 112 and send an emergency alert with your location to your family members. Continue?",
+      confirmAction: 'Yes, Call 112',
+      locationLabel: 'Location',
+      notificationTitle: '🚨 Emergency',
+      notificationBody: '{who} tapped the emergency button and is calling 112!',
+    },
   },
   history: {
     title: 'Full History',

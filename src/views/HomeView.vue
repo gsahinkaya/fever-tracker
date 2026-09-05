@@ -5,6 +5,7 @@ import { useChildrenStore } from '@/stores/children'
 import { useAuthStore } from '@/stores/auth'
 import { useDoseReminders } from '@/composables/useDoseReminders'
 import { registerDeviceForPush } from '@/composables/usePushNotifications'
+import { triggerEmergencyAlert } from '@/composables/useEmergencyAlert'
 import AddReadingDialog from '@/components/AddReadingDialog.vue'
 import AddDoseDialog from '@/components/AddDoseDialog.vue'
 import OnboardingWizard from '@/components/OnboardingWizard.vue'
@@ -16,6 +17,11 @@ const { requestPermission } = useDoseReminders()
 
 const showReadingDialog = ref(false)
 const showDoseDialog = ref(false)
+const showEmergencyConfirm = ref(false)
+function confirmEmergency() {
+  showEmergencyConfirm.value = false
+  triggerEmergencyAlert()
+}
 const showOnboarding = computed({
   get: () => !!authStore.profile && !authStore.profile.hasSeenOnboarding,
   set: (value) => {
@@ -61,6 +67,21 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
     </template>
 
     <template v-else>
+      <v-btn
+        block
+        height="72"
+        color="error"
+        variant="flat"
+        rounded="lg"
+        class="mb-4"
+        @click="showEmergencyConfirm = true"
+      >
+        <div class="d-flex align-center w-100">
+          <v-icon icon="mdi-phone-alert" size="30" class="mr-3" />
+          <span class="text-h6 font-weight-bold">{{ t('home.emergency.button') }}</span>
+        </div>
+      </v-btn>
+
       <div class="d-flex flex-column mb-6" style="gap: 12px">
         <v-btn block height="64" color="primary" variant="flat" rounded="lg" to="/gecmis">
           <div class="d-flex align-center w-100">
@@ -177,6 +198,22 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
       <AddReadingDialog v-model="showReadingDialog" />
       <AddDoseDialog v-model="showDoseDialog" />
       <OnboardingWizard v-model="showOnboarding" />
+
+      <v-dialog v-model="showEmergencyConfirm" max-width="360">
+        <v-card>
+          <v-card-title class="text-h6">{{ t('home.emergency.confirmTitle') }}</v-card-title>
+          <v-card-text>{{ t('home.emergency.confirmBody') }}</v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn variant="text" @click="showEmergencyConfirm = false">{{
+              t('common.cancel')
+            }}</v-btn>
+            <v-btn color="error" variant="flat" @click="confirmEmergency">{{
+              t('home.emergency.confirmAction')
+            }}</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </template>
   </v-container>
 </template>

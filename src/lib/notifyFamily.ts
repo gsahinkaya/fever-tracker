@@ -7,7 +7,7 @@ import { t } from '@/i18n'
 // OS Notification in useEntryNotifications can't reach a device that isn't
 // open. Best-effort: a failure here should never block or surface an error
 // for the write that already succeeded.
-export async function notifyFamily(body: string, tag: string): Promise<void> {
+export async function notifyFamily(body: string, tag: string, title?: string): Promise<void> {
   const authStore = useAuthStore()
   const familyId = authStore.familyId
   if (!familyId) return
@@ -18,7 +18,7 @@ export async function notifyFamily(body: string, tag: string): Promise<void> {
     await fetch('/api/notify-family', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
-      body: JSON.stringify({ familyId, title: t('common.appName'), body, tag }),
+      body: JSON.stringify({ familyId, title: title ?? t('common.appName'), body, tag }),
     })
   } catch (err) {
     console.error('notifyFamily failed', err)
