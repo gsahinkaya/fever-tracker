@@ -22,6 +22,8 @@ export interface Child {
   // IDs from vaccinationSchedule.ts that have been marked as given.
   completedVaccineIds?: string[]
   customVaccines?: CustomVaccine[]
+  // IDs from developmentalMilestones.ts that have been marked as reached.
+  completedMilestoneIds?: string[]
 }
 
 export type FamilyRelation =

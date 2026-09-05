@@ -170,6 +170,7 @@ export default {
       sleep: 'Sleep',
       diaper: 'Diaper Change',
       calendar: 'Calendar',
+      milestones: 'Milestones',
     },
     nextSafeDose: 'Next Safe Dose',
     emergency: {
@@ -267,6 +268,19 @@ export default {
       namePlaceholder: 'E.g. Rotavirus, Flu shot',
       dueDateLabel: 'Date (optional)',
       dueDateHint: 'Enter the planned date if upcoming, or the date given if already done',
+    },
+  },
+  milestones: {
+    title: 'Developmental Milestones',
+    disclaimer: 'A general developmental guide; every child develops at their own pace. Share any concerns with your pediatrician.',
+    needsBirthDate: "Add your child's birth date first to show milestones by age.",
+    goToChildren: 'Go to Child Info',
+    ageGroupLabel: '{months} Months',
+    category: {
+      motor: 'Motor Skills',
+      language: 'Language',
+      social: 'Social',
+      cognitive: 'Cognitive',
     },
   },
   symptoms: {

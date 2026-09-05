@@ -172,6 +172,7 @@ export default {
       sleep: 'Uyku',
       diaper: 'Bez Değişimi',
       calendar: 'Takvim',
+      milestones: 'Gelişim Kilometre Taşları',
     },
     nextSafeDose: 'Sonraki Güvenli Doz',
     emergency: {
@@ -269,6 +270,19 @@ export default {
       namePlaceholder: 'Örn. Rotavirüs, Grip aşısı',
       dueDateLabel: 'Tarih (opsiyonel)',
       dueDateHint: 'Yapılacaksa planlanan, yapıldıysa yapılma tarihini gir',
+    },
+  },
+  milestones: {
+    title: 'Gelişim Kilometre Taşları',
+    disclaimer: 'Genel bir gelişim rehberidir; her çocuk kendi hızında gelişir. Endişelerini çocuk doktoruyla paylaş.',
+    needsBirthDate: 'Yaşa göre kilometre taşlarını gösterebilmek için önce çocuğunun doğum tarihini ekle.',
+    goToChildren: 'Çocuk Bilgilerine Git',
+    ageGroupLabel: '{months} Aylık',
+    category: {
+      motor: 'Motor Beceriler',
+      language: 'Dil',
+      social: 'Sosyal',
+      cognitive: 'Bilişsel',
     },
   },
   symptoms: {

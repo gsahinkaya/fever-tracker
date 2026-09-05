@@ -32,6 +32,11 @@ const router = createRouter({
       component: () => import('../views/VaccinationsView.vue'),
     },
     {
+      path: '/gelisim',
+      name: 'milestones',
+      component: () => import('../views/MilestonesView.vue'),
+    },
+    {
       path: '/etkinlikler',
       name: 'nearby-activities',
       component: () => import('../views/NearbyActivitiesView.vue'),

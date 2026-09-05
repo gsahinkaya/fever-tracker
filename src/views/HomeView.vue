@@ -136,6 +136,12 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.growth') }}</span>
           </div>
         </v-btn>
+        <v-btn block height="64" color="growth" variant="flat" rounded="lg" to="/gelisim">
+          <div class="d-flex align-center w-100">
+            <v-icon icon="mdi-star-outline" size="26" class="mr-3" />
+            <span class="text-body-1 font-weight-bold">{{ t('home.tiles.milestones') }}</span>
+          </div>
+        </v-btn>
         <v-btn block height="64" color="info" variant="flat" rounded="lg" to="/rapor">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-file-chart-outline" size="26" class="mr-3" />
