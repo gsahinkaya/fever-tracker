@@ -23,19 +23,28 @@ function waitForActive(
 
 // Registered at a scope distinct from vite-plugin-pwa's own service worker
 // (which handles offline caching) so the two coexist instead of one
-// clobbering the other's control of the page.
+// clobbering the other's control of the page. Passing an explicit `scope`
+// here (rather than looking one up first) sidesteps a separate pitfall:
+// getRegistration(url) resolves by longest-matching scope, so once
+// vite-plugin-pwa's own worker is registered at '/' it "wins" the lookup for
+// any sub-path including PUSH_SCOPE, silently handing back that unrelated
+// worker (no Firebase message handler) instead of this one.
 //
-// getRegistration(PUSH_SCOPE) is deliberately NOT used here: it resolves by
-// longest-matching scope, so once vite-plugin-pwa's own worker is registered
-// at '/' it "wins" the lookup for any sub-path including PUSH_SCOPE — this
-// function would then silently reuse that unrelated worker (no Firebase
-// message handler) and getToken() would never point at the real one.
+// Always calling register() — not just when nothing's registered yet — is
+// deliberate too: this is also what makes the browser check whether
+// firebase-messaging-sw.js has changed since the last install and, if so,
+// fetch and activate the new version. An earlier version of this function
+// skipped the call entirely whenever a registration already existed, which
+// meant a returning user's already-registered device could run a stale
+// service worker indefinitely — the actual cause of a "bare 'Alfred', no
+// body" notification the app had already started sending a different (now
+// data-only) payload shape for. registerDeviceForPush() runs on every app
+// open with permission already granted, so this now gets a chance to
+// refresh on every one of those.
 async function registerPushServiceWorker(): Promise<ServiceWorkerRegistration> {
-  const registrations = await navigator.serviceWorker.getRegistrations()
-  const existing = registrations.find((r) => r.scope.endsWith(PUSH_SCOPE))
-  const registration =
-    existing ??
-    (await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: PUSH_SCOPE }))
+  const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+    scope: PUSH_SCOPE,
+  })
   return waitForActive(registration)
 }
 

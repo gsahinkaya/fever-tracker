@@ -200,7 +200,7 @@ watch(
       </template>
       <v-app-bar-title>
         <RouterLink to="/" class="d-block" style="text-decoration: none; color: inherit">
-          <span class="text-subtitle-1 font-weight-bold">{{ t('common.appName') }} - {{ t('common.appTagline') }}</span>
+          <span class="text-subtitle-1 font-weight-bold">{{ t('common.appName') }}</span>
         </RouterLink>
       </v-app-bar-title>
       <template #append>
