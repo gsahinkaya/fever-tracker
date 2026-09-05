@@ -232,11 +232,12 @@ interface DueCheck {
   // string here rather than importing that type (see the top-of-file note
   // on zero local imports).
   kind: 'courseStart' | 'courseEnd' | 'reminder'
-  // The notification's title — carries the "who/what" (child + medication)
-  // so it's readable at a glance on a lock screen, which can truncate or
-  // hide the body entirely. No app name in it: the notification's own icon
-  // already identifies which app it's from.
-  title: (childName: string, medName: string) => string
+  // The notification's only line of text — sent as the title with an empty
+  // body (see pushAndMark/sendPush below). An earlier version split this
+  // into a short title plus a longer, near-identical body ("X için Y
+  // hatırlatması" / "X için Y hatırlatma zamanı geldi.") which just showed
+  // as two redundant lines stacked on a lock screen — one clean sentence
+  // reads better than restating the same thing twice.
   message: (childName: string, medName: string) => string
 }
 
@@ -244,24 +245,19 @@ const COURSE_START: DueCheck = {
   fieldTs: 'courseStartAt',
   fieldNotified: 'courseStartNotified',
   kind: 'courseStart',
-  title: (childName, medName) => `${childName} için ${medName} kürü başlıyor`,
-  message: (childName, medName) =>
-    `${childName} için ${medName} kürünü başlatma zamanı geldi. Kür boyunca düzenli vermeyi unutma.`,
+  message: (childName, medName) => `${childName} için ${medName} kürü başlıyor`,
 }
 const COURSE_END: DueCheck = {
   fieldTs: 'courseEndAt',
   fieldNotified: 'courseEndNotified',
   kind: 'courseEnd',
-  title: (childName, medName) => `${childName} için ${medName} kürü bitti`,
-  message: (childName, medName) =>
-    `${childName} için ${medName} kürü sona erdi. Kürü yarıda bırakmadığından emin ol.`,
+  message: (childName, medName) => `${childName} için ${medName} kürü sona erdi`,
 }
 const REMINDER: DueCheck = {
   fieldTs: 'reminderAt',
   fieldNotified: 'reminderNotified',
   kind: 'reminder',
-  title: (childName, medName) => `${childName} için ${medName} hatırlatması`,
-  message: (childName, medName) => `${childName} için ${medName} hatırlatma zamanı geldi.`,
+  message: (childName, medName) => `${childName} için ${medName} zamanı geldi`,
 }
 
 // Claims this exact moment first (a conditional write, so at most one
@@ -282,7 +278,6 @@ async function pushAndMark(
   medName: string,
   medicationId: string,
   kind: 'courseStart' | 'courseEnd' | 'reminder' | 'nextDose',
-  title: string,
   message: string,
   documentName: string,
   documentUpdateTime: string | undefined,
@@ -325,8 +320,11 @@ async function pushAndMark(
   // now" — so it's the one kind that doesn't get the quick-log action.
   const quickDose: QuickDose | undefined =
     kind !== 'courseEnd' ? { childId, medicationId, medicationName: medName } : undefined
+  // A single clean sentence as the title, empty body — see DueCheck's
+  // `message` comment for why this isn't split into two near-duplicate
+  // lines.
   const results = await Promise.allSettled(
-    tokens.map((token) => sendPush(accessToken, projectId, token, title, message, quickDose)),
+    tokens.map((token) => sendPush(accessToken, projectId, token, message, '', quickDose)),
   )
   await alertPromise
   return {
@@ -436,7 +434,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               medName,
               docId(med),
               due.kind,
-              due.title(childName, medName),
               due.message(childName, medName),
               med.name,
               medUpdateTime,
@@ -485,8 +482,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             medName,
             docId(med),
             'nextDose',
-            `${childName} için ${medName} zamanı`,
-            `${childName} için ${medName} vermek üzere güvenli doz zamanı geldi.`,
+            `${childName} için ${medName} zamanı geldi`,
             med.name,
             medUpdateTime,
             'nextDoseNotifiedFor',
