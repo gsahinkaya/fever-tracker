@@ -117,9 +117,16 @@ async function sendPush(
     // it directly *and* firebase-messaging-sw.js's onBackgroundMessage
     // fires and shows a second one — the same push landing twice in the
     // tray. Keeping everything in `data` forces exactly one display path.
+    //
+    // TTL:43200 (12h) — this says "due tomorrow", still roughly true for
+    // most of a day but not worth showing at all a day or more late if
+    // delivery got stuck (see check-medication-courses.ts's sendPush for
+    // the concrete case that motivated this: a device silently missing
+    // pushes because its service worker was stuck on a broken update).
     body: JSON.stringify({
       message: {
         token,
+        webpush: { headers: { TTL: '43200' } },
         data: { title, body, tag: 'vaccine-reminder', link: '/asilar' },
       },
     }),

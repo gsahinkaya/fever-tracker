@@ -131,9 +131,16 @@ async function sendPush(
     // it directly *and* firebase-messaging-sw.js's onBackgroundMessage
     // fires and shows a second one — the same push landing twice in the
     // tray. Keeping everything in `data` forces exactly one display path.
+    //
+    // An emergency alert delivered late is worse than useless — it reads as
+    // current ("X just hit the emergency button") long after the situation
+    // has moved on — so it gets a short TTL rather than the long default,
+    // unlike the other activity pushes this endpoint sends (a fever
+    // reading/dose logged an hour ago is still true whenever it arrives).
     body: JSON.stringify({
       message: {
         token,
+        ...(tag === 'emergency-alert' ? { webpush: { headers: { TTL: '900' } } } : {}),
         data: { title, body, tag, link: '/' },
       },
     }),

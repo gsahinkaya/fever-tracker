@@ -198,9 +198,20 @@ async function sendPush(
     // it directly *and* firebase-messaging-sw.js's onBackgroundMessage
     // fires and shows a second one — the same push landing twice in the
     // tray. Keeping everything in `data` forces exactly one display path.
+    //
+    // TTL:3600 — this says "it's time now", which stops being true if
+    // delivery is delayed. Without a TTL, FCM/the browser's push service can
+    // hold and redeliver a message hours or even days later (e.g. while a
+    // device was offline, or — as happened before skipWaiting/clients.claim
+    // were added to the service worker — while it was stuck registering a
+    // broken update and silently failing to show anything); a parent who
+    // already gave the dose shouldn't see a stale "time to give it" days
+    // later. An hour is generous slack for normal delivery delay while still
+    // meaning a redelivered one is never far enough off to be misleading.
     body: JSON.stringify({
       message: {
         token,
+        webpush: { headers: { TTL: '3600' } },
         data: {
           title,
           body,
