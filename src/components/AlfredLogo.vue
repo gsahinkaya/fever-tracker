@@ -25,8 +25,8 @@ const props = withDefaults(defineProps<{ height?: number }>(), { height: 40 })
     -apple-system,
     'Segoe UI',
     sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   color: #5f07ef;
   line-height: 1.05;
 }
@@ -39,7 +39,9 @@ const props = withDefaults(defineProps<{ height?: number }>(), { height: 40 })
     -apple-system,
     'Segoe UI',
     sans-serif;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  opacity: 0.85;
   color: #5f07ef;
   line-height: 1.2;
 }
