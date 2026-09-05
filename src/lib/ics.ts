@@ -77,6 +77,7 @@ export function downloadCalendarEventIcs(event: CalendarEvent) {
     ...timedLines,
     `SUMMARY:${escapeIcsText(event.title)}`,
     ...(event.note ? [`DESCRIPTION:${escapeIcsText(event.note)}`] : []),
+    ...(event.repeat ? [`RRULE:FREQ=${event.repeat === 'weekly' ? 'WEEKLY' : 'MONTHLY'}`] : []),
     'END:VEVENT',
     'END:VCALENDAR',
   ]

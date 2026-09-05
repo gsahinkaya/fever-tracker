@@ -41,7 +41,13 @@ export const useCalendarEventsStore = defineStore('calendarEvents', () => {
     collection: calendarEventsCollection,
   })
 
-  async function addEvent(title: string, date: string, time?: string, note?: string) {
+  async function addEvent(
+    title: string,
+    date: string,
+    time?: string,
+    note?: string,
+    repeat?: CalendarEvent['repeat'],
+  ) {
     const { familyId, childId } = requireContext()
     const payload: Omit<CalendarEvent, 'id' | 'createdAt'> & { createdAt: Timestamp } = {
       title,
@@ -49,6 +55,7 @@ export const useCalendarEventsStore = defineStore('calendarEvents', () => {
       createdAt: Timestamp.now(),
       ...(time ? { time } : {}),
       ...(note ? { note } : {}),
+      ...(repeat ? { repeat } : {}),
       ...creatorFields(),
     }
     await addDoc(calendarEventsCollection(familyId, childId), payload)

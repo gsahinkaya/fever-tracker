@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useCalendarEventsStore } from '@/stores/calendarEvents'
 import { todayDateString } from '@/lib/dateFormat'
+import type { CalendarEvent } from '@/types/health'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
@@ -12,6 +13,13 @@ const title = ref('')
 const date = ref('')
 const time = ref('')
 const note = ref('')
+const repeat = ref<CalendarEvent['repeat']>(undefined)
+
+const repeatOptions = [
+  { value: undefined, title: t('calendar.repeat.none') },
+  { value: 'weekly' as const, title: t('calendar.repeat.weekly') },
+  { value: 'monthly' as const, title: t('calendar.repeat.monthly') },
+]
 
 watch(model, (open) => {
   if (open) {
@@ -22,12 +30,19 @@ watch(model, (open) => {
     // all-day (a birthday, a "special day"), so a time is opt-in.
     time.value = ''
     note.value = ''
+    repeat.value = undefined
   }
 })
 
 function save() {
   if (!title.value.trim() || !date.value) return
-  store.addEvent(title.value.trim(), date.value, time.value || undefined, note.value.trim() || undefined)
+  store.addEvent(
+    title.value.trim(),
+    date.value,
+    time.value || undefined,
+    note.value.trim() || undefined,
+    repeat.value,
+  )
   model.value = false
 }
 </script>
@@ -66,6 +81,15 @@ function save() {
         <v-text-field
           v-model="note"
           :label="t('calendar.dialog.noteLabel')"
+          variant="outlined"
+          density="comfortable"
+        />
+        <v-select
+          v-model="repeat"
+          :items="repeatOptions"
+          item-title="title"
+          item-value="value"
+          :label="t('calendar.dialog.repeatLabel')"
           variant="outlined"
           density="comfortable"
         />

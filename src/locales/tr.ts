@@ -184,6 +184,8 @@ export default {
       locationLabel: 'Konum',
       notificationTitle: '🚨 Acil Durum',
       notificationBody: '{who} acil durum butonuna bastı ve 112\'yi arıyor!',
+      historyFever: 'Son ateş: {temp}°C ({time})',
+      historyDose: 'Son ilaç: {med} ({time})',
     },
   },
   history: {
@@ -361,8 +363,16 @@ export default {
     deleteAria: 'Etkinliği sil',
     deleteConfirmTitle: 'Etkinliği sil',
     deleteConfirmBody: '{title} · {date} etkinliği silinsin mi?',
+    deleteConfirmBodyRepeating: '{title} etkinliği (ve tüm gelecek tekrarları, {date} dahil) silinsin mi?',
     addToPhoneCalendar: 'Telefon takvimine ekle',
     reminderNote: 'Etkinlik gününden bir gün önce hatırlatma bildirimi gönderilir.',
+    repeat: {
+      none: 'Tekrar yok',
+      weekly: 'Her hafta',
+      monthly: 'Her ay',
+      weeklyChip: 'Haftalık',
+      monthlyChip: 'Aylık',
+    },
     dialog: {
       title: 'Etkinlik Ekle',
       titleLabel: 'Başlık',
@@ -371,6 +381,7 @@ export default {
       timeLabel: 'Saat (opsiyonel)',
       timeHint: 'Boş bırakırsan tüm gün süren bir etkinlik olur',
       noteLabel: 'Not (opsiyonel)',
+      repeatLabel: 'Tekrar',
     },
   },
   settings: {

@@ -108,6 +108,26 @@ function pad(n: number): string {
   return String(n).padStart(2, '0')
 }
 
+// Kept in sync by hand with lib/calendarRecurrence.ts's nextOccurrence,
+// which this file can't import (see the top-of-file note on zero local
+// imports) — but this only needs a yes/no answer for one specific date
+// (tomorrow), not "what's the next occurrence", so it's simpler than that
+// one rather than a literal copy.
+function isDueTomorrow(anchorDate: string, repeat: string | undefined, tomorrowStr: string): boolean {
+  if (!repeat) return anchorDate === tomorrowStr
+  if (anchorDate > tomorrowStr) return false
+  const anchor = new Date(`${anchorDate}T00:00:00Z`)
+  const tomorrow = new Date(`${tomorrowStr}T00:00:00Z`)
+  if (repeat === 'weekly') {
+    const diffDays = Math.round((tomorrow.getTime() - anchor.getTime()) / 86_400_000)
+    return diffDays % 7 === 0
+  }
+  if (repeat === 'monthly') {
+    return anchor.getUTCDate() === tomorrow.getUTCDate()
+  }
+  return false
+}
+
 // Vercel Cron (see vercel.json) hits this once a day. It scans every
 // family's children for a calendar event whose `date` (a plain YYYY-MM-DD
 // string — see types/health.ts) is exactly tomorrow, and pushes a reminder
@@ -150,7 +170,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           projectId,
           `families/${familyId}/children/${docId(child)}/calendarEvents`,
         )
-        const dueEvents = events.filter((e) => e.fields?.date?.stringValue === tomorrowStr)
+        const dueEvents = events.filter((e) =>
+          isDueTomorrow(e.fields?.date?.stringValue ?? '', e.fields?.repeat?.stringValue, tomorrowStr),
+        )
         if (!dueEvents.length) continue
 
         const tokenLists = await Promise.all(

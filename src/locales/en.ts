@@ -182,6 +182,8 @@ export default {
       locationLabel: 'Location',
       notificationTitle: '🚨 Emergency',
       notificationBody: '{who} tapped the emergency button and is calling 112!',
+      historyFever: 'Last fever: {temp}°C ({time})',
+      historyDose: 'Last medication: {med} ({time})',
     },
   },
   history: {
@@ -359,8 +361,16 @@ export default {
     deleteAria: 'Delete event',
     deleteConfirmTitle: 'Delete event',
     deleteConfirmBody: 'Delete the {title} · {date} event?',
+    deleteConfirmBodyRepeating: 'Delete {title} (and all future occurrences, including {date})?',
     addToPhoneCalendar: 'Add to phone calendar',
     reminderNote: "A reminder notification is sent one day before the event.",
+    repeat: {
+      none: 'No repeat',
+      weekly: 'Weekly',
+      monthly: 'Monthly',
+      weeklyChip: 'Weekly',
+      monthlyChip: 'Monthly',
+    },
     dialog: {
       title: 'Add Event',
       titleLabel: 'Title',
@@ -369,6 +379,7 @@ export default {
       timeLabel: 'Time (optional)',
       timeHint: 'Leave blank for an all-day event',
       noteLabel: 'Note (optional)',
+      repeatLabel: 'Repeat',
     },
   },
   settings: {

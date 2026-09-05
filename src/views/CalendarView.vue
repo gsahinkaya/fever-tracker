@@ -8,6 +8,7 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { whoNameLabel } from '@/lib/describeActivity'
 import { plainDate, todayDateString } from '@/lib/dateFormat'
 import { downloadCalendarEventIcs } from '@/lib/ics'
+import { nextOccurrence, repeatLabel } from '@/lib/calendarRecurrence'
 import type { CalendarEvent } from '@/types/health'
 
 const { t } = useI18n()
@@ -17,32 +18,50 @@ const familyMembersStore = useFamilyMembersStore()
 const showAddDialog = ref(false)
 const confirmDeleteTarget = ref<CalendarEvent | null>(null)
 
+const today = todayDateString()
+
+// A recurring event's stored `date` is its first/anchor occurrence and is
+// never rewritten (see lib/calendarRecurrence.ts) — displayDate is what
+// actually drives the upcoming/past split and the label shown, so a
+// recurring event whose anchor already passed still shows (and sorts by)
+// its next real occurrence instead of sliding into "past" forever.
+function displayDate(event: CalendarEvent): string {
+  return nextOccurrence(event.date, event.repeat, today)
+}
+
 // store.events is already ordered ascending by date (see the Firestore
 // query in stores/calendarEvents.ts) — same-day events aren't ordered by
 // time there (Firestore would need a composite index for a second orderBy
 // field), so that tie-break happens here instead.
-function byTime(a: CalendarEvent, b: CalendarEvent) {
-  return (a.time ?? '').localeCompare(b.time ?? '')
+function byDisplayDateThenTime(a: CalendarEvent, b: CalendarEvent) {
+  return displayDate(a).localeCompare(displayDate(b)) || (a.time ?? '').localeCompare(b.time ?? '')
 }
-const today = todayDateString()
-const upcoming = computed(() => store.events.filter((e) => e.date >= today).sort(byTime))
+const upcoming = computed(() =>
+  store.events.filter((e) => displayDate(e) >= today).sort(byDisplayDateThenTime),
+)
 const past = computed(() =>
   store.events
-    .filter((e) => e.date < today)
-    .sort(byTime)
+    .filter((e) => displayDate(e) < today)
+    .sort(byDisplayDateThenTime)
     .reverse(),
 )
 
 function eventDateLabel(event: CalendarEvent): string {
-  return event.time ? `${plainDate(event.date)} ${event.time}` : plainDate(event.date)
+  const date = plainDate(displayDate(event))
+  return event.time ? `${date} ${event.time}` : date
 }
 
 const deleteBody = computed(() =>
   confirmDeleteTarget.value
-    ? t('calendar.deleteConfirmBody', {
-        title: confirmDeleteTarget.value.title,
-        date: plainDate(confirmDeleteTarget.value.date),
-      })
+    ? t(
+        confirmDeleteTarget.value.repeat
+          ? 'calendar.deleteConfirmBodyRepeating'
+          : 'calendar.deleteConfirmBody',
+        {
+          title: confirmDeleteTarget.value.title,
+          date: plainDate(displayDate(confirmDeleteTarget.value)),
+        },
+      )
     : '',
 )
 
@@ -96,7 +115,10 @@ function confirmDelete() {
             </v-avatar>
           </template>
           <v-list-item-title
-            >{{ event.title }}<span v-if="event.note"> · {{ event.note }}</span></v-list-item-title
+            >{{ event.title }}<span v-if="event.note"> · {{ event.note }}</span
+            ><v-chip v-if="repeatLabel(event.repeat)" size="x-small" variant="tonal" class="ml-2">{{
+              repeatLabel(event.repeat)
+            }}</v-chip></v-list-item-title
           >
           <v-list-item-subtitle
             >{{ eventDateLabel(event) }} ·

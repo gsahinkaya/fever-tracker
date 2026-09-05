@@ -185,6 +185,12 @@ export interface CalendarEvent {
   // event can stay a plain day even without a time.
   time?: string
   note?: string
+  // Undefined means a one-time event. `date` stays the first/anchor
+  // occurrence even once it's passed — see lib/calendarRecurrence.ts for how
+  // the next occurrence is computed from it. Kept in sync by hand with
+  // api/check-upcoming-calendar-events.ts, which can't import this file
+  // (see the note at the top of that file for why).
+  repeat?: 'weekly' | 'monthly'
   createdBy?: string
   createdByEmail?: string
   // When the event was added (not `date`, which is when it's scheduled for)
