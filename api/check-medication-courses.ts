@@ -180,12 +180,15 @@ async function sendPush(
   const res = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    // Data-only payload, deliberately with no top-level `notification`
+    // field: when a webpush message carries one, the browser auto-displays
+    // it directly *and* firebase-messaging-sw.js's onBackgroundMessage
+    // fires and shows a second one — the same push landing twice in the
+    // tray. Keeping everything in `data` forces exactly one display path.
     body: JSON.stringify({
       message: {
         token,
-        notification: { title, body },
-        data: { tag: 'medication-course-reminder' },
-        webpush: { fcm_options: { link: '/ilaclar' } },
+        data: { title, body, tag: 'medication-course-reminder', link: '/ilaclar' },
       },
     }),
   })
