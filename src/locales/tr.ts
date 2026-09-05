@@ -546,6 +546,21 @@ export default {
     disclaimer: 'Alfred bir doktorun yerini tutmaz; ciddi durumlarda mutlaka bir hekime danış.',
     genericError: 'Yanıt alınamadı, tekrar dene.',
   },
+  quickDose: {
+    saving: 'Kaydediliyor...',
+    done: '{medName} verildi olarak kaydedildi.',
+    error: 'Kaydedilemedi. Uygulamayı açıp elle ekleyebilirsin.',
+    openApp: 'Uygulamayı Aç',
+    fallbackMedName: 'İlaç',
+  },
+  feverTriage: {
+    emergency: 'Bu ateş acil tıbbi değerlendirme gerektirebilir. Hemen 112\'yi ara ya da en yakın acil servise git.',
+    doctor: 'Bugün içinde bir aile hekimine ya da çocuk doktoruna danışmanı öneririz.',
+    monitor:
+      'Genellikle evde takip edilebilir: bol sıvı, hafif giysi ve gerekirse doktorunun önerdiği ateş düşürücü. Durumu izlemeye devam et.',
+    disclaimer:
+      'Nefes darlığı, boyun tutulması, basmakla solmayan döküntü, bilinç bulanıklığı ya da nöbet gibi belirtiler varsa ateşin derecesine bakılmaksızın hemen 112\'yi ara. Bu bilgi tıbbi tanı yerine geçmez.',
+  },
   dialogs: {
     addReading: {
       title: 'Ateş Girişi',

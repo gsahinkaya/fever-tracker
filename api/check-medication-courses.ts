@@ -170,12 +170,25 @@ async function createMedicationAlert(
   )
 }
 
+// When set, the service worker adds a "Verildi" action button to the
+// notification that deep-links straight into /hizli-doz (see
+// src/views/QuickDoseView.vue) instead of just opening the app — lets a
+// parent log the dose without unlocking the phone and finding the button
+// themselves. Only meaningful for a "give a dose now" moment (a reminder or
+// the next-dose nudge), not courseEnd, which means the opposite.
+interface QuickDose {
+  childId: string
+  medicationId: string
+  medicationName: string
+}
+
 async function sendPush(
   accessToken: string,
   projectId: string,
   token: string,
   title: string,
   body: string,
+  quickDose?: QuickDose,
 ): Promise<boolean> {
   const res = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
     method: 'POST',
@@ -188,7 +201,19 @@ async function sendPush(
     body: JSON.stringify({
       message: {
         token,
-        data: { title, body, tag: 'medication-course-reminder', link: '/ilaclar' },
+        data: {
+          title,
+          body,
+          tag: 'medication-course-reminder',
+          link: '/ilaclar',
+          ...(quickDose
+            ? {
+                childId: quickDose.childId,
+                medId: quickDose.medicationId,
+                medName: quickDose.medicationName,
+              }
+            : {}),
+        },
       },
     }),
   })
@@ -248,6 +273,7 @@ async function pushAndMark(
   childName: string,
   dueAt: number,
   medName: string,
+  medicationId: string,
   kind: 'courseStart' | 'courseEnd' | 'reminder' | 'nextDose',
   message: string,
   documentName: string,
@@ -287,8 +313,12 @@ async function pushAndMark(
     memberUids.map((uid) => listDocuments(accessToken, projectId, `users/${uid}/deviceTokens`)),
   )
   const tokens = tokenLists.flat().map(docId)
+  // courseEnd means "the course is over" — the opposite of "give a dose
+  // now" — so it's the one kind that doesn't get the quick-log action.
+  const quickDose: QuickDose | undefined =
+    kind !== 'courseEnd' ? { childId, medicationId, medicationName: medName } : undefined
   const results = await Promise.allSettled(
-    tokens.map((token) => sendPush(accessToken, projectId, token, childName, message)),
+    tokens.map((token) => sendPush(accessToken, projectId, token, childName, message, quickDose)),
   )
   await alertPromise
   return {
@@ -397,6 +427,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               childName,
               dueAt,
               medName,
+              docId(med),
               due.kind,
               due.message(childName, medName),
               med.name,
@@ -445,6 +476,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             childName,
             safeAt,
             medName,
+            docId(med),
             'nextDose',
             `${childName} için ${medName} vermek üzere güvenli doz zamanı geldi.`,
             med.name,

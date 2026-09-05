@@ -82,6 +82,11 @@ const router = createRouter({
       component: () => import('../views/SymptomsView.vue'),
     },
     {
+      path: '/hizli-doz',
+      name: 'quick-dose',
+      component: () => import('../views/QuickDoseView.vue'),
+    },
+    {
       path: '/sonraki-doz',
       name: 'next-dose',
       component: () => import('../views/NextDoseView.vue'),

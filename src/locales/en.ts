@@ -544,6 +544,21 @@ export default {
     disclaimer: 'Alfred is not a substitute for a doctor; always consult a physician in serious situations.',
     genericError: 'Could not get a response, please try again.',
   },
+  quickDose: {
+    saving: 'Saving...',
+    done: '{medName} logged as given.',
+    error: 'Could not save. Open the app to add it manually.',
+    openApp: 'Open App',
+    fallbackMedName: 'Medication',
+  },
+  feverTriage: {
+    emergency: 'This fever may need urgent medical attention. Call emergency services now or go to the nearest ER.',
+    doctor: 'We recommend consulting a family doctor or pediatrician today.',
+    monitor:
+      'This can usually be monitored at home: plenty of fluids, light clothing, and a fever reducer if your doctor has recommended one. Keep watching how it develops.',
+    disclaimer:
+      'If there is difficulty breathing, a stiff neck, a rash that does not fade under pressure, confusion, or a seizure, call emergency services immediately regardless of the temperature. This is not a medical diagnosis.',
+  },
   dialogs: {
     addReading: {
       title: 'Fever Entry',

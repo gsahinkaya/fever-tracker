@@ -3,13 +3,16 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
+import { useChildrenStore } from '@/stores/children'
 import { useNow } from '@/composables/useNow'
 import { currentTimeString, resolveTakenAt } from '@/lib/time'
+import { assessFeverTriage } from '@/lib/feverTriage'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
 const store = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
+const childrenStore = useChildrenStore()
 const now = useNow()
 
 const temperature = ref<number | null>(null)
@@ -40,6 +43,25 @@ const remainingLabel = computed(() => {
 const tooEarlyMessage = computed(() =>
   t('dialogs.addDose.tooEarly', { remaining: remainingLabel.value }),
 )
+
+const activeChildBirthDate = computed(
+  () => childrenStore.children.find((c) => c.id === store.activeChildId)?.birthDate,
+)
+const ageMonths = computed(() => {
+  const birthDate = activeChildBirthDate.value
+  if (!birthDate) return null
+  return (Date.now() - new Date(birthDate).getTime()) / (30.436875 * 86_400_000)
+})
+const triage = computed(() =>
+  temperature.value != null && temperature.value > 0
+    ? assessFeverTriage(temperature.value, ageMonths.value)
+    : null,
+)
+const triageColor = computed(() => {
+  if (triage.value?.level === 'emergency') return 'error'
+  if (triage.value?.level === 'doctor') return 'warning'
+  return 'success'
+})
 
 watch(model, (open) => {
   if (open) {
@@ -78,6 +100,19 @@ function save() {
           variant="outlined"
           density="comfortable"
         />
+        <v-alert
+          v-if="triage"
+          :type="triageColor"
+          variant="tonal"
+          density="comfortable"
+          class="mb-3"
+        >
+          <div>{{ triage.message }}</div>
+          <div class="text-caption mt-1" style="opacity: 0.85">
+            {{ t('feverTriage.disclaimer') }}
+          </div>
+        </v-alert>
+
         <v-text-field
           v-model="note"
           :label="t('dialogs.addReading.noteLabel')"
