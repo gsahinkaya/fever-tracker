@@ -43,7 +43,10 @@ export const useMedicationsStore = defineStore('medications', () => {
       ...(email ? { createdByEmail: email } : {}),
     }
     const ref = await addDoc(medicationsCollection(familyId, childId), payload)
-    void notifyFamily(messageForMedicationAdded(currentWhoLabel(), data.name), 'entry-push')
+    void notifyFamily(
+      messageForMedicationAdded(currentWhoLabel(), data.name),
+      `medication-${ref.id}`,
+    )
     return ref.id
   }
 

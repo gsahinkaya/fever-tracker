@@ -51,8 +51,8 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
       ...(side ? { side } : {}),
       ...creatorFields(),
     }
-    await addDoc(feedingsCollection(familyId, childId), payload)
-    void notifyFamily(messageForBreastfeeding(currentWhoLabel()), 'entry-push')
+    const ref = await addDoc(feedingsCollection(familyId, childId), payload)
+    void notifyFamily(messageForBreastfeeding(currentWhoLabel()), `feeding-${ref.id}`)
   }
 
   async function addBottle(amountMl: number, milkType: BottleEntry['milkType'], takenAt?: Date) {
@@ -64,8 +64,8 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
       milkType,
       ...creatorFields(),
     }
-    await addDoc(feedingsCollection(familyId, childId), payload)
-    void notifyFamily(messageForBottle(currentWhoLabel(), amountMl, milkType), 'entry-push')
+    const ref = await addDoc(feedingsCollection(familyId, childId), payload)
+    void notifyFamily(messageForBottle(currentWhoLabel(), amountMl, milkType), `feeding-${ref.id}`)
   }
 
   async function addSolidFood(note?: string, takenAt?: Date) {
@@ -76,8 +76,8 @@ export const useFeedingLogStore = defineStore('feedingLog', () => {
       ...(note ? { note } : {}),
       ...creatorFields(),
     }
-    await addDoc(feedingsCollection(familyId, childId), payload)
-    void notifyFamily(messageForSolidFood(currentWhoLabel()), 'entry-push')
+    const ref = await addDoc(feedingsCollection(familyId, childId), payload)
+    void notifyFamily(messageForSolidFood(currentWhoLabel()), `feeding-${ref.id}`)
   }
 
   return {

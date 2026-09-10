@@ -3,7 +3,10 @@ import { getMessaging, getToken, isSupported } from 'firebase/messaging'
 import { firebaseApp, db } from '@/firebase'
 import { useAuthStore } from '@/stores/auth'
 
-const PUSH_SCOPE = '/firebase-cloud-messaging-push-scope'
+// Exported so useEntryNotifications can show its foreground notifications
+// through this same registration — see the comment on showSystemNotification
+// there for why that matters for de-duping against the FCM push path.
+export const PUSH_SCOPE = '/firebase-cloud-messaging-push-scope'
 
 // register() can resolve while the worker is still installing/waiting —
 // getToken()'s PushManager.subscribe() needs it to actually be *active*,

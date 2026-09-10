@@ -3,7 +3,7 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
-import { t } from '@/i18n'
+import { PUSH_SCOPE } from '@/composables/usePushNotifications'
 import {
   describeEntry,
   describeFeeding,
@@ -12,16 +12,28 @@ import {
 } from '@/lib/describeActivity'
 
 // Android Chrome throws on `new Notification()` and requires going through a
-// service worker; desktop browsers support both. Prefer the SW registration
-// when one exists (always true in the installed PWA) and fall back otherwise
-// so this still works in plain browser tabs and in dev (no SW registered).
+// service worker; desktop browsers support both. Prefer a SW registration
+// when one exists and fall back otherwise so this still works in plain
+// browser tabs and in dev (no SW registered).
+//
+// Specifically the *push-scoped* registration (firebase-messaging-sw.js, not
+// vite-plugin-pwa's own one at '/'): this same activity also triggers a
+// server-sent FCM push (see the notifyFamily calls in the stores below)
+// shown through that exact registration, and a device with the app merely
+// open in the background — not fully closed — gets both. Showing this one
+// through the identical registration+tag lets the platform's own same-tag
+// "replace, don't add" behavior collapse the pair into one, however they
+// interleave, instead of leaving two cards in the tray.
 async function showSystemNotification(title: string, body: string, tag: string) {
   if (!('Notification' in window) || Notification.permission !== 'granted') return
 
   const options: NotificationOptions = { body, icon: '/icon-192.png', tag }
 
   const registration =
-    'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : undefined
+    'serviceWorker' in navigator
+      ? ((await navigator.serviceWorker.getRegistration(PUSH_SCOPE)) ??
+        (await navigator.serviceWorker.getRegistration()))
+      : undefined
   if (registration) {
     await registration.showNotification(title, options)
   } else {
@@ -42,8 +54,7 @@ export function useEntryNotifications() {
   watch(
     () => feverLogStore.lastRemoteEntry,
     (entry) => {
-      if (entry)
-        void showSystemNotification(t('common.appName'), describeEntry(entry), `entry-${entry.id}`)
+      if (entry) void showSystemNotification(describeEntry(entry), '', `entry-${entry.id}`)
     },
   )
 
@@ -52,8 +63,8 @@ export function useEntryNotifications() {
     (medication) => {
       if (medication) {
         void showSystemNotification(
-          t('common.appName'),
           describeMedication(medication),
+          '',
           `medication-${medication.id}`,
         )
       }
@@ -63,24 +74,14 @@ export function useEntryNotifications() {
   watch(
     () => feedingLogStore.lastRemoteEntry,
     (entry) => {
-      if (entry)
-        void showSystemNotification(
-          t('common.appName'),
-          describeFeeding(entry),
-          `feeding-${entry.id}`,
-        )
+      if (entry) void showSystemNotification(describeFeeding(entry), '', `feeding-${entry.id}`)
     },
   )
 
   watch(
     () => growthLogStore.lastRemoteEntry,
     (entry) => {
-      if (entry)
-        void showSystemNotification(
-          t('common.appName'),
-          describeGrowth(entry),
-          `growth-${entry.id}`,
-        )
+      if (entry) void showSystemNotification(describeGrowth(entry), '', `growth-${entry.id}`)
     },
   )
 }

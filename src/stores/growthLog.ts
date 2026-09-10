@@ -46,8 +46,8 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
       ...(headCircumferenceCm ? { headCircumferenceCm } : {}),
       ...creatorFields(),
     }
-    await addDoc(growthCollection(familyId, childId), payload)
-    void notifyFamily(messageForGrowth(currentWhoLabel(), heightCm, weightKg), 'entry-push')
+    const ref = await addDoc(growthCollection(familyId, childId), payload)
+    void notifyFamily(messageForGrowth(currentWhoLabel(), heightCm, weightKg), `growth-${ref.id}`)
   }
 
   // Called from the child profile form (both creating a new child and

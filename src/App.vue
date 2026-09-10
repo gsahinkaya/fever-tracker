@@ -130,6 +130,7 @@ function acknowledgeIncoming() {
   symptomLogStore.acknowledgeIncoming()
   sleepLogStore.acknowledgeIncoming()
   diaperLogStore.acknowledgeIncoming()
+  calendarEventsStore.acknowledgeIncoming()
   medicationAlertsStore.acknowledgeIncoming()
   bannerDismissed.value = false
 }
