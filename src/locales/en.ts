@@ -434,8 +434,8 @@ export default {
       genderLabel: 'Sex (optional)',
       female: 'Girl',
       male: 'Boy',
-      heightLabel: 'Height (cm, optional)',
-      weightLabel: 'Weight (kg, optional)',
+      heightLabel: 'Height (cm)',
+      weightLabel: 'Weight (kg)',
       headCircumferenceLabel: 'Head circumference (cm, optional)',
     },
     deleteConfirm: {

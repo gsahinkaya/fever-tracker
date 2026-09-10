@@ -356,23 +356,21 @@ async function confirmDelete() {
             variant="outlined"
             density="comfortable"
           />
-          <div class="d-flex ga-2">
-            <v-text-field
-              v-model="expiryDate"
-              type="date"
-              :label="t('medications.dialog.expiryDateLabel')"
-              variant="outlined"
-              density="comfortable"
-            />
-            <v-text-field
-              v-model.number="shelfLifeDaysAfterOpening"
-              type="number"
-              :label="t('medications.dialog.shelfLifeLabel')"
-              :placeholder="String(DEFAULT_SHELF_LIFE_DAYS)"
-              variant="outlined"
-              density="comfortable"
-            />
-          </div>
+          <v-text-field
+            v-model="expiryDate"
+            type="date"
+            :label="t('medications.dialog.expiryDateLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+          <v-text-field
+            v-model.number="shelfLifeDaysAfterOpening"
+            type="number"
+            :label="t('medications.dialog.shelfLifeLabel')"
+            :placeholder="String(DEFAULT_SHELF_LIFE_DAYS)"
+            variant="outlined"
+            density="comfortable"
+          />
           <v-divider class="mb-4" />
           <p class="text-caption text-medium-emphasis mb-2">
             {{ t('medications.dialog.courseSectionHint') }}

@@ -436,8 +436,8 @@ export default {
       genderLabel: 'Cinsiyet (opsiyonel)',
       female: 'Kız',
       male: 'Erkek',
-      heightLabel: 'Boy (cm, opsiyonel)',
-      weightLabel: 'Kilo (kg, opsiyonel)',
+      heightLabel: 'Boy (cm)',
+      weightLabel: 'Kilo (kg)',
       headCircumferenceLabel: 'Baş çevresi (cm, opsiyonel)',
     },
     deleteConfirm: {

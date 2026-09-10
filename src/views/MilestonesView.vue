@@ -91,6 +91,7 @@ async function toggle(id: string, done: boolean) {
               />
             </template>
             <v-list-item-title
+              class="text-wrap"
               :class="{ 'text-decoration-line-through text-medium-emphasis': item.done }"
             >
               <v-icon :icon="CATEGORY_ICONS[item.category]" size="16" class="mr-1" />

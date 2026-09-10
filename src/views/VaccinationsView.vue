@@ -152,7 +152,10 @@ async function addCustomVaccine() {
               @update:model-value="(v: boolean) => toggle(row.id, v)"
             />
           </template>
-          <v-list-item-title :class="{ 'text-decoration-line-through text-medium-emphasis': row.done }">
+          <v-list-item-title
+            class="text-wrap"
+            :class="{ 'text-decoration-line-through text-medium-emphasis': row.done }"
+          >
             {{ row.name }} — {{ row.doseLabel }}
           </v-list-item-title>
           <v-list-item-subtitle>
@@ -188,7 +191,10 @@ async function addCustomVaccine() {
               @update:model-value="(v: boolean) => toggleCustom(row.id, v)"
             />
           </template>
-          <v-list-item-title :class="{ 'text-decoration-line-through text-medium-emphasis': row.done }">
+          <v-list-item-title
+            class="text-wrap"
+            :class="{ 'text-decoration-line-through text-medium-emphasis': row.done }"
+          >
             {{ row.name }}
           </v-list-item-title>
           <v-list-item-subtitle>

@@ -139,7 +139,7 @@ function confirmDelete() {
       </template>
     </v-list-item>
   </v-list>
-  <div v-else class="text-center text-medium-emphasis py-8">
+  <div v-else class="text-center text-medium-emphasis py-8 px-4">
     {{ t('timeline.empty') }}
   </div>
 

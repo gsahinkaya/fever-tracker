@@ -60,24 +60,22 @@ function save() {
           density="comfortable"
           autofocus
         />
-        <div class="d-flex ga-2">
-          <v-text-field
-            v-model="date"
-            type="date"
-            :label="t('calendar.dialog.dateLabel')"
-            variant="outlined"
-            density="comfortable"
-          />
-          <v-text-field
-            v-model="time"
-            type="time"
-            :label="t('calendar.dialog.timeLabel')"
-            :hint="t('calendar.dialog.timeHint')"
-            persistent-hint
-            variant="outlined"
-            density="comfortable"
-          />
-        </div>
+        <v-text-field
+          v-model="date"
+          type="date"
+          :label="t('calendar.dialog.dateLabel')"
+          variant="outlined"
+          density="comfortable"
+        />
+        <v-text-field
+          v-model="time"
+          type="time"
+          :label="t('calendar.dialog.timeLabel')"
+          :hint="t('calendar.dialog.timeHint')"
+          persistent-hint
+          variant="outlined"
+          density="comfortable"
+        />
         <v-text-field
           v-model="note"
           :label="t('calendar.dialog.noteLabel')"
