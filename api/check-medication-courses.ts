@@ -171,7 +171,7 @@ async function createMedicationAlert(
 }
 
 // When set, the service worker adds a "Verildi" action button to the
-// notification that deep-links straight into /hizli-doz (see
+// notification that deep-links straight into /quick-dose (see
 // src/views/QuickDoseView.vue) instead of just opening the app — lets a
 // parent log the dose without unlocking the phone and finding the button
 // themselves. Only meaningful for a "give a dose now" moment (a reminder or
@@ -216,7 +216,7 @@ async function sendPush(
           title,
           body,
           tag: 'medication-course-reminder',
-          link: '/ilaclar',
+          link: '/medications',
           ...(quickDose
             ? {
                 childId: quickDose.childId,

@@ -63,8 +63,6 @@ function save() {
           v-model="time"
           type="time"
           :label="t('symptoms.dialog.timeLabel')"
-          :hint="t('symptoms.dialog.timeHint')"
-          persistent-hint
           variant="outlined"
           density="comfortable"
         />

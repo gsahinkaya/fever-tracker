@@ -64,7 +64,7 @@ async function submit() {
 
     <div class="text-center mt-6">
       <span class="text-medium-emphasis">{{ t('auth.login.noAccount') }}</span>
-      <v-btn variant="text" color="primary" to="/kayit">{{ t('auth.login.registerLink') }}</v-btn>
+      <v-btn variant="text" color="primary" to="/register">{{ t('auth.login.registerLink') }}</v-btn>
     </div>
 
     <p class="text-body-2 text-medium-emphasis text-center mt-8">

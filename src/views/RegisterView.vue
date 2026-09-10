@@ -36,7 +36,7 @@ const loading = ref(false)
 const errorMessage = ref('')
 
 onMounted(() => {
-  const code = route.query.kod
+  const code = route.query.code
   if (typeof code === 'string') inviteCode.value = code.toUpperCase()
 })
 
@@ -66,7 +66,7 @@ async function submit() {
       relation: relation.value || undefined,
       inviteCode: inviteCode.value || undefined,
     })
-    router.push('/cocuklar')
+    router.push('/children')
   } catch (err) {
     errorMessage.value = friendlyError(err)
   } finally {
@@ -157,7 +157,7 @@ async function submit() {
 
     <div class="text-center mt-6">
       <span class="text-medium-emphasis">{{ t('auth.register.haveAccount') }}</span>
-      <v-btn variant="text" color="primary" to="/giris">{{ t('auth.register.loginLink') }}</v-btn>
+      <v-btn variant="text" color="primary" to="/login">{{ t('auth.register.loginLink') }}</v-btn>
     </div>
   </v-container>
 </template>

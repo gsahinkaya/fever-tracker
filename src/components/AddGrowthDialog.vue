@@ -98,8 +98,6 @@ function save() {
           v-model="time"
           type="time"
           :label="t('growth.dialog.timeLabel')"
-          :hint="t('growth.dialog.timeHint')"
-          persistent-hint
           variant="outlined"
           density="comfortable"
         />

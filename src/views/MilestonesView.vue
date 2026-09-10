@@ -69,7 +69,7 @@ async function toggle(id: string, done: boolean) {
     <div v-if="!activeChild?.birthDate" class="text-center py-8">
       <v-icon icon="mdi-calendar-alert-outline" size="48" color="medium-emphasis" class="mb-4" />
       <p class="text-body-2 text-medium-emphasis mb-4">{{ t('milestones.needsBirthDate') }}</p>
-      <v-btn color="primary" variant="tonal" to="/cocuklar">{{
+      <v-btn color="primary" variant="tonal" to="/children">{{
         t('milestones.goToChildren')
       }}</v-btn>
     </div>

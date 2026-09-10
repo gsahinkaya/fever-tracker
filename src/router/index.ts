@@ -12,114 +12,114 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/rapor',
+      path: '/doctor-report',
       name: 'doctor-report',
       component: () => import('../views/DoctorReportView.vue'),
     },
     {
-      path: '/gecmis',
+      path: '/history',
       name: 'history',
       component: () => import('../views/HistoryView.vue'),
     },
     {
-      path: '/nobetci-eczane',
+      path: '/duty-pharmacy',
       name: 'duty-pharmacy',
       component: () => import('../views/DutyPharmacyView.vue'),
     },
     {
-      path: '/asilar',
+      path: '/vaccinations',
       name: 'vaccinations',
       component: () => import('../views/VaccinationsView.vue'),
     },
     {
-      path: '/gelisim',
+      path: '/milestones',
       name: 'milestones',
       component: () => import('../views/MilestonesView.vue'),
     },
     {
-      path: '/etkinlikler',
+      path: '/nearby-activities',
       name: 'nearby-activities',
       component: () => import('../views/NearbyActivitiesView.vue'),
     },
     {
-      path: '/takvim',
+      path: '/calendar',
       name: 'calendar',
       component: () => import('../views/CalendarView.vue'),
     },
     {
-      path: '/hastaneler',
+      path: '/nearby-hospitals',
       name: 'nearby-hospitals',
       component: () => import('../views/NearbyHospitalsView.vue'),
     },
     {
-      path: '/ayarlar',
+      path: '/settings',
       name: 'settings',
       component: () => import('../views/SettingsView.vue'),
     },
     {
-      path: '/cocuklar',
+      path: '/children',
       name: 'children',
       component: () => import('../views/ChildrenView.vue'),
     },
     {
-      path: '/ilaclar',
+      path: '/medications',
       name: 'medications',
       component: () => import('../views/MedicationsView.vue'),
     },
     {
-      path: '/beslenme',
+      path: '/feeding',
       name: 'feeding',
       component: () => import('../views/FeedingView.vue'),
     },
     {
-      path: '/sor',
+      path: '/ask-alfred',
       name: 'ask-alfred',
       component: () => import('../views/AskAlfredView.vue'),
     },
     {
-      path: '/buyume',
+      path: '/growth',
       name: 'growth',
       component: () => import('../views/GrowthView.vue'),
     },
     {
-      path: '/semptomlar',
+      path: '/symptoms',
       name: 'symptoms',
       component: () => import('../views/SymptomsView.vue'),
     },
     {
-      path: '/hizli-doz',
+      path: '/quick-dose',
       name: 'quick-dose',
       component: () => import('../views/QuickDoseView.vue'),
     },
     {
-      path: '/sonraki-doz',
+      path: '/next-dose',
       name: 'next-dose',
       component: () => import('../views/NextDoseView.vue'),
     },
     {
-      path: '/uyku',
+      path: '/sleep',
       name: 'sleep',
       component: () => import('../views/SleepView.vue'),
     },
     {
-      path: '/bez-degisimi',
+      path: '/diaper',
       name: 'diaper',
       component: () => import('../views/DiaperView.vue'),
     },
     {
-      path: '/giris',
+      path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),
     },
     {
-      path: '/kayit',
+      path: '/register',
       name: 'register',
       component: () => import('../views/RegisterView.vue'),
     },
   ],
 })
 
-const PUBLIC_ROUTES = new Set(['/giris', '/kayit'])
+const PUBLIC_ROUTES = new Set(['/login', '/register'])
 
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
@@ -139,7 +139,7 @@ router.beforeEach(async (to) => {
   }
 
   if (!authStore.isAuthenticated && !PUBLIC_ROUTES.has(to.path)) {
-    return '/giris'
+    return '/login'
   }
   if (authStore.isAuthenticated && PUBLIC_ROUTES.has(to.path)) {
     return '/'

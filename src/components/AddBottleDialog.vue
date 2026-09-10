@@ -62,8 +62,6 @@ function save() {
           v-model="time"
           type="time"
           :label="t('dialogs.addBottle.timeLabel')"
-          :hint="t('dialogs.addBottle.timeHint')"
-          persistent-hint
           variant="outlined"
           density="comfortable"
         />

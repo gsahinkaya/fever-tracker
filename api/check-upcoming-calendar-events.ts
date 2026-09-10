@@ -99,7 +99,7 @@ async function sendPush(
       message: {
         token,
         webpush: { headers: { TTL: '43200' } },
-        data: { title, body, tag: 'calendar-event-reminder', link: '/takvim' },
+        data: { title, body, tag: 'calendar-event-reminder', link: '/calendar' },
       },
     }),
   })

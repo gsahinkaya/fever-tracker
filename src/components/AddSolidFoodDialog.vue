@@ -52,8 +52,6 @@ function save() {
           v-model="time"
           type="time"
           :label="t('dialogs.addSolidFood.timeLabel')"
-          :hint="t('dialogs.addSolidFood.timeHint')"
-          persistent-hint
           variant="outlined"
           density="comfortable"
         />

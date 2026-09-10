@@ -48,7 +48,7 @@ useThemeStore()
 
 useEntryNotifications()
 
-const isAuthPage = computed(() => route.path === '/giris' || route.path === '/kayit')
+const isAuthPage = computed(() => route.path === '/login' || route.path === '/register')
 
 // Merge separately-tracked streams (fever entries, medications, feedings) by
 // when they actually happened, oldest first, so both the banner and the
@@ -237,7 +237,7 @@ watch(
         <v-btn
           icon="mdi-cog-outline"
           variant="text"
-          to="/ayarlar"
+          to="/settings"
           :aria-label="t('common.settings')"
         />
       </template>

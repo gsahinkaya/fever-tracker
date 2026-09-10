@@ -312,7 +312,6 @@ export default {
       notePlaceholder: 'Örn. gece daha çok öksürdü',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
-      timeHint: 'Önceden başladıysa saati değiştirebilirsin',
     },
   },
   sleep: {
@@ -353,7 +352,6 @@ export default {
       notePlaceholder: 'Örn. renk/kıvam farklıydı',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
-      timeHint: 'Önceden değiştirdiysen saati değiştirebilirsin',
     },
   },
   calendar: {
@@ -533,7 +531,6 @@ export default {
       headCircumferenceLabel: 'Baş çevresi (cm, opsiyonel)',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
-      timeHint: 'Önceden ölçtüysen saati değiştirebilirsin',
       hint: 'En az birini gir.',
     },
   },
@@ -596,7 +593,6 @@ export default {
       noteLabel: 'Not (opsiyonel)',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
-      timeHint: 'Önceden ölçtüysen saati değiştirebilirsin',
       alsoGaveMedication: 'Aynı anda ilaç da verildi',
       addMedicationHintPrefix: 'İlaç da kaydetmek istersen önce',
       addMedicationHintLink: 'İlaçlarım',
@@ -610,7 +606,6 @@ export default {
       afterCourseEnd: 'Bu ilacın kürü {date} tarihinde sona erdi, seçtiğin saat kür bittikten sonra.',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
-      timeHint: 'Önceden verildiyse saati değiştirebilirsin',
       noMedTitle: 'Henüz ilaç eklenmedi',
       noMedBody:
         'İlaç kaydı yapabilmek için önce takip etmek istediğin ilacı ve güvenli doz aralığını ekle.',
@@ -625,7 +620,6 @@ export default {
       both: 'İkisi',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
-      timeHint: 'Önceden emzirdiysen saati değiştirebilirsin',
     },
     addBottle: {
       title: 'Biberon',
@@ -635,7 +629,6 @@ export default {
       mixed: 'Karışık',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
-      timeHint: 'Önceden verildiyse saati değiştirebilirsin',
     },
     addSolidFood: {
       title: 'Katı Gıda',
@@ -643,7 +636,6 @@ export default {
       notePlaceholder: 'Örn. elma püresi',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
-      timeHint: 'Önceden verildiyse saati değiştirebilirsin',
     },
   },
   timeline: {

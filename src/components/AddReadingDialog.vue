@@ -132,8 +132,6 @@ function save() {
           v-model="time"
           type="time"
           :label="t('dialogs.addReading.timeLabel')"
-          :hint="t('dialogs.addReading.timeHint')"
-          persistent-hint
           variant="outlined"
           density="comfortable"
         />
@@ -172,7 +170,7 @@ function save() {
         </template>
         <p v-else class="text-caption text-medium-emphasis mt-2">
           {{ t('dialogs.addReading.addMedicationHintPrefix') }}
-          <RouterLink to="/ilaclar">{{ t('dialogs.addReading.addMedicationHintLink') }}</RouterLink
+          <RouterLink to="/medications">{{ t('dialogs.addReading.addMedicationHintLink') }}</RouterLink
           >{{ t('dialogs.addReading.addMedicationHintSuffix') }}
         </p>
       </v-card-text>

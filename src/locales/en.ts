@@ -310,7 +310,6 @@ export default {
       notePlaceholder: 'E.g. coughed more at night',
       dateLabel: 'Date',
       timeLabel: 'Time',
-      timeHint: 'You can change the time if it started earlier',
     },
   },
   sleep: {
@@ -351,7 +350,6 @@ export default {
       notePlaceholder: 'E.g. color/consistency was different',
       dateLabel: 'Date',
       timeLabel: 'Time',
-      timeHint: 'You can change the time if it was earlier',
     },
   },
   calendar: {
@@ -531,7 +529,6 @@ export default {
       headCircumferenceLabel: 'Head circumference (cm, optional)',
       dateLabel: 'Date',
       timeLabel: 'Time',
-      timeHint: 'You can change the time if you measured earlier',
       hint: 'Enter at least one.',
     },
   },
@@ -594,7 +591,6 @@ export default {
       noteLabel: 'Note (optional)',
       dateLabel: 'Date',
       timeLabel: 'Time',
-      timeHint: 'You can change the time if you measured earlier',
       alsoGaveMedication: 'Medication was also given at the same time',
       addMedicationHintPrefix: 'If you want to log medication too, first add one from',
       addMedicationHintLink: 'My Medications',
@@ -608,7 +604,6 @@ export default {
       afterCourseEnd: "This medication's course ended on {date} — the time you picked is after it finished.",
       dateLabel: 'Date',
       timeLabel: 'Time',
-      timeHint: 'You can change the time if it was given earlier',
       noMedTitle: 'No medication added yet',
       noMedBody:
         'Add the medication you want to track and its safe dose interval first, so you can log a dose.',
@@ -623,7 +618,6 @@ export default {
       both: 'Both',
       dateLabel: 'Date',
       timeLabel: 'Time',
-      timeHint: 'You can change the time if you breastfed earlier',
     },
     addBottle: {
       title: 'Bottle',
@@ -633,7 +627,6 @@ export default {
       mixed: 'Mixed',
       dateLabel: 'Date',
       timeLabel: 'Time',
-      timeHint: 'You can change the time if it was given earlier',
     },
     addSolidFood: {
       title: 'Solid Food',
@@ -641,7 +634,6 @@ export default {
       notePlaceholder: 'E.g. apple puree',
       dateLabel: 'Date',
       timeLabel: 'Time',
-      timeHint: 'You can change the time if it was given earlier',
     },
   },
   timeline: {

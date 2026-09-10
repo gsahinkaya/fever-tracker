@@ -63,8 +63,6 @@ function save() {
           v-model="time"
           type="time"
           :label="t('diaper.dialog.timeLabel')"
-          :hint="t('diaper.dialog.timeHint')"
-          persistent-hint
           variant="outlined"
           density="comfortable"
         />

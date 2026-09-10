@@ -127,8 +127,6 @@ function confirm() {
           v-model="time"
           type="time"
           :label="t('dialogs.addDose.timeLabel')"
-          :hint="t('dialogs.addDose.timeHint')"
-          persistent-hint
           variant="outlined"
           density="comfortable"
         />
@@ -155,7 +153,7 @@ function confirm() {
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" @click="model = false">{{ t('common.cancel') }}</v-btn>
-        <v-btn color="primary" variant="flat" to="/ilaclar" @click="model = false">{{
+        <v-btn color="primary" variant="flat" to="/medications" @click="model = false">{{
           t('dialogs.addDose.addMedButton')
         }}</v-btn>
       </v-card-actions>

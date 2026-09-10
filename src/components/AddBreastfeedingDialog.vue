@@ -68,8 +68,6 @@ function save() {
           v-model="time"
           type="time"
           :label="t('dialogs.addBreastfeeding.timeLabel')"
-          :hint="t('dialogs.addBreastfeeding.timeHint')"
-          persistent-hint
           variant="outlined"
           density="comfortable"
         />

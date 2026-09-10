@@ -34,7 +34,7 @@ const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
 
 const inviteLink = computed(() =>
-  authStore.familyId ? `${window.location.origin}/kayit?kod=${authStore.familyId}` : '',
+  authStore.familyId ? `${window.location.origin}/register?code=${authStore.familyId}` : '',
 )
 const copied = ref(false)
 
@@ -115,7 +115,7 @@ async function clearAll() {
 
 async function logout() {
   await authStore.logout()
-  router.push('/giris')
+  router.push('/login')
 }
 </script>
 
@@ -210,7 +210,7 @@ async function logout() {
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" variant="text" to="/cocuklar">{{ t('settings.manage') }}</v-btn>
+        <v-btn color="primary" variant="text" to="/children">{{ t('settings.manage') }}</v-btn>
       </v-card-actions>
     </v-card>
 
@@ -221,7 +221,7 @@ async function logout() {
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" variant="text" to="/ilaclar">{{ t('settings.manage') }}</v-btn>
+        <v-btn color="primary" variant="text" to="/medications">{{ t('settings.manage') }}</v-btn>
       </v-card-actions>
     </v-card>
 

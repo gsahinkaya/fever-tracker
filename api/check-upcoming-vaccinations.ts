@@ -127,7 +127,7 @@ async function sendPush(
       message: {
         token,
         webpush: { headers: { TTL: '43200' } },
-        data: { title, body, tag: 'vaccine-reminder', link: '/asilar' },
+        data: { title, body, tag: 'vaccine-reminder', link: '/vaccinations' },
       },
     }),
   })

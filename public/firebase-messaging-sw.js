@@ -43,7 +43,7 @@ messaging.onBackgroundMessage((payload) => {
   // Presence of medId means check-medication-courses.ts flagged this as a
   // "give a dose now" moment (a reminder or the next-dose nudge, never
   // courseEnd) — add a one-tap action that deep-links straight into
-  // /hizli-doz (src/views/QuickDoseView.vue) instead of making the parent
+  // /quick-dose (src/views/QuickDoseView.vue) instead of making the parent
   // open the app and find the button themselves.
   const medId = payload.data?.medId
   self.registration.showNotification(title, {
@@ -69,7 +69,7 @@ self.addEventListener('notificationclick', (event) => {
     const params = new URLSearchParams({ medId: data.medId })
     if (data.childId) params.set('childId', data.childId)
     if (data.medName) params.set('medName', data.medName)
-    link = `/hizli-doz?${params.toString()}`
+    link = `/quick-dose?${params.toString()}`
   }
 
   event.waitUntil(

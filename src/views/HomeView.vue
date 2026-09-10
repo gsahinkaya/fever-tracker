@@ -54,7 +54,7 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
         <p class="text-body-2 text-medium-emphasis mb-6">
           {{ t('home.addChildBody') }}
         </p>
-        <v-btn color="primary" size="large" prepend-icon="mdi-plus" to="/cocuklar">{{
+        <v-btn color="primary" size="large" prepend-icon="mdi-plus" to="/children">{{
           t('home.addChildButton')
         }}</v-btn>
       </div>
@@ -62,13 +62,13 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
 
     <template v-else>
       <div class="d-flex flex-column mb-6" style="gap: 12px">
-        <v-btn block height="64" color="primary" variant="flat" rounded="lg" to="/gecmis">
+        <v-btn block height="64" color="primary" variant="flat" rounded="lg" to="/history">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-history" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.last48h') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="nextdose" variant="flat" rounded="lg" to="/sonraki-doz">
+        <v-btn block height="64" color="nextdose" variant="flat" rounded="lg" to="/next-dose">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-clock-check-outline" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.nextSafeDose') }}</span>
@@ -87,13 +87,13 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.fever') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="symptom" variant="flat" rounded="lg" to="/semptomlar">
+        <v-btn block height="64" color="symptom" variant="flat" rounded="lg" to="/symptoms">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-emoticon-sick-outline" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.symptoms') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="sleep" variant="flat" rounded="lg" to="/uyku">
+        <v-btn block height="64" color="sleep" variant="flat" rounded="lg" to="/sleep">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-sleep" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.sleep') }}</span>
@@ -112,67 +112,67 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.medication') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="secondary" variant="flat" rounded="lg" to="/beslenme">
+        <v-btn block height="64" color="secondary" variant="flat" rounded="lg" to="/feeding">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-baby-bottle-outline" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.feeding') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="diaper" variant="flat" rounded="lg" to="/bez-degisimi">
+        <v-btn block height="64" color="diaper" variant="flat" rounded="lg" to="/diaper">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-diaper-outline" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.diaper') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="vaccine" variant="flat" rounded="lg" to="/asilar">
+        <v-btn block height="64" color="vaccine" variant="flat" rounded="lg" to="/vaccinations">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-needle" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.vaccinations') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="growth" variant="flat" rounded="lg" to="/buyume">
+        <v-btn block height="64" color="growth" variant="flat" rounded="lg" to="/growth">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-human-male-height" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.growth') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="growth" variant="flat" rounded="lg" to="/gelisim">
+        <v-btn block height="64" color="growth" variant="flat" rounded="lg" to="/milestones">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-star-outline" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.milestones') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="info" variant="flat" rounded="lg" to="/rapor">
+        <v-btn block height="64" color="info" variant="flat" rounded="lg" to="/doctor-report">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-file-chart-outline" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.report') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="success" variant="flat" rounded="lg" to="/sor">
+        <v-btn block height="64" color="success" variant="flat" rounded="lg" to="/ask-alfred">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-chat-question-outline" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.askAlfred') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="pharmacy" variant="flat" rounded="lg" to="/nobetci-eczane">
+        <v-btn block height="64" color="pharmacy" variant="flat" rounded="lg" to="/duty-pharmacy">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-mortar-pestle" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.dutyPharmacy') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="hospital" variant="flat" rounded="lg" to="/hastaneler">
+        <v-btn block height="64" color="hospital" variant="flat" rounded="lg" to="/nearby-hospitals">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-hospital-building" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.nearbyHospitals') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="activity" variant="flat" rounded="lg" to="/etkinlikler">
+        <v-btn block height="64" color="activity" variant="flat" rounded="lg" to="/nearby-activities">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-drama-masks" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.nearbyActivities') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="calendar" variant="flat" rounded="lg" to="/takvim">
+        <v-btn block height="64" color="calendar" variant="flat" rounded="lg" to="/calendar">
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-calendar-heart" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.calendar') }}</span>
