@@ -4,8 +4,8 @@ import { useI18n } from 'vue-i18n'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useNow } from '@/composables/useNow'
-import { currentTimeString, resolveTakenAt } from '@/lib/time'
-import { localeTag } from '@/lib/dateFormat'
+import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
+import { localeTag, todayDateString } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
@@ -14,11 +14,13 @@ const medicationsStore = useMedicationsStore()
 const now = useNow()
 
 const medicationId = ref<string | null>(null)
+const date = ref('')
 const time = ref('')
 
 watch(model, (open) => {
   if (open) {
     medicationId.value = medicationsStore.medications[0]?.id ?? null
+    date.value = todayDateString()
     time.value = currentTimeString()
   }
 })
@@ -55,11 +57,7 @@ function dateTimeLabel(ts: number): string {
   })
 }
 
-// The time field only ever picks a moment on *today* (see resolveTakenAt),
-// so this catches the real mismatch case: logging a course medication's
-// dose today when its course hasn't started yet, or has already ended —
-// not a full backdating check across arbitrary past dates.
-const doseTakenAt = computed(() => resolveTakenAt(time.value).getTime())
+const doseTakenAt = computed(() => resolveTakenAtOn(date.value, time.value).getTime())
 const courseWarning = computed(() => {
   const med = selectedMedication.value
   if (!med) return null
@@ -78,7 +76,7 @@ function confirm() {
   store.addDose(
     selectedMedication.value.id,
     selectedMedication.value.name,
-    resolveTakenAt(time.value),
+    resolveTakenAtOn(date.value, time.value),
   )
   model.value = false
 }
@@ -118,6 +116,13 @@ function confirm() {
           {{ courseWarning }}
         </v-alert>
 
+        <v-text-field
+          v-model="date"
+          type="date"
+          :label="t('dialogs.addDose.dateLabel')"
+          variant="outlined"
+          density="comfortable"
+        />
         <v-text-field
           v-model="time"
           type="time"

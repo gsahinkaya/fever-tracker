@@ -2,7 +2,8 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDiaperLogStore } from '@/stores/diaperLog'
-import { currentTimeString, resolveTakenAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
+import { todayDateString } from '@/lib/dateFormat'
 import type { DiaperType } from '@/types/health'
 
 const { t } = useI18n()
@@ -13,18 +14,20 @@ const DIAPER_TYPES: DiaperType[] = ['pee', 'poop', 'both']
 
 const type = ref<DiaperType>('pee')
 const note = ref('')
+const date = ref('')
 const time = ref('')
 
 watch(model, (open) => {
   if (open) {
     type.value = 'pee'
     note.value = ''
+    date.value = todayDateString()
     time.value = currentTimeString()
   }
 })
 
 function save() {
-  store.addDiaper(type.value, note.value || undefined, resolveTakenAt(time.value))
+  store.addDiaper(type.value, note.value || undefined, resolveTakenAtOn(date.value, time.value))
   model.value = false
 }
 </script>
@@ -46,6 +49,13 @@ function save() {
           v-model="note"
           :label="t('diaper.dialog.noteLabel')"
           :placeholder="t('diaper.dialog.notePlaceholder')"
+          variant="outlined"
+          density="comfortable"
+        />
+        <v-text-field
+          v-model="date"
+          type="date"
+          :label="t('diaper.dialog.dateLabel')"
           variant="outlined"
           density="comfortable"
         />

@@ -1,28 +1,25 @@
-// For backdating an entry (e.g. "this dose was actually given an hour ago").
-// A plain HH:mm time field is enough for the common case — correcting
-// something from earlier today — without the extra complexity of a full
-// date+time picker for the rare cross-midnight case.
+import { todayDateString } from './dateFormat'
+
+// The add-dialogs default their time field to this and their date field to
+// todayDateString() — used to detect the common "log it now" case (fields
+// left untouched) in resolveTakenAtOn, as opposed to a deliberate backdate.
 export function currentTimeString(): string {
   const now = new Date()
   return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
 }
 
-export function todayAt(timeString: string): Date {
+// For the common "log it now" case (date/time fields left at their defaults)
+// this returns a precise `new Date()` instead of resolving through the
+// fields, which only carry minute precision. That precision matters: two
+// truncated same-minute entries from different devices can otherwise invert
+// ordering against another device's precise last-seen watermark, silently
+// swallowing a cross-parent notification, or collapse onto one timestamp.
+// Only once the user actually edits a field away from "now" do we resolve
+// the picked date+time exactly (backdating an entry, e.g. "this dose was
+// actually given yesterday evening").
+export function resolveTakenAtOn(dateString: string, timeString: string): Date {
+  if (dateString === todayDateString() && timeString === currentTimeString()) return new Date()
+  const [year, month, day] = dateString.split('-').map(Number)
   const [hours, minutes] = timeString.split(':').map(Number)
-  const date = new Date()
-  date.setHours(hours ?? 0, minutes ?? 0, 0, 0)
-  return date
-}
-
-// The add-dialogs default their time field to currentTimeString() and only
-// resolve through todayAt(), which truncates to the minute — fine for a
-// deliberate backdate, but for the common "log it now" case (field left
-// untouched) it throws away seconds/ms. That's enough to invert ordering
-// against another device's precise last-seen watermark when two people act
-// within the same clock-minute, silently swallowing a cross-parent
-// notification, and can also collapse same-minute entries onto one
-// timestamp. Only truncate when the user actually edited the field away
-// from "now"; otherwise use a precise timestamp.
-export function resolveTakenAt(timeString: string): Date {
-  return timeString === currentTimeString() ? new Date() : todayAt(timeString)
+  return new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1, hours ?? 0, minutes ?? 0, 0, 0)
 }

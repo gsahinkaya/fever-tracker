@@ -5,7 +5,8 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useChildrenStore } from '@/stores/children'
 import { useNow } from '@/composables/useNow'
-import { currentTimeString, resolveTakenAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
+import { todayDateString } from '@/lib/dateFormat'
 import { assessFeverTriage } from '@/lib/feverTriage'
 import { ageInMonths } from '@/lib/age'
 
@@ -18,6 +19,7 @@ const now = useNow()
 
 const temperature = ref<number | null>(null)
 const note = ref('')
+const date = ref('')
 const time = ref('')
 const alsoGaveMedication = ref(false)
 const medicationId = ref<string | null>(null)
@@ -66,6 +68,7 @@ watch(model, (open) => {
   if (open) {
     temperature.value = null
     note.value = ''
+    date.value = todayDateString()
     time.value = currentTimeString()
     alsoGaveMedication.value = false
     medicationId.value = medicationsStore.medications[0]?.id ?? null
@@ -74,7 +77,7 @@ watch(model, (open) => {
 
 function save() {
   if (temperature.value == null || temperature.value <= 0) return
-  const takenAt = resolveTakenAt(time.value)
+  const takenAt = resolveTakenAtOn(date.value, time.value)
   store.addReading(temperature.value, note.value || undefined, takenAt)
   if (alsoGaveMedication.value && medicationId.value) {
     const medication = medicationsStore.medications.find((m) => m.id === medicationId.value)
@@ -115,6 +118,13 @@ function save() {
         <v-text-field
           v-model="note"
           :label="t('dialogs.addReading.noteLabel')"
+          variant="outlined"
+          density="comfortable"
+        />
+        <v-text-field
+          v-model="date"
+          type="date"
+          :label="t('dialogs.addReading.dateLabel')"
           variant="outlined"
           density="comfortable"
         />

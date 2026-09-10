@@ -53,8 +53,6 @@ const activity = computed(() => {
       }}</v-btn>
     </div>
 
-    <v-card variant="outlined">
-      <CombinedTimelineList :entries="activity" />
-    </v-card>
+    <CombinedTimelineList :entries="activity" />
   </v-container>
 </template>

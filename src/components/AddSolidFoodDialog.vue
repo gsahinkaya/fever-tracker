@@ -2,24 +2,27 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFeedingLogStore } from '@/stores/feedingLog'
-import { currentTimeString, resolveTakenAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
+import { todayDateString } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
 const store = useFeedingLogStore()
 
 const note = ref('')
+const date = ref('')
 const time = ref('')
 
 watch(model, (open) => {
   if (open) {
     note.value = ''
+    date.value = todayDateString()
     time.value = currentTimeString()
   }
 })
 
 function save() {
-  store.addSolidFood(note.value.trim() || undefined, resolveTakenAt(time.value))
+  store.addSolidFood(note.value.trim() || undefined, resolveTakenAtOn(date.value, time.value))
   model.value = false
 }
 </script>
@@ -38,6 +41,14 @@ function save() {
           density="comfortable"
         />
         <v-text-field
+          v-model="date"
+          type="date"
+          :label="t('dialogs.addSolidFood.dateLabel')"
+          variant="outlined"
+          density="comfortable"
+          class="mt-2"
+        />
+        <v-text-field
           v-model="time"
           type="time"
           :label="t('dialogs.addSolidFood.timeLabel')"
@@ -45,7 +56,6 @@ function save() {
           persistent-hint
           variant="outlined"
           density="comfortable"
-          class="mt-2"
         />
       </v-card-text>
       <v-card-actions>

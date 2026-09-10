@@ -2,7 +2,8 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFeedingLogStore } from '@/stores/feedingLog'
-import { currentTimeString, resolveTakenAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
+import { todayDateString } from '@/lib/dateFormat'
 import type { BottleEntry } from '@/types/health'
 
 const { t } = useI18n()
@@ -11,19 +12,21 @@ const store = useFeedingLogStore()
 
 const amountMl = ref<number | null>(null)
 const milkType = ref<BottleEntry['milkType']>('formula')
+const date = ref('')
 const time = ref('')
 
 watch(model, (open) => {
   if (open) {
     amountMl.value = null
     milkType.value = 'formula'
+    date.value = todayDateString()
     time.value = currentTimeString()
   }
 })
 
 function save() {
   if (amountMl.value == null || amountMl.value <= 0) return
-  store.addBottle(amountMl.value, milkType.value, resolveTakenAt(time.value))
+  store.addBottle(amountMl.value, milkType.value, resolveTakenAtOn(date.value, time.value))
   model.value = false
 }
 </script>
@@ -48,6 +51,14 @@ function save() {
           <v-radio :label="t('dialogs.addBottle.mixed')" value="mixed" />
         </v-radio-group>
         <v-text-field
+          v-model="date"
+          type="date"
+          :label="t('dialogs.addBottle.dateLabel')"
+          variant="outlined"
+          density="comfortable"
+          class="mt-2"
+        />
+        <v-text-field
           v-model="time"
           type="time"
           :label="t('dialogs.addBottle.timeLabel')"
@@ -55,7 +66,6 @@ function save() {
           persistent-hint
           variant="outlined"
           density="comfortable"
-          class="mt-2"
         />
       </v-card-text>
       <v-card-actions>

@@ -2,7 +2,8 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useFeedingLogStore } from '@/stores/feedingLog'
-import { currentTimeString, resolveTakenAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
+import { todayDateString } from '@/lib/dateFormat'
 import type { BreastfeedingEntry } from '@/types/health'
 
 const { t } = useI18n()
@@ -11,12 +12,14 @@ const store = useFeedingLogStore()
 
 const durationMinutes = ref<number | null>(null)
 const side = ref<BreastfeedingEntry['side'] | null>(null)
+const date = ref('')
 const time = ref('')
 
 watch(model, (open) => {
   if (open) {
     durationMinutes.value = null
     side.value = null
+    date.value = todayDateString()
     time.value = currentTimeString()
   }
 })
@@ -25,7 +28,7 @@ function save() {
   store.addBreastfeeding(
     durationMinutes.value ?? undefined,
     side.value ?? undefined,
-    resolveTakenAt(time.value),
+    resolveTakenAtOn(date.value, time.value),
   )
   model.value = false
 }
@@ -54,6 +57,14 @@ function save() {
           <v-radio :label="t('dialogs.addBreastfeeding.both')" value="both" />
         </v-radio-group>
         <v-text-field
+          v-model="date"
+          type="date"
+          :label="t('dialogs.addBreastfeeding.dateLabel')"
+          variant="outlined"
+          density="comfortable"
+          class="mt-2"
+        />
+        <v-text-field
           v-model="time"
           type="time"
           :label="t('dialogs.addBreastfeeding.timeLabel')"
@@ -61,7 +72,6 @@ function save() {
           persistent-hint
           variant="outlined"
           density="comfortable"
-          class="mt-2"
         />
       </v-card-text>
       <v-card-actions>

@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n'
 import { useGrowthLogStore } from '@/stores/growthLog'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
-import { currentTimeString, resolveTakenAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
+import { todayDateString } from '@/lib/dateFormat'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
@@ -15,6 +16,7 @@ const childrenStore = useChildrenStore()
 const heightCm = ref<number | null>(null)
 const weightKg = ref<number | null>(null)
 const headCircumferenceCm = ref<number | null>(null)
+const date = ref('')
 const time = ref('')
 
 watch(model, (open) => {
@@ -22,6 +24,7 @@ watch(model, (open) => {
     heightCm.value = null
     weightKg.value = null
     headCircumferenceCm.value = null
+    date.value = todayDateString()
     time.value = currentTimeString()
   }
 })
@@ -31,14 +34,14 @@ function save() {
   store.addGrowthEntry(
     heightCm.value ?? undefined,
     weightKg.value ?? undefined,
-    resolveTakenAt(time.value),
+    resolveTakenAtOn(date.value, time.value),
     headCircumferenceCm.value ?? undefined,
   )
-  // Growth entries are always dated today (see resolveTakenAt), so a newly
-  // added reading is the latest one — keep the child profile's own
-  // height/weight/head-circumference fields in sync with it instead of
-  // leaving them stuck at whatever was entered when the child was created.
-  if (authStore.familyId && store.activeChildId) {
+  // The date field now allows backdating, so only treat this entry as the
+  // latest one (and sync it onto the child profile) when it's actually
+  // dated today — otherwise a backdated entry would overwrite the child's
+  // current height/weight with stale numbers.
+  if (date.value === todayDateString() && authStore.familyId && store.activeChildId) {
     const update: Record<string, number> = {}
     if (heightCm.value) update.heightCm = heightCm.value
     if (weightKg.value) update.weightKg = weightKg.value
@@ -84,6 +87,13 @@ function save() {
           density="comfortable"
         />
         <p class="text-caption text-medium-emphasis mt-n2 mb-2">{{ t('growth.dialog.hint') }}</p>
+        <v-text-field
+          v-model="date"
+          type="date"
+          :label="t('growth.dialog.dateLabel')"
+          variant="outlined"
+          density="comfortable"
+        />
         <v-text-field
           v-model="time"
           type="time"

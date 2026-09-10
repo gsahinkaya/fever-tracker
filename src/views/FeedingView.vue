@@ -76,9 +76,7 @@ const recent = computed(() => store.recentEntries(48))
       <div class="mb-2">
         <span class="text-subtitle-2 text-medium-emphasis">{{ t('feeding.last48h') }}</span>
       </div>
-      <v-card variant="outlined">
-        <FeedingTimelineList :entries="recent" />
-      </v-card>
+      <FeedingTimelineList :entries="recent" />
     </template>
 
     <AddBreastfeedingDialog v-model="showBreastfeedingDialog" />

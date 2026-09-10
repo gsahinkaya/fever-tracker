@@ -2,7 +2,8 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSymptomLogStore } from '@/stores/symptomLog'
-import { currentTimeString, resolveTakenAt } from '@/lib/time'
+import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
+import { todayDateString } from '@/lib/dateFormat'
 import type { SymptomType } from '@/types/health'
 
 const { t } = useI18n()
@@ -13,18 +14,20 @@ const SYMPTOM_TYPES: SymptomType[] = ['cough', 'vomiting', 'diarrhea', 'rash', '
 
 const type = ref<SymptomType>('cough')
 const note = ref('')
+const date = ref('')
 const time = ref('')
 
 watch(model, (open) => {
   if (open) {
     type.value = 'cough'
     note.value = ''
+    date.value = todayDateString()
     time.value = currentTimeString()
   }
 })
 
 function save() {
-  store.addSymptom(type.value, note.value || undefined, resolveTakenAt(time.value))
+  store.addSymptom(type.value, note.value || undefined, resolveTakenAtOn(date.value, time.value))
   model.value = false
 }
 </script>
@@ -46,6 +49,13 @@ function save() {
           v-model="note"
           :label="t('symptoms.dialog.noteLabel')"
           :placeholder="t('symptoms.dialog.notePlaceholder')"
+          variant="outlined"
+          density="comfortable"
+        />
+        <v-text-field
+          v-model="date"
+          type="date"
+          :label="t('symptoms.dialog.dateLabel')"
           variant="outlined"
           density="comfortable"
         />

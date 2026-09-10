@@ -187,9 +187,7 @@ const headCircumferenceTable = computed(() =>
     <div class="mb-2">
       <span class="text-subtitle-2 text-medium-emphasis">{{ t('growth.history') }}</span>
     </div>
-    <v-card variant="outlined">
-      <GrowthTimelineList :entries="sorted" />
-    </v-card>
+    <GrowthTimelineList :entries="sorted" />
 
     <AddGrowthDialog v-model="showAddDialog" />
   </v-container>
