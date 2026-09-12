@@ -17,6 +17,7 @@ import { useMedicationAlertsStore } from '@/stores/medicationAlerts'
 import { useThemeStore } from '@/stores/theme'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
+import { dismissNotification, isDismissed } from '@/lib/notificationHistory'
 import {
   describeCalendarEvent,
   describeDiaper,
@@ -93,6 +94,66 @@ const incomingItems = computed(() =>
       text: describeMedicationAlert(entry),
     })),
   ].sort((a, b) => a.at - b.at),
+)
+
+// Same activity as incomingItems, but every one this device has ever loaded
+// (not just the still-unread ones) so the bell menu can double as a
+// notification history — each with a stable per-entry key so a dismissed
+// one (see notificationHistory.ts) can be told apart from every other
+// notification of the same kind. Capped since a long-lived family could
+// otherwise pile up hundreds of these.
+const NOTIFICATION_HISTORY_LIMIT = 50
+const notificationHistoryItems = computed(() =>
+  [
+    ...feverLogStore.allRemoteEntries.map((entry) => ({
+      key: `entry-${entry.id}`,
+      at: entry.takenAt,
+      text: describeEntry(entry),
+    })),
+    ...medicationsStore.allRemoteMedications.map((medication) => ({
+      key: `medication-${medication.id}`,
+      at: medication.createdAt ?? 0,
+      text: describeMedication(medication),
+    })),
+    ...feedingLogStore.allRemoteEntries.map((entry) => ({
+      key: `feeding-${entry.id}`,
+      at: entry.takenAt,
+      text: describeFeeding(entry),
+    })),
+    ...growthLogStore.allRemoteEntries.map((entry) => ({
+      key: `growth-${entry.id}`,
+      at: entry.takenAt,
+      text: describeGrowth(entry),
+    })),
+    ...symptomLogStore.allRemoteEntries.map((entry) => ({
+      key: `symptom-${entry.id}`,
+      at: entry.takenAt,
+      text: describeSymptom(entry),
+    })),
+    ...sleepLogStore.allRemoteEntries.map((entry) => ({
+      key: `sleep-${entry.id}`,
+      at: entry.takenAt,
+      text: describeSleep(entry),
+    })),
+    ...diaperLogStore.allRemoteEntries.map((entry) => ({
+      key: `diaper-${entry.id}`,
+      at: entry.takenAt,
+      text: describeDiaper(entry),
+    })),
+    ...calendarEventsStore.allRemoteEvents.map((entry) => ({
+      key: `calendar-${entry.id}`,
+      at: entry.createdAt ?? 0,
+      text: describeCalendarEvent(entry),
+    })),
+    ...medicationAlertsStore.allRemoteEntries.map((entry) => ({
+      key: `alert-${entry.id}`,
+      at: entry.takenAt,
+      text: describeMedicationAlert(entry),
+    })),
+  ]
+    .filter((item) => !isDismissed(item.key))
+    .sort((a, b) => b.at - a.at)
+    .slice(0, NOTIFICATION_HISTORY_LIMIT),
 )
 
 const incomingBannerText = computed(() => {
@@ -205,9 +266,15 @@ watch(
         </RouterLink>
       </v-app-bar-title>
       <template #append>
-        <v-menu v-if="incomingItems.length" location="bottom end">
+        <v-menu location="bottom end">
           <template #activator="{ props: menuProps }">
-            <v-badge :content="incomingItems.length" color="error" offset-x="6" offset-y="6">
+            <v-badge
+              :model-value="!!incomingItems.length"
+              :content="incomingItems.length"
+              color="error"
+              offset-x="6"
+              offset-y="6"
+            >
               <v-btn
                 icon="mdi-bell-alert"
                 variant="text"
@@ -217,17 +284,29 @@ watch(
             </v-badge>
           </template>
           <v-card min-width="280" max-width="360">
-            <v-list density="comfortable">
-              <v-list-item v-for="(item, i) in [...incomingItems].reverse()" :key="i" class="py-2">
+            <v-list v-if="notificationHistoryItems.length" density="comfortable">
+              <v-list-item v-for="item in notificationHistoryItems" :key="item.key" class="py-2">
                 <v-list-item-title
                   class="text-body-2"
                   style="white-space: normal; overflow-wrap: break-word"
                   >{{ item.text }}</v-list-item-title
                 >
                 <v-list-item-subtitle>{{ relativeTime(item.at) }}</v-list-item-subtitle>
+                <template #append>
+                  <v-btn
+                    icon="mdi-close"
+                    variant="text"
+                    size="small"
+                    :aria-label="t('notifications.deleteAria')"
+                    @click="dismissNotification(item.key)"
+                  />
+                </template>
               </v-list-item>
             </v-list>
-            <v-card-actions>
+            <v-card-text v-else class="text-center text-medium-emphasis text-body-2">
+              {{ t('notifications.historyEmpty') }}
+            </v-card-text>
+            <v-card-actions v-if="incomingItems.length">
               <v-spacer />
               <v-btn size="small" variant="text" @click="acknowledgeIncoming()">{{
                 t('notifications.markAllSeen')

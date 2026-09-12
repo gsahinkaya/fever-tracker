@@ -697,6 +697,8 @@ export default {
     },
     bannerMore: '{text} (+{count} diğer)',
     markAllSeen: 'Tümünü gördüm',
+    deleteAria: 'Bildirimi sil',
+    historyEmpty: 'Henüz bildirim yok.',
   },
   age: {
     monthsOld: '{n} aylık',

@@ -15,6 +15,7 @@ export const useMedicationsStore = defineStore('medications', () => {
   const {
     items: medications,
     incoming: incomingMedications,
+    allRemote: allRemoteMedications,
     lastRemote: lastRemoteMedication,
     watchChild,
     acknowledgeIncoming,
@@ -66,6 +67,7 @@ export const useMedicationsStore = defineStore('medications', () => {
   return {
     medications,
     incomingMedications,
+    allRemoteMedications,
     lastRemoteMedication,
     watchChild,
     acknowledgeIncoming,

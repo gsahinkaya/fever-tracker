@@ -695,6 +695,8 @@ export default {
     },
     bannerMore: '{text} (+{count} more)',
     markAllSeen: 'Mark all as seen',
+    deleteAria: 'Delete notification',
+    historyEmpty: 'No notifications yet.',
   },
   age: {
     monthsOld: '{n} months old',

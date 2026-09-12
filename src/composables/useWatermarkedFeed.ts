@@ -60,6 +60,17 @@ export function useWatermarkedFeed<T extends CreatedByFields & { id: string }>(o
       .sort((a: T, b: T) => options.sortKey(a) - options.sortKey(b))
   })
 
+  // Same "someone else did this" filter as `incoming`, but without the
+  // lastSeenAt cutoff — every such item still loaded locally, for the bell
+  // menu's notification history (see App.vue's notificationHistoryItems).
+  const allRemote = computed(() => {
+    const myUid = useAuthStore().user?.uid
+    return items.value
+      .filter((item: T) => item.createdBy && item.createdBy !== myUid)
+      .slice()
+      .sort((a: T, b: T) => options.sortKey(a) - options.sortKey(b))
+  })
+
   function watchChild(childId: string | null) {
     activeChildId.value = childId
     if (unsubscribe) {
@@ -149,6 +160,7 @@ export function useWatermarkedFeed<T extends CreatedByFields & { id: string }>(o
     items,
     activeChildId,
     incoming,
+    allRemote,
     lastRemote,
     watchChild,
     acknowledgeIncoming,
