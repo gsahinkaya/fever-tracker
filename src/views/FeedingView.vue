@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { deleteField } from 'firebase/firestore'
 import { useFeedingLogStore } from '@/stores/feedingLog'
@@ -25,19 +25,30 @@ const activeChild = computed(
   () => childrenStore.children.find((c) => c.id === store.activeChildId) ?? null,
 )
 
-// Two-way bound straight to Firestore (no separate "save" step) — the same
-// field also drives the server-side push (api/check-feeding-reminders.ts)
-// and the foreground one (useFeedingReminders), so it should take effect
-// immediately rather than waiting on a dialog's own save button.
-const feedingReminderHours = computed<number | null>({
-  get: () => activeChild.value?.feedingReminderIntervalHours ?? null,
-  set: (value) => {
-    if (!authStore.familyId || !activeChild.value) return
-    childrenStore.updateChild(authStore.familyId, activeChild.value.id, {
-      feedingReminderIntervalHours: value && value > 0 ? value : deleteField(),
-    })
+// A local draft plus an explicit Kaydet/Sil pair, rather than saving on
+// every keystroke — typing "3" used to write to Firestore after every
+// digit with no feedback that anything had happened, which read as
+// "nothing I do here does anything."
+const feedingReminderInput = ref<number | null>(null)
+watch(
+  activeChild,
+  (child) => {
+    feedingReminderInput.value = child?.feedingReminderIntervalHours ?? null
   },
-})
+  { immediate: true },
+)
+
+function saveFeedingReminder(hours: number | null) {
+  if (!authStore.familyId || !activeChild.value) return
+  childrenStore.updateChild(authStore.familyId, activeChild.value.id, {
+    feedingReminderIntervalHours: hours && hours > 0 ? hours : deleteField(),
+  })
+}
+
+function clearFeedingReminder() {
+  feedingReminderInput.value = null
+  saveFeedingReminder(null)
+}
 </script>
 
 <template>
@@ -98,7 +109,7 @@ const feedingReminderHours = computed<number | null>({
     <v-card v-if="activeChild" variant="outlined" class="mb-6 pa-2">
       <v-card-text class="py-2">
         <v-text-field
-          v-model.number="feedingReminderHours"
+          v-model.number="feedingReminderInput"
           type="number"
           min="0"
           :label="t('feeding.reminderLabel')"
@@ -109,6 +120,26 @@ const feedingReminderHours = computed<number | null>({
           hide-details="auto"
         />
       </v-card-text>
+      <v-card-actions>
+        <v-btn
+          v-if="activeChild.feedingReminderIntervalHours"
+          variant="text"
+          color="error"
+          size="small"
+          @click="clearFeedingReminder"
+        >
+          {{ t('common.delete') }}
+        </v-btn>
+        <v-spacer />
+        <v-btn
+          color="primary"
+          variant="flat"
+          size="small"
+          @click="saveFeedingReminder(feedingReminderInput)"
+        >
+          {{ t('common.save') }}
+        </v-btn>
+      </v-card-actions>
     </v-card>
 
     <template v-if="recent.length">
