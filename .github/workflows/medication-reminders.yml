@@ -1,4 +1,5 @@
-name: Medication course/reminder push
+cat << 'PASTE_THIS'
+name: Medication/feeding reminder push
 
 on:
   schedule:
@@ -14,3 +15,9 @@ jobs:
           curl --fail -sS \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             "https://fever-tracker-nu.vercel.app/api/check-medication-courses"
+      - name: Call check-feeding-reminders
+        run: |
+          curl --fail -sS \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://fever-tracker-nu.vercel.app/api/check-feeding-reminders"
+PASTE_THIS
