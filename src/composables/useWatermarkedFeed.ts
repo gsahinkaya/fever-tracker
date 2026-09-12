@@ -49,27 +49,22 @@ export function useWatermarkedFeed<T extends CreatedByFields & { id: string }>(o
   const lastRemote = shallowRef<T | null>(null)
   let unsubscribe: (() => void) | null = null
 
-  const incoming = computed(() => {
+  // "Someone else did this" (never the current device's own writes),
+  // optionally narrowed further — shared by `incoming` (only what's newer
+  // than the last-seen watermark) and `allRemote` (everything, for the bell
+  // menu's notification history in App.vue).
+  function remoteItems(extraFilter: (item: T) => boolean = () => true) {
     const myUid = useAuthStore().user?.uid
     return items.value
-      .filter(
-        (item: T) =>
-          item.createdBy && item.createdBy !== myUid && options.sortKey(item) > lastSeenAt.value,
-      )
+      .filter((item: T) => item.createdBy && item.createdBy !== myUid && extraFilter(item))
       .slice()
       .sort((a: T, b: T) => options.sortKey(a) - options.sortKey(b))
-  })
+  }
 
-  // Same "someone else did this" filter as `incoming`, but without the
-  // lastSeenAt cutoff — every such item still loaded locally, for the bell
-  // menu's notification history (see App.vue's notificationHistoryItems).
-  const allRemote = computed(() => {
-    const myUid = useAuthStore().user?.uid
-    return items.value
-      .filter((item: T) => item.createdBy && item.createdBy !== myUid)
-      .slice()
-      .sort((a: T, b: T) => options.sortKey(a) - options.sortKey(b))
-  })
+  const incoming = computed(() =>
+    remoteItems((item) => options.sortKey(item) > lastSeenAt.value),
+  )
+  const allRemote = computed(() => remoteItems())
 
   function watchChild(childId: string | null) {
     activeChildId.value = childId

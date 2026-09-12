@@ -51,106 +51,111 @@ useEntryNotifications()
 
 const isAuthPage = computed(() => route.path === '/login' || route.path === '/register')
 
-// Merge separately-tracked streams (fever entries, medications, feedings) by
-// when they actually happened, oldest first, so both the banner and the
-// bell menu agree on what's truly latest — not just whichever store's
-// array happens to be concatenated last.
+interface NotificationItem {
+  key: string
+  at: number
+  text: string
+}
+
+// One declarative line per store instead of writing the same {key, at,
+// text} mapping out twice (once for the still-unread list, once for the
+// full history) — see incomingItems/notificationHistoryItems below, which
+// just flatMap+sort the two sides of this.
+function notificationSource<T extends { id: string }>(
+  keyPrefix: string,
+  incoming: T[],
+  allRemote: T[],
+  at: (item: T) => number,
+  describe: (item: T) => string,
+): { incoming: NotificationItem[]; allRemote: NotificationItem[] } {
+  const toItem = (item: T): NotificationItem => ({
+    key: `${keyPrefix}-${item.id}`,
+    at: at(item),
+    text: describe(item),
+  })
+  return { incoming: incoming.map(toItem), allRemote: allRemote.map(toItem) }
+}
+
+const notificationSources = computed(() => [
+  notificationSource(
+    'entry',
+    feverLogStore.incomingEntries,
+    feverLogStore.allRemoteEntries,
+    (entry) => entry.takenAt,
+    describeEntry,
+  ),
+  notificationSource(
+    'medication',
+    medicationsStore.incomingMedications,
+    medicationsStore.allRemoteMedications,
+    (medication) => medication.createdAt ?? 0,
+    describeMedication,
+  ),
+  notificationSource(
+    'feeding',
+    feedingLogStore.incomingEntries,
+    feedingLogStore.allRemoteEntries,
+    (entry) => entry.takenAt,
+    describeFeeding,
+  ),
+  notificationSource(
+    'growth',
+    growthLogStore.incomingEntries,
+    growthLogStore.allRemoteEntries,
+    (entry) => entry.takenAt,
+    describeGrowth,
+  ),
+  notificationSource(
+    'symptom',
+    symptomLogStore.incomingEntries,
+    symptomLogStore.allRemoteEntries,
+    (entry) => entry.takenAt,
+    describeSymptom,
+  ),
+  notificationSource(
+    'sleep',
+    sleepLogStore.incomingEntries,
+    sleepLogStore.allRemoteEntries,
+    (entry) => entry.takenAt,
+    describeSleep,
+  ),
+  notificationSource(
+    'diaper',
+    diaperLogStore.incomingEntries,
+    diaperLogStore.allRemoteEntries,
+    (entry) => entry.takenAt,
+    describeDiaper,
+  ),
+  notificationSource(
+    'calendar',
+    calendarEventsStore.incomingEvents,
+    calendarEventsStore.allRemoteEvents,
+    (entry) => entry.createdAt ?? 0,
+    describeCalendarEvent,
+  ),
+  notificationSource(
+    'alert',
+    medicationAlertsStore.incomingEntries,
+    medicationAlertsStore.allRemoteEntries,
+    (entry) => entry.takenAt,
+    describeMedicationAlert,
+  ),
+])
+
+// Oldest first, so both the banner and the bell menu agree on what's truly
+// latest — not just whichever store happens to be concatenated last.
 const incomingItems = computed(() =>
-  [
-    ...feverLogStore.incomingEntries.map((entry) => ({
-      at: entry.takenAt,
-      text: describeEntry(entry),
-    })),
-    ...medicationsStore.incomingMedications.map((medication) => ({
-      at: medication.createdAt ?? 0,
-      text: describeMedication(medication),
-    })),
-    ...feedingLogStore.incomingEntries.map((entry) => ({
-      at: entry.takenAt,
-      text: describeFeeding(entry),
-    })),
-    ...growthLogStore.incomingEntries.map((entry) => ({
-      at: entry.takenAt,
-      text: describeGrowth(entry),
-    })),
-    ...symptomLogStore.incomingEntries.map((entry) => ({
-      at: entry.takenAt,
-      text: describeSymptom(entry),
-    })),
-    ...sleepLogStore.incomingEntries.map((entry) => ({
-      at: entry.takenAt,
-      text: describeSleep(entry),
-    })),
-    ...diaperLogStore.incomingEntries.map((entry) => ({
-      at: entry.takenAt,
-      text: describeDiaper(entry),
-    })),
-    ...calendarEventsStore.incomingEvents.map((entry) => ({
-      at: entry.createdAt ?? 0,
-      text: describeCalendarEvent(entry),
-    })),
-    ...medicationAlertsStore.incomingEntries.map((entry) => ({
-      at: entry.takenAt,
-      text: describeMedicationAlert(entry),
-    })),
-  ].sort((a, b) => a.at - b.at),
+  notificationSources.value.flatMap((s) => s.incoming).sort((a, b) => a.at - b.at),
 )
 
-// Same activity as incomingItems, but every one this device has ever loaded
-// (not just the still-unread ones) so the bell menu can double as a
-// notification history — each with a stable per-entry key so a dismissed
-// one (see notificationHistory.ts) can be told apart from every other
-// notification of the same kind. Capped since a long-lived family could
-// otherwise pile up hundreds of these.
+// Same activity, but every one this device has ever loaded (not just the
+// still-unread ones) so the bell menu can double as a notification history,
+// minus whatever's been dismissed (see notificationHistory.ts) and capped
+// since a long-lived family could otherwise pile up hundreds of these.
 const NOTIFICATION_HISTORY_LIMIT = 50
 const notificationHistoryItems = computed(() =>
-  [
-    ...feverLogStore.allRemoteEntries.map((entry) => ({
-      key: `entry-${entry.id}`,
-      at: entry.takenAt,
-      text: describeEntry(entry),
-    })),
-    ...medicationsStore.allRemoteMedications.map((medication) => ({
-      key: `medication-${medication.id}`,
-      at: medication.createdAt ?? 0,
-      text: describeMedication(medication),
-    })),
-    ...feedingLogStore.allRemoteEntries.map((entry) => ({
-      key: `feeding-${entry.id}`,
-      at: entry.takenAt,
-      text: describeFeeding(entry),
-    })),
-    ...growthLogStore.allRemoteEntries.map((entry) => ({
-      key: `growth-${entry.id}`,
-      at: entry.takenAt,
-      text: describeGrowth(entry),
-    })),
-    ...symptomLogStore.allRemoteEntries.map((entry) => ({
-      key: `symptom-${entry.id}`,
-      at: entry.takenAt,
-      text: describeSymptom(entry),
-    })),
-    ...sleepLogStore.allRemoteEntries.map((entry) => ({
-      key: `sleep-${entry.id}`,
-      at: entry.takenAt,
-      text: describeSleep(entry),
-    })),
-    ...diaperLogStore.allRemoteEntries.map((entry) => ({
-      key: `diaper-${entry.id}`,
-      at: entry.takenAt,
-      text: describeDiaper(entry),
-    })),
-    ...calendarEventsStore.allRemoteEvents.map((entry) => ({
-      key: `calendar-${entry.id}`,
-      at: entry.createdAt ?? 0,
-      text: describeCalendarEvent(entry),
-    })),
-    ...medicationAlertsStore.allRemoteEntries.map((entry) => ({
-      key: `alert-${entry.id}`,
-      at: entry.takenAt,
-      text: describeMedicationAlert(entry),
-    })),
-  ]
+  notificationSources.value
+    .flatMap((s) => s.allRemote)
     .filter((item) => !isDismissed(item.key))
     .sort((a, b) => b.at - a.at)
     .slice(0, NOTIFICATION_HISTORY_LIMIT),
