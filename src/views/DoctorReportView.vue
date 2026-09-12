@@ -239,7 +239,7 @@ async function createPdf() {
         :aria-label="t('common.back')"
         @click="$router.back()"
       />
-      <span class="text-h6 ml-2">{{ t('doctorReport.title') }}</span>
+      <span class="text-h6 ml-2">{{ t('home.tiles.report') }}</span>
       <v-spacer />
       <v-btn
         color="primary"

@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useChildrenStore } from '@/stores/children'
 import { useAuthStore } from '@/stores/auth'
 import { useDoseReminders } from '@/composables/useDoseReminders'
+import { useFeedingReminders } from '@/composables/useFeedingReminders'
 import { registerDeviceForPush } from '@/composables/usePushNotifications'
 import AddReadingDialog from '@/components/AddReadingDialog.vue'
 import AddDoseDialog from '@/components/AddDoseDialog.vue'
@@ -13,6 +14,7 @@ const { t } = useI18n()
 const childrenStore = useChildrenStore()
 const authStore = useAuthStore()
 const { requestPermission } = useDoseReminders()
+useFeedingReminders()
 
 const showReadingDialog = ref(false)
 const showDoseDialog = ref(false)

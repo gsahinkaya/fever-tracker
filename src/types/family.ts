@@ -24,6 +24,19 @@ export interface Child {
   customVaccines?: CustomVaccine[]
   // IDs from developmentalMilestones.ts that have been marked as reached.
   completedMilestoneIds?: string[]
+  // "Remind me if it's been this many hours since the last feeding"
+  // (breastfeeding or bottle, whichever was more recent — a baby getting
+  // both doesn't need two separate timers). Lives on the child, not a
+  // medication, since feeding has no per-item entity to attach it to.
+  // Unset/0 means disabled. Mirrors Medication.minIntervalHours, driving
+  // both the foreground check (useFeedingReminders) and the server-side
+  // push (api/check-feeding-reminders.ts).
+  feedingReminderIntervalHours?: number
+  // Server-side counterpart to feedingReminderIntervalHours, same pattern
+  // as Medication.nextDoseNotifiedFor: holds the id of the feeding entry
+  // the reminder was last sent for, so a newly-logged feeding (a new id)
+  // naturally re-arms it for the next interval.
+  feedingReminderNotifiedFor?: string
 }
 
 export type FamilyRelation =

@@ -159,7 +159,7 @@ export default {
       medication: 'Medication',
       feeding: 'Feeding',
       growth: 'Growth',
-      report: 'Summary Report',
+      report: 'Show to Doctor',
       askAlfred: 'Ask Alfred',
       dutyPharmacy: 'On-Duty Pharmacy',
       vaccinations: 'Vaccinations',
@@ -501,6 +501,9 @@ export default {
       solid: 'Solid Food',
     },
     last48h: 'Last 48 Hours',
+    reminderLabel: 'Feeding reminder (hours)',
+    reminderHint:
+      "Remind this many hours after the last breastfeeding/bottle. Leave blank to turn off.",
   },
   temperatureChart: {
     ariaLabel: 'Last 48 hours fever chart',
@@ -671,6 +674,7 @@ export default {
     courseStartReady: 'It\'s time to start the {name} course.',
     courseEndReady: 'The {name} course has ended.',
     reminderReady: 'Your reminder for {name} is due now.',
+    feedingReminderReady: "It's time to feed {name}.",
     addedReading: '{who} added a {temp}° reading',
     gaveMedication: '{who} gave {name}',
     addedMedication: '{who} added the {name} medication',

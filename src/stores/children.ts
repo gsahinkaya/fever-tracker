@@ -8,9 +8,16 @@ import {
   onSnapshot,
   updateDoc,
   writeBatch,
+  type FieldValue,
 } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Child } from '@/types/family'
+
+// Same as Partial<Omit<Child, 'id'>>, but also allows a FieldValue sentinel
+// (e.g. deleteField()) per field — needed to actually clear an optional
+// field like feedingReminderIntervalHours rather than just never writing a
+// value for it.
+type ChildUpdate = { [K in keyof Omit<Child, 'id'>]?: Child[K] | FieldValue }
 
 export const useChildrenStore = defineStore('children', () => {
   const children = ref<Child[]>([])
@@ -43,7 +50,7 @@ export const useChildrenStore = defineStore('children', () => {
     return ref.id
   }
 
-  async function updateChild(familyId: string, childId: string, data: Partial<Omit<Child, 'id'>>) {
+  async function updateChild(familyId: string, childId: string, data: ChildUpdate) {
     await updateDoc(doc(db, 'families', familyId, 'children', childId), data)
   }
 

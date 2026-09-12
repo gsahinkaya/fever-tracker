@@ -2,7 +2,7 @@ import { watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { t } from '@/i18n'
-import { showSystemNotification } from '@/lib/systemNotification'
+import { createNotifyOnceTracker } from '@/lib/notifyOnce'
 import { useNow } from './useNow'
 
 // Foreground-only reminder: notifies while this tab/PWA is open and in
@@ -10,52 +10,7 @@ import { useNow } from './useNow'
 // check server-side (polled every few minutes) so a closed app/PWA still
 // gets a push — this one is what drives the in-app "next safe dose" banner
 // while the app is actually open, which a push notification can't do.
-//
-// Persisted to localStorage (not just an in-memory Set) because a moment
-// that's still due doesn't stop being due just because the tab reloaded —
-// without this, reopening the app (or a background tab getting suspended
-// and restored) re-ran the whole in-memory history from empty and re-fired
-// every already-shown reminder that was still overdue. Capped to the most
-// recent entries since a long-lived install would otherwise grow this
-// forever.
-const NOTIFIED_STORAGE_KEY = 'ates-olcer:notified-doses'
-const MAX_NOTIFIED_KEYS = 200
-
-function loadNotifiedFor(): Set<string> {
-  try {
-    const stored = localStorage.getItem(NOTIFIED_STORAGE_KEY)
-    if (stored) return new Set(JSON.parse(stored) as string[])
-  } catch {
-    // Corrupt/unavailable storage — fall through to an empty set rather
-    // than blocking reminders entirely.
-  }
-  return new Set()
-}
-
-const notifiedFor = loadNotifiedFor()
-
-function saveNotifiedFor() {
-  const keys = [...notifiedFor].slice(-MAX_NOTIFIED_KEYS)
-  try {
-    localStorage.setItem(NOTIFIED_STORAGE_KEY, JSON.stringify(keys))
-  } catch {
-    // Storage full/unavailable — the in-memory Set still dedupes for the
-    // rest of this session, it just won't survive a reload.
-  }
-}
-
-// Every reminder kind below (one-time alarm, course start, next-dose) is the
-// same shape: "if due and not already shown for this exact key, show it."
-// `key` alone determines whether this fires again — callers key by
-// whatever makes a moment unique (the alarm's own timestamp, a day string,
-// the triggering dose's id), not by time, so this stays a pure "have I
-// already told them about *this*" check.
-function notifyOnce(key: string, message: string) {
-  if (notifiedFor.has(key)) return
-  notifiedFor.add(key)
-  saveNotifiedFor()
-  void showSystemNotification(message, '', key)
-}
+const notifyOnce = createNotifyOnceTracker('ates-olcer:notified-doses')
 
 export function useDoseReminders() {
   const store = useFeverLogStore()

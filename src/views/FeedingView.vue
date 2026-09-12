@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { deleteField } from 'firebase/firestore'
 import { useFeedingLogStore } from '@/stores/feedingLog'
+import { useChildrenStore } from '@/stores/children'
+import { useAuthStore } from '@/stores/auth'
 import AddBreastfeedingDialog from '@/components/AddBreastfeedingDialog.vue'
 import AddBottleDialog from '@/components/AddBottleDialog.vue'
 import AddSolidFoodDialog from '@/components/AddSolidFoodDialog.vue'
@@ -9,12 +12,32 @@ import FeedingTimelineList from '@/components/FeedingTimelineList.vue'
 
 const { t } = useI18n()
 const store = useFeedingLogStore()
+const childrenStore = useChildrenStore()
+const authStore = useAuthStore()
 
 const showBreastfeedingDialog = ref(false)
 const showBottleDialog = ref(false)
 const showSolidFoodDialog = ref(false)
 
 const recent = computed(() => store.recentEntries(48))
+
+const activeChild = computed(
+  () => childrenStore.children.find((c) => c.id === store.activeChildId) ?? null,
+)
+
+// Two-way bound straight to Firestore (no separate "save" step) — the same
+// field also drives the server-side push (api/check-feeding-reminders.ts)
+// and the foreground one (useFeedingReminders), so it should take effect
+// immediately rather than waiting on a dialog's own save button.
+const feedingReminderHours = computed<number | null>({
+  get: () => activeChild.value?.feedingReminderIntervalHours ?? null,
+  set: (value) => {
+    if (!authStore.familyId || !activeChild.value) return
+    childrenStore.updateChild(authStore.familyId, activeChild.value.id, {
+      feedingReminderIntervalHours: value && value > 0 ? value : deleteField(),
+    })
+  },
+})
 </script>
 
 <template>
@@ -71,6 +94,22 @@ const recent = computed(() => store.recentEntries(48))
         </div>
       </v-btn>
     </div>
+
+    <v-card v-if="activeChild" variant="outlined" class="mb-6 pa-2">
+      <v-card-text class="py-2">
+        <v-text-field
+          v-model.number="feedingReminderHours"
+          type="number"
+          min="0"
+          :label="t('feeding.reminderLabel')"
+          :hint="t('feeding.reminderHint')"
+          persistent-hint
+          variant="outlined"
+          density="comfortable"
+          hide-details="auto"
+        />
+      </v-card-text>
+    </v-card>
 
     <template v-if="recent.length">
       <div class="mb-2">

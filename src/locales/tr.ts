@@ -161,7 +161,7 @@ export default {
       medication: 'İlaç',
       feeding: 'Beslenme',
       growth: 'Büyüme',
-      report: 'Özet Rapor',
+      report: 'Doktora Göster',
       askAlfred: "Alfred'e Sor",
       dutyPharmacy: 'Nöbetçi Eczane',
       vaccinations: 'Aşılar',
@@ -503,6 +503,9 @@ export default {
       solid: 'Katı Gıda',
     },
     last48h: 'Son 48 Saat',
+    reminderLabel: 'Beslenme hatırlatıcısı (saat)',
+    reminderHint:
+      'Son emzirme/biberondan bu kadar saat sonra hatırlat. Boş bırakırsan kapalı olur.',
   },
   temperatureChart: {
     ariaLabel: 'Son 48 saat ateş grafiği',
@@ -673,6 +676,7 @@ export default {
     courseStartReady: '{name} kürüne başlama zamanı geldi.',
     courseEndReady: '{name} kürü sona erdi.',
     reminderReady: '{name} için ayarladığın hatırlatma zamanı geldi.',
+    feedingReminderReady: '{name} için beslenme zamanı geldi.',
     addedReading: '{who} {temp}° ölçüm ekledi',
     gaveMedication: '{who} {name} verdi',
     addedMedication: '{who} {name} ilacını ekledi',
