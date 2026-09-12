@@ -271,7 +271,7 @@ watch(
         </RouterLink>
       </v-app-bar-title>
       <template #append>
-        <v-menu location="bottom end">
+        <v-menu location="bottom end" :close-on-content-click="false">
           <template #activator="{ props: menuProps }">
             <v-badge
               :model-value="!!incomingItems.length"
@@ -289,7 +289,11 @@ watch(
             </v-badge>
           </template>
           <v-card min-width="280" max-width="360">
-            <v-list v-if="notificationHistoryItems.length" density="comfortable">
+            <v-list
+              v-if="notificationHistoryItems.length"
+              density="comfortable"
+              style="max-height: 320px; overflow-y: auto"
+            >
               <v-list-item v-for="item in notificationHistoryItems" :key="item.key" class="py-2">
                 <v-list-item-title
                   class="text-body-2"
