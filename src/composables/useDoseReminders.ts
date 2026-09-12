@@ -2,6 +2,7 @@ import { watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { t } from '@/i18n'
+import { showSystemNotification } from '@/lib/systemNotification'
 import { useNow } from './useNow'
 
 // Foreground-only reminder: notifies while this tab/PWA is open and in
@@ -49,11 +50,11 @@ function saveNotifiedFor() {
 // whatever makes a moment unique (the alarm's own timestamp, a day string,
 // the triggering dose's id), not by time, so this stays a pure "have I
 // already told them about *this*" check.
-function notifyOnce(key: string, body: string) {
+function notifyOnce(key: string, message: string) {
   if (notifiedFor.has(key)) return
   notifiedFor.add(key)
   saveNotifiedFor()
-  new Notification(t('common.appName'), { body, icon: '/icon-192.png', tag: key })
+  void showSystemNotification(message, '', key)
 }
 
 export function useDoseReminders() {
