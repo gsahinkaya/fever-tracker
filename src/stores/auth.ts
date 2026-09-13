@@ -103,8 +103,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function markOnboardingSeen() {
     if (!user.value || profile.value?.hasSeenOnboarding) return
-    await updateDoc(doc(db, 'users', user.value.uid), { hasSeenOnboarding: true })
+    // Flip the local flag first — the wizard's v-model reads it, so waiting
+    // on the Firestore round-trip before this makes "Atla"/"Anladım"
+    // feel unresponsive (a real, visible delay, not just a slow test) on a
+    // slow connection. The write below still persists it for other
+    // devices/a reinstall.
     if (profile.value) profile.value.hasSeenOnboarding = true
+    await updateDoc(doc(db, 'users', user.value.uid), { hasSeenOnboarding: true })
   }
 
   // Settings' "edit profile" — accounts created before `relation` existed

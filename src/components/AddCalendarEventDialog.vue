@@ -17,6 +17,7 @@ const repeat = ref<CalendarEvent['repeat']>(undefined)
 
 const repeatOptions = [
   { value: undefined, title: t('calendar.repeat.none') },
+  { value: 'daily' as const, title: t('calendar.repeat.daily') },
   { value: 'weekly' as const, title: t('calendar.repeat.weekly') },
   { value: 'monthly' as const, title: t('calendar.repeat.monthly') },
 ]

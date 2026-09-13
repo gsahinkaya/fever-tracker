@@ -1,6 +1,6 @@
 import { t } from '@/i18n'
 
-export type CalendarRepeat = 'weekly' | 'monthly'
+export type CalendarRepeat = 'daily' | 'weekly' | 'monthly'
 
 function toDateString(d: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0')
@@ -19,6 +19,10 @@ export function nextOccurrence(
   from: string,
 ): string {
   if (!repeat || anchorDate >= from) return anchorDate
+
+  // Every day on/after the anchor — `from` itself always qualifies (we only
+  // get here once anchorDate < from, per the guard above).
+  if (repeat === 'daily') return from
 
   const anchor = new Date(`${anchorDate}T00:00:00`)
   const target = new Date(`${from}T00:00:00`)

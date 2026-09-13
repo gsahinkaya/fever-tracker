@@ -168,6 +168,17 @@ export interface MedicationAlertEntry {
   createdByEmail?: string
 }
 
+// Same server-created-sentinel-doc trick as MedicationAlertEntry, so a
+// feeding reminder shows up in the bell/banner for every family member too —
+// written by api/check-feeding-reminders.ts, never by the client.
+export interface FeedingReminderEntry {
+  id: string
+  takenAt: number
+  childName: string
+  createdBy?: string
+  createdByEmail?: string
+}
+
 // A future-dated reminder (doctor appointment, a friend's birthday, any
 // other special day) — unlike every other entry type here, `date` looks
 // forward rather than logging something that already happened, and the

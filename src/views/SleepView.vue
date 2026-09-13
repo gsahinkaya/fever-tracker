@@ -7,7 +7,8 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { formatDuration, whoNameLabel } from '@/lib/describeActivity'
 import { useNow } from '@/composables/useNow'
 import { use48hToggle } from '@/composables/use48hToggle'
-import { shortDateTime as timeLabel } from '@/lib/dateFormat'
+import { shortDateTime as timeLabel, todayDateString } from '@/lib/dateFormat'
+import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
 
 const { t } = useI18n()
 const store = useSleepLogStore()
@@ -15,6 +16,33 @@ const familyMembersStore = useFamilyMembersStore()
 const now = useNow(30_000)
 
 const confirmDeleteTarget = ref<{ id: string; takenAt: number; endedAt?: number } | null>(null)
+
+const showStartDialog = ref(false)
+const showEndDialog = ref(false)
+const startDate = ref('')
+const startTime = ref('')
+const endDate = ref('')
+const endTime = ref('')
+
+function openStartDialog() {
+  startDate.value = todayDateString()
+  startTime.value = currentTimeString()
+  showStartDialog.value = true
+}
+function confirmStart() {
+  store.startSleep(resolveTakenAtOn(startDate.value, startTime.value))
+  showStartDialog.value = false
+}
+
+function openEndDialog() {
+  endDate.value = todayDateString()
+  endTime.value = currentTimeString()
+  showEndDialog.value = true
+}
+function confirmEnd() {
+  store.endSleep(resolveTakenAtOn(endDate.value, endTime.value))
+  showEndDialog.value = false
+}
 
 const { showAll, sorted: sortedAll } = use48hToggle(store)
 // The still-ongoing sleep session (no endedAt yet) is excluded from the
@@ -75,7 +103,7 @@ function confirmDelete() {
         {{ t('sleep.ongoingSince', { time: ongoingSince }) }}
       </div>
       <div class="text-body-2 text-medium-emphasis mb-3">{{ ongoingDuration }}</div>
-      <v-btn color="sleep" variant="flat" rounded="pill" @click="store.endSleep()">{{
+      <v-btn color="sleep" variant="flat" rounded="pill" @click="openEndDialog">{{
         t('sleep.stop')
       }}</v-btn>
     </v-card>
@@ -87,7 +115,7 @@ function confirmDelete() {
       variant="flat"
       rounded="lg"
       class="mb-6"
-      @click="store.startSleep()"
+      @click="openStartDialog"
     >
       <div class="d-flex align-center w-100">
         <v-icon icon="mdi-sleep" size="26" class="mr-3" />
@@ -141,5 +169,59 @@ function confirmDelete() {
       :body="deleteBody"
       @confirm="confirmDelete"
     />
+
+    <v-dialog v-model="showStartDialog" max-width="420">
+      <v-card>
+        <v-card-title class="text-h6">{{ t('sleep.startDialog.title') }}</v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="startDate"
+            type="date"
+            :label="t('sleep.startDialog.dateLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+          <v-text-field
+            v-model="startTime"
+            type="time"
+            :label="t('sleep.startDialog.timeLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="showStartDialog = false">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="sleep" variant="flat" @click="confirmStart">{{ t('common.save') }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="showEndDialog" max-width="420">
+      <v-card>
+        <v-card-title class="text-h6">{{ t('sleep.endDialog.title') }}</v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="endDate"
+            type="date"
+            :label="t('sleep.endDialog.dateLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+          <v-text-field
+            v-model="endTime"
+            type="time"
+            :label="t('sleep.endDialog.timeLabel')"
+            variant="outlined"
+            density="comfortable"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="showEndDialog = false">{{ t('common.cancel') }}</v-btn>
+          <v-btn color="sleep" variant="flat" @click="confirmEnd">{{ t('common.save') }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>

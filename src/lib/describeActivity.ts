@@ -4,6 +4,7 @@ import type {
   CalendarEvent,
   DiaperEntry,
   FeedingEntry,
+  FeedingReminderEntry,
   GrowthEntry,
   LogEntry,
   Medication,
@@ -149,4 +150,10 @@ export function describeMedicationAlert(entry: MedicationAlertEntry): string {
     return t('notifications.doseReady', { name: entry.medicationName })
   }
   return t('notifications.reminderReady', { name: entry.medicationName })
+}
+
+// No actor either (see describeMedicationAlert above) — a feeding interval
+// elapsing, not something a family member did.
+export function describeFeedingReminder(entry: FeedingReminderEntry): string {
+  return t('notifications.feedingReminderReady', { name: entry.childName })
 }

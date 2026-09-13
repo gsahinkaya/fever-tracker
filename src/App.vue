@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterView, useRoute } from 'vue-router'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
 import { useFamilyMembersStore } from '@/stores/familyMembers'
@@ -14,6 +14,7 @@ import { useSleepLogStore } from '@/stores/sleepLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
 import { useCalendarEventsStore } from '@/stores/calendarEvents'
 import { useMedicationAlertsStore } from '@/stores/medicationAlerts'
+import { useFeedingRemindersStore } from '@/stores/feedingReminders'
 import { useThemeStore } from '@/stores/theme'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
@@ -23,6 +24,7 @@ import {
   describeDiaper,
   describeEntry,
   describeFeeding,
+  describeFeedingReminder,
   describeGrowth,
   describeMedication,
   describeMedicationAlert,
@@ -33,6 +35,7 @@ import AlfredMark from '@/components/AlfredMark.vue'
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 const childrenStore = useChildrenStore()
 const familyMembersStore = useFamilyMembersStore()
@@ -45,6 +48,7 @@ const sleepLogStore = useSleepLogStore()
 const diaperLogStore = useDiaperLogStore()
 const calendarEventsStore = useCalendarEventsStore()
 const medicationAlertsStore = useMedicationAlertsStore()
+const feedingRemindersStore = useFeedingRemindersStore()
 useThemeStore()
 
 useEntryNotifications()
@@ -55,23 +59,26 @@ interface NotificationItem {
   key: string
   at: number
   text: string
+  route: string
 }
 
 // One declarative line per store instead of writing the same {key, at,
-// text} mapping out twice (once for the still-unread list, once for the
-// full history) — see incomingItems/notificationHistoryItems below, which
-// just flatMap+sort the two sides of this.
+// text, route} mapping out twice (once for the still-unread list, once for
+// the full history) — see incomingItems/notificationHistoryItems below,
+// which just flatMap+sort the two sides of this.
 function notificationSource<T extends { id: string }>(
   keyPrefix: string,
   incoming: T[],
   allRemote: T[],
   at: (item: T) => number,
   describe: (item: T) => string,
+  route: string,
 ): { incoming: NotificationItem[]; allRemote: NotificationItem[] } {
   const toItem = (item: T): NotificationItem => ({
     key: `${keyPrefix}-${item.id}`,
     at: at(item),
     text: describe(item),
+    route,
   })
   return { incoming: incoming.map(toItem), allRemote: allRemote.map(toItem) }
 }
@@ -83,6 +90,7 @@ const notificationSources = computed(() => [
     feverLogStore.allRemoteEntries,
     (entry) => entry.takenAt,
     describeEntry,
+    '/history',
   ),
   notificationSource(
     'medication',
@@ -90,6 +98,7 @@ const notificationSources = computed(() => [
     medicationsStore.allRemoteMedications,
     (medication) => medication.createdAt ?? 0,
     describeMedication,
+    '/medications',
   ),
   notificationSource(
     'feeding',
@@ -97,6 +106,7 @@ const notificationSources = computed(() => [
     feedingLogStore.allRemoteEntries,
     (entry) => entry.takenAt,
     describeFeeding,
+    '/feeding',
   ),
   notificationSource(
     'growth',
@@ -104,6 +114,7 @@ const notificationSources = computed(() => [
     growthLogStore.allRemoteEntries,
     (entry) => entry.takenAt,
     describeGrowth,
+    '/growth',
   ),
   notificationSource(
     'symptom',
@@ -111,6 +122,7 @@ const notificationSources = computed(() => [
     symptomLogStore.allRemoteEntries,
     (entry) => entry.takenAt,
     describeSymptom,
+    '/symptoms',
   ),
   notificationSource(
     'sleep',
@@ -118,6 +130,7 @@ const notificationSources = computed(() => [
     sleepLogStore.allRemoteEntries,
     (entry) => entry.takenAt,
     describeSleep,
+    '/sleep',
   ),
   notificationSource(
     'diaper',
@@ -125,6 +138,7 @@ const notificationSources = computed(() => [
     diaperLogStore.allRemoteEntries,
     (entry) => entry.takenAt,
     describeDiaper,
+    '/diaper',
   ),
   notificationSource(
     'calendar',
@@ -132,6 +146,7 @@ const notificationSources = computed(() => [
     calendarEventsStore.allRemoteEvents,
     (entry) => entry.createdAt ?? 0,
     describeCalendarEvent,
+    '/calendar',
   ),
   notificationSource(
     'alert',
@@ -139,6 +154,15 @@ const notificationSources = computed(() => [
     medicationAlertsStore.allRemoteEntries,
     (entry) => entry.takenAt,
     describeMedicationAlert,
+    '/medications',
+  ),
+  notificationSource(
+    'feeding-reminder',
+    feedingRemindersStore.incomingEntries,
+    feedingRemindersStore.allRemoteEntries,
+    (entry) => entry.takenAt,
+    describeFeedingReminder,
+    '/feeding',
   ),
 ])
 
@@ -160,6 +184,17 @@ const notificationHistoryItems = computed(() =>
     .sort((a, b) => b.at - a.at)
     .slice(0, NOTIFICATION_HISTORY_LIMIT),
 )
+
+// Which history items are still unread, purely for the bell list's bold/
+// colored styling — this doesn't affect what counts as "incoming" for the
+// badge/banner/acknowledge flow above, only how a row looks.
+const unreadKeys = computed(() => new Set(incomingItems.value.map((item) => item.key)))
+
+const bellMenuOpen = ref(false)
+function openNotification(item: NotificationItem) {
+  bellMenuOpen.value = false
+  router.push(item.route)
+}
 
 const incomingBannerText = computed(() => {
   const items = incomingItems.value
@@ -198,6 +233,7 @@ function acknowledgeIncoming() {
   diaperLogStore.acknowledgeIncoming()
   calendarEventsStore.acknowledgeIncoming()
   medicationAlertsStore.acknowledgeIncoming()
+  feedingRemindersStore.acknowledgeIncoming()
   bannerDismissed.value = false
 }
 
@@ -248,6 +284,7 @@ watch(
     diaperLogStore.watchChild(childId)
     calendarEventsStore.watchChild(childId)
     medicationAlertsStore.watchChild(childId)
+    feedingRemindersStore.watchChild(childId)
     if (childId && authStore.familyId) {
       localStorage.setItem(`ates-olcer:active-child:${authStore.familyId}`, childId)
     }
@@ -271,7 +308,7 @@ watch(
         </RouterLink>
       </v-app-bar-title>
       <template #append>
-        <v-menu location="bottom end" :close-on-content-click="false">
+        <v-menu v-model="bellMenuOpen" location="bottom end" :close-on-content-click="false">
           <template #activator="{ props: menuProps }">
             <v-badge
               :model-value="!!incomingItems.length"
@@ -294,9 +331,16 @@ watch(
               density="comfortable"
               style="max-height: 320px; overflow-y: auto"
             >
-              <v-list-item v-for="item in notificationHistoryItems" :key="item.key" class="py-2">
+              <v-list-item
+                v-for="item in notificationHistoryItems"
+                :key="item.key"
+                class="py-2"
+                style="cursor: pointer"
+                @click="openNotification(item)"
+              >
                 <v-list-item-title
                   class="text-body-2"
+                  :class="unreadKeys.has(item.key) ? 'text-primary font-weight-bold' : ''"
                   style="white-space: normal; overflow-wrap: break-word"
                   >{{ item.text }}</v-list-item-title
                 >
@@ -307,7 +351,7 @@ watch(
                     variant="text"
                     size="small"
                     :aria-label="t('notifications.deleteAria')"
-                    @click="dismissNotification(item.key)"
+                    @click.stop="dismissNotification(item.key)"
                   />
                 </template>
               </v-list-item>

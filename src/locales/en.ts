@@ -327,6 +327,16 @@ export default {
     deleteConfirmBody: 'Delete the {duration} · {time} entry?',
     ongoing: 'Sleeping',
     duration: 'Slept {duration}',
+    startDialog: {
+      title: 'Start Sleep',
+      dateLabel: 'Date',
+      timeLabel: 'Time',
+    },
+    endDialog: {
+      title: 'Woke Up, Stop',
+      dateLabel: 'Date',
+      timeLabel: 'Time',
+    },
   },
   diaper: {
     title: 'Diaper Change',
@@ -366,8 +376,10 @@ export default {
     reminderNote: "A reminder notification is sent one day before the event.",
     repeat: {
       none: 'No repeat',
+      daily: 'Daily',
       weekly: 'Weekly',
       monthly: 'Monthly',
+      dailyChip: 'Daily',
       weeklyChip: 'Weekly',
       monthlyChip: 'Monthly',
     },

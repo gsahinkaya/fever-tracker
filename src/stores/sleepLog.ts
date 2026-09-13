@@ -46,28 +46,28 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
   // keeps this self-healing if a write is ever interrupted.
   const activeSleep = computed(() => entries.value.find((e) => e.endedAt == null) ?? null)
 
-  async function startSleep() {
+  async function startSleep(takenAt?: Date) {
     const { familyId, childId } = requireContext()
     await addDoc(sleepCollection(familyId, childId), {
-      takenAt: Timestamp.now(),
+      takenAt: takenAt ? Timestamp.fromDate(takenAt) : Timestamp.now(),
       ...creatorFields(),
     })
     void notifyFamily(messageForSleepStart(currentWhoLabel()), 'entry-push')
   }
 
-  async function endSleep() {
+  async function endSleep(endedAt?: Date) {
     const { familyId, childId } = requireContext()
     const active = activeSleep.value
     if (!active) return
-    const endedAt = Date.now()
+    const endedAtMs = endedAt ? endedAt.getTime() : Date.now()
     await updateDoc(doc(sleepCollection(familyId, childId), active.id), {
-      endedAt: Timestamp.fromMillis(endedAt),
+      endedAt: Timestamp.fromMillis(endedAtMs),
     })
     // A separate, explicit push (not just relying on the Firestore write)
     // since useWatermarkedFeed's incoming list only reacts to newly-added
     // documents — this update wouldn't otherwise notify anyone.
     void notifyFamily(
-      messageForSleepEnd(currentWhoLabel(), Math.round((endedAt - active.takenAt) / 60_000)),
+      messageForSleepEnd(currentWhoLabel(), Math.round((endedAtMs - active.takenAt) / 60_000)),
       'entry-push',
     )
   }

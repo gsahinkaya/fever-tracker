@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
@@ -10,6 +11,8 @@ import { plainDate, mediumDateTime as dateTimeLabel } from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 const childrenStore = useChildrenStore()
 const feverLogStore = useFeverLogStore()
@@ -57,6 +60,17 @@ function openAdd() {
   reminderAt.value = ''
   showDialog.value = true
 }
+
+// Lets another screen (AddDoseDialog's "İlaç Ekle" button) land here with
+// the add dialog already open instead of making the parent navigate here
+// and then find/tap the button themselves. The query param is stripped
+// right after so a later manual reload of /medications doesn't reopen it.
+onMounted(() => {
+  if (route.query.add) {
+    openAdd()
+    router.replace({ path: route.path })
+  }
+})
 
 function openEdit(medication: Medication) {
   editingMedication.value = medication

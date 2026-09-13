@@ -329,6 +329,16 @@ export default {
     deleteConfirmBody: '{duration} · {time} kaydı silinsin mi?',
     ongoing: 'Uyuyor',
     duration: '{duration} uyudu',
+    startDialog: {
+      title: 'Uykuyu Başlat',
+      dateLabel: 'Tarih',
+      timeLabel: 'Saat',
+    },
+    endDialog: {
+      title: 'Uyandı, Bitir',
+      dateLabel: 'Tarih',
+      timeLabel: 'Saat',
+    },
   },
   diaper: {
     title: 'Bez Değişimi',
@@ -368,8 +378,10 @@ export default {
     reminderNote: 'Etkinlik gününden bir gün önce hatırlatma bildirimi gönderilir.',
     repeat: {
       none: 'Tekrar yok',
+      daily: 'Her gün',
       weekly: 'Her hafta',
       monthly: 'Her ay',
+      dailyChip: 'Günlük',
       weeklyChip: 'Haftalık',
       monthlyChip: 'Aylık',
     },

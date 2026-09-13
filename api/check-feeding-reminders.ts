@@ -112,6 +112,34 @@ async function patchField(
   return res.ok
 }
 
+// Creates a feedingReminders doc so this same moment also shows up in the
+// in-app bell/banner (App.vue via stores/feedingReminders.ts) — a field
+// patch on the child doc (patchField above) doesn't trigger
+// useWatermarkedFeed's "added" listener the bell relies on, only a genuinely
+// new document does. `createdBy` is a sentinel, never a real family
+// member's uid — see MedicationAlertEntry's comment in types/health.ts for
+// why that's exactly what makes it show as "incoming" for every member.
+async function createFeedingReminderAlert(
+  accessToken: string,
+  projectId: string,
+  familyId: string,
+  childId: string,
+  takenAt: number,
+  childName: string,
+): Promise<void> {
+  await fetch(`${baseUrl(projectId)}/families/${familyId}/children/${childId}/feedingReminders`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fields: {
+        takenAt: { integerValue: String(takenAt) },
+        childName: { stringValue: childName },
+        createdBy: { stringValue: 'alfred-system' },
+      },
+    }),
+  })
+}
+
 async function sendPush(
   accessToken: string,
   projectId: string,
@@ -215,6 +243,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // handled (or will handle) this moment.
         if (!claimed) continue
 
+        // Unconditional (not gated on token lookup below) so a family
+        // member with the app open right now sees it even if push delivery
+        // had nothing to reach — same reasoning as
+        // check-medication-courses.ts's pushAndMark.
+        const alertPromise = createFeedingReminderAlert(
+          accessToken,
+          projectId,
+          familyId,
+          childId,
+          dueAt,
+          childName,
+        )
+
         const tokenLists = await Promise.all(
           memberUids.map((uid) => listDocuments(accessToken, projectId, `users/${uid}/deviceTokens`)),
         )
@@ -223,6 +264,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const results = await Promise.allSettled(
           tokens.map((token) => sendPush(accessToken, projectId, token, message)),
         )
+        await alertPromise
         notificationsSent += results.filter((r) => r.status === 'fulfilled' && r.value).length
       }
     }

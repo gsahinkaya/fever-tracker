@@ -120,5 +120,11 @@ service cloud.firestore {
     match /families/{familyId}/children/{childId}/medicationAlerts/{alertId} {
       allow read, write: if isMember(familyId);
     }
+
+    // Same as medicationAlerts above, written by
+    // api/check-feeding-reminders.ts.
+    match /families/{familyId}/children/{childId}/feedingReminders/{reminderId} {
+      allow read, write: if isMember(familyId);
+    }
   }
 }
