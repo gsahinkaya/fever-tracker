@@ -48,7 +48,12 @@ export const useGrowthLogStore = defineStore('growthLog', () => {
       ...creatorFields(),
     }
     const ref = await addDoc(growthCollection(familyId, childId), payload)
-    void notifyFamily(messageForGrowth(currentWhoLabel(), heightCm, weightKg), `growth-${ref.id}`)
+    void notifyFamily(
+      messageForGrowth(currentWhoLabel(), heightCm, weightKg),
+      `growth-${ref.id}`,
+      undefined,
+      '/growth',
+    )
   }
 
   // Called from the child profile form (both creating a new child and

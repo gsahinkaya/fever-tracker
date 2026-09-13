@@ -122,6 +122,7 @@ async function sendPush(
   title: string,
   body: string,
   tag: string,
+  link: string,
 ): Promise<boolean> {
   const res = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
     method: 'POST',
@@ -141,7 +142,7 @@ async function sendPush(
       message: {
         token,
         ...(tag === 'emergency-alert' ? { webpush: { headers: { TTL: '900' } } } : {}),
-        data: { title, body, tag, link: '/' },
+        data: { title, body, tag, link },
       },
     }),
   })
@@ -179,7 +180,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const { familyId, title, body, tag } = (req.body ?? {}) as Record<string, unknown>
+  const { familyId, title, body, tag, link } = (req.body ?? {}) as Record<string, unknown>
   if (typeof familyId !== 'string' || typeof title !== 'string' || typeof body !== 'string') {
     res.status(400).json({ error: 'Eksik parametre.' })
     return
@@ -206,7 +207,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const results = await Promise.allSettled(
       tokens.map((token) =>
-        sendPush(accessToken, projectId, token, title, body, typeof tag === 'string' ? tag : ''),
+        sendPush(
+          accessToken,
+          projectId,
+          token,
+          title,
+          body,
+          typeof tag === 'string' ? tag : '',
+          typeof link === 'string' ? link : '/',
+        ),
       ),
     )
     const sent = results.filter((r) => r.status === 'fulfilled' && r.value).length

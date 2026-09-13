@@ -44,7 +44,7 @@ export default {
       },
       {
         title: 'Beslenme',
-        body: 'Emzirme, biberon ve katı gıda girişlerini bu ekrandan kaydedebilirsin.',
+        body: 'Emzirme, biberon ve katı gıda girişlerini bu ekrandan kaydedebilirsin. İstersen bir hatırlatma aralığı ayarlayabilirsin — son emzirme/biberondan bu kadar saat geçince Alfred sana haber verir.',
       },
       {
         title: 'Bez Değişimi',
@@ -63,7 +63,7 @@ export default {
         body: 'Boy, kilo ve baş çevresi ölçümlerini kaydet; Dünya Sağlık Örgütü (DSÖ) büyüme eğrileriyle karşılaştırarak çocuğunun kendi yaş ve cinsiyetindeki yerini (persentilini) gör.',
       },
       {
-        title: 'Özet Rapor',
+        title: 'Doktora Göster',
         body: 'Ateş, ilaç, beslenme, büyüme ve aşı bilgilerini içeren bir özeti tek dokunuşla PDF olarak indirip doktorla paylaşabilirsin.',
       },
       {
@@ -88,7 +88,7 @@ export default {
       },
       {
         title: 'Bildirimler',
-        body: 'Eşin ya da aileden biri bir kayıt eklediğinde sağ üstteki zil ikonunda bunu görürsün, kimse birbirinden habersiz kalmaz.',
+        body: 'Eşin ya da aileden biri bir kayıt eklediğinde sağ üstteki zil ikonunda bunu görürsün, kimse birbirinden habersiz kalmaz. Zile dokunduğunda geçmiş bildirimleri de görebilir, istemediğini tek tek silebilir ya da bir bildirime dokunup ilgili ekrana gidebilirsin.',
       },
       {
         title: 'Aile Üyesi Davet Et',

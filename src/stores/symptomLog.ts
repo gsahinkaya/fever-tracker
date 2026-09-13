@@ -43,7 +43,7 @@ export const useSymptomLogStore = defineStore('symptomLog', () => {
       ...creatorFields(),
     }
     await addDoc(symptomsCollection(familyId, childId), payload)
-    void notifyFamily(messageForSymptom(currentWhoLabel(), type), 'entry-push')
+    void notifyFamily(messageForSymptom(currentWhoLabel(), type), 'entry-push', undefined, '/symptoms')
   }
 
   return {

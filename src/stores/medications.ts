@@ -47,6 +47,8 @@ export const useMedicationsStore = defineStore('medications', () => {
     void notifyFamily(
       messageForMedicationAdded(currentWhoLabel(), data.name),
       `medication-${ref.id}`,
+      undefined,
+      '/medications',
     )
     return ref.id
   }

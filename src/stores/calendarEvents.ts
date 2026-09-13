@@ -60,7 +60,7 @@ export const useCalendarEventsStore = defineStore('calendarEvents', () => {
       ...creatorFields(),
     }
     await addDoc(calendarEventsCollection(familyId, childId), payload)
-    void notifyFamily(messageForCalendarEvent(currentWhoLabel(), title), 'entry-push')
+    void notifyFamily(messageForCalendarEvent(currentWhoLabel(), title), 'entry-push', undefined, '/calendar')
   }
 
   return {

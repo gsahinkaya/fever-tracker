@@ -15,9 +15,22 @@ import { useAuthStore } from '@/stores/auth'
 // "Alfred" title only duplicates what the notification's own icon already
 // says. `title` stays available for callers (e.g. the emergency alert) that
 // have a genuinely distinct heading and want both lines populated.
+//
+// `link` is where firebase-messaging-sw.js's notificationclick handler
+// sends the parent when they tap this on a lock screen/notification tray —
+// matches the route App.vue's bell uses for the same kind of entry
+// (notificationSources), so tapping the same activity notification lands
+// on the same screen whether the app was open or closed. Defaults to home
+// for anything that doesn't have a more specific screen (or wasn't updated
+// to pass one).
 // Best-effort: a failure here should never block or surface an error for the
 // write that already succeeded.
-export async function notifyFamily(message: string, tag: string, title?: string): Promise<void> {
+export async function notifyFamily(
+  message: string,
+  tag: string,
+  title?: string,
+  link?: string,
+): Promise<void> {
   const authStore = useAuthStore()
   const familyId = authStore.familyId
   if (!familyId) return
@@ -33,6 +46,7 @@ export async function notifyFamily(message: string, tag: string, title?: string)
         title: title ?? message,
         body: title ? message : '',
         tag,
+        link: link ?? '/',
       }),
     })
   } catch (err) {

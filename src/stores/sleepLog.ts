@@ -52,7 +52,7 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
       takenAt: takenAt ? Timestamp.fromDate(takenAt) : Timestamp.now(),
       ...creatorFields(),
     })
-    void notifyFamily(messageForSleepStart(currentWhoLabel()), 'entry-push')
+    void notifyFamily(messageForSleepStart(currentWhoLabel()), 'entry-push', undefined, '/sleep')
   }
 
   async function endSleep(endedAt?: Date) {
@@ -69,6 +69,8 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
     void notifyFamily(
       messageForSleepEnd(currentWhoLabel(), Math.round((endedAtMs - active.takenAt) / 60_000)),
       'entry-push',
+      undefined,
+      '/sleep',
     )
   }
 

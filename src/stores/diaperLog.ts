@@ -43,7 +43,7 @@ export const useDiaperLogStore = defineStore('diaperLog', () => {
       ...creatorFields(),
     }
     await addDoc(diapersCollection(familyId, childId), payload)
-    void notifyFamily(messageForDiaper(currentWhoLabel(), type), 'entry-push')
+    void notifyFamily(messageForDiaper(currentWhoLabel(), type), 'entry-push', undefined, '/diaper')
   }
 
   return {

@@ -44,7 +44,12 @@ export const useFeverLogStore = defineStore('feverLog', () => {
       ...creatorFields(),
     }
     const ref = await addDoc(entriesCollection(familyId, childId), payload)
-    void notifyFamily(messageForReading(currentWhoLabel(), temperature), `entry-${ref.id}`)
+    void notifyFamily(
+      messageForReading(currentWhoLabel(), temperature),
+      `entry-${ref.id}`,
+      undefined,
+      '/history',
+    )
   }
 
   async function addDose(medicationId: string, medicationName: string, takenAt?: Date) {
@@ -57,7 +62,12 @@ export const useFeverLogStore = defineStore('feverLog', () => {
       ...creatorFields(),
     }
     const ref = await addDoc(entriesCollection(familyId, childId), payload)
-    void notifyFamily(messageForDose(currentWhoLabel(), medicationName), `entry-${ref.id}`)
+    void notifyFamily(
+      messageForDose(currentWhoLabel(), medicationName),
+      `entry-${ref.id}`,
+      undefined,
+      '/history',
+    )
   }
 
   function lastDose(medicationId: string): DoseEntry | undefined {

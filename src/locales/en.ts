@@ -42,7 +42,7 @@ export default {
       },
       {
         title: 'Feeding',
-        body: 'Log breastfeeding, bottle and solid food entries from this screen.',
+        body: 'Log breastfeeding, bottle and solid food entries from this screen. You can also set a reminder interval — Alfred lets you know once that many hours have passed since the last breastfeeding/bottle.',
       },
       {
         title: 'Diaper Changes',
@@ -61,7 +61,7 @@ export default {
         body: 'Log height, weight and head circumference; compare against World Health Organization (WHO) growth curves to see where your child stands for their age and sex (percentile).',
       },
       {
-        title: 'Summary Report',
+        title: 'Show to Doctor',
         body: 'Download a one-tap PDF summary of fever, medication, feeding, growth and vaccination info to share with the doctor.',
       },
       {
@@ -86,7 +86,7 @@ export default {
       },
       {
         title: 'Notifications',
-        body: 'When your partner or another family member logs something, you\'ll see it in the bell icon at the top right — no one is left out of the loop.',
+        body: 'When your partner or another family member logs something, you\'ll see it in the bell icon at the top right — no one is left out of the loop. Tap the bell to see past notifications too, delete ones you don\'t need, or tap one to jump straight to that screen.',
       },
       {
         title: 'Invite a Family Member',
