@@ -132,9 +132,15 @@ function confirm() {
         />
       </v-card-text>
       <v-card-actions>
-        <v-btn variant="text" size="small" to="/medications?add=1" @click="model = false">{{
-          t('dialogs.addDose.addMedButton')
-        }}</v-btn>
+        <v-btn
+          variant="tonal"
+          color="primary"
+          size="small"
+          to="/medications?add=1"
+          @click="model = false"
+        >
+          {{ t('dialogs.addDose.addMedButton') }}
+        </v-btn>
         <v-spacer />
         <v-btn variant="text" @click="model = false">{{ t('common.cancel') }}</v-btn>
         <v-btn
