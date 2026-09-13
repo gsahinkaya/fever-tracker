@@ -132,13 +132,7 @@ function confirm() {
         />
       </v-card-text>
       <v-card-actions>
-        <v-btn
-          variant="tonal"
-          color="primary"
-          size="small"
-          to="/medications?add=1"
-          @click="model = false"
-        >
+        <v-btn variant="tonal" color="primary" to="/medications?add=1" @click="model = false">
           {{ t('dialogs.addDose.addMedButton') }}
         </v-btn>
         <v-spacer />
@@ -146,7 +140,6 @@ function confirm() {
         <v-btn
           :color="isTooEarly || courseWarning ? 'warning' : 'primary'"
           variant="flat"
-          size="large"
           @click="confirm"
         >
           {{ t('common.save') }}
