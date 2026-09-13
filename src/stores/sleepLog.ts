@@ -48,11 +48,11 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
 
   async function startSleep(takenAt?: Date) {
     const { familyId, childId } = requireContext()
-    await addDoc(sleepCollection(familyId, childId), {
+    const ref = await addDoc(sleepCollection(familyId, childId), {
       takenAt: takenAt ? Timestamp.fromDate(takenAt) : Timestamp.now(),
       ...creatorFields(),
     })
-    void notifyFamily(messageForSleepStart(currentWhoLabel()), 'entry-push', undefined, '/sleep')
+    void notifyFamily(messageForSleepStart(currentWhoLabel()), `sleep-${ref.id}`, undefined, '/sleep')
   }
 
   async function endSleep(endedAt?: Date) {
@@ -68,7 +68,7 @@ export const useSleepLogStore = defineStore('sleepLog', () => {
     // documents — this update wouldn't otherwise notify anyone.
     void notifyFamily(
       messageForSleepEnd(currentWhoLabel(), Math.round((endedAtMs - active.takenAt) / 60_000)),
-      'entry-push',
+      `sleep-end-${active.id}`,
       undefined,
       '/sleep',
     )

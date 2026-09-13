@@ -59,8 +59,13 @@ export const useCalendarEventsStore = defineStore('calendarEvents', () => {
       ...(repeat ? { repeat } : {}),
       ...creatorFields(),
     }
-    await addDoc(calendarEventsCollection(familyId, childId), payload)
-    void notifyFamily(messageForCalendarEvent(currentWhoLabel(), title), 'entry-push', undefined, '/calendar')
+    const ref = await addDoc(calendarEventsCollection(familyId, childId), payload)
+    void notifyFamily(
+      messageForCalendarEvent(currentWhoLabel(), title),
+      `calendar-${ref.id}`,
+      undefined,
+      '/calendar',
+    )
   }
 
   return {
