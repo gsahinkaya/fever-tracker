@@ -152,6 +152,7 @@ async function createMedicationAlert(
   takenAt: number,
   medicationName: string,
   kind: string,
+  childName: string,
 ): Promise<void> {
   await fetch(
     `${baseUrl(projectId)}/families/${familyId}/children/${childId}/medicationAlerts`,
@@ -163,6 +164,7 @@ async function createMedicationAlert(
           takenAt: { integerValue: String(takenAt) },
           medicationName: { stringValue: medicationName },
           kind: { stringValue: kind },
+          childName: { stringValue: childName },
           createdBy: { stringValue: 'alfred-system' },
         },
       }),
@@ -294,6 +296,7 @@ async function pushAndMark(
   documentUpdateTime: string | undefined,
   notifiedField: string,
   notifiedValue: FirestoreValue,
+  childName: string,
 ): Promise<{ sent: number; updateTime?: string }> {
   // Mark notified regardless of whether any device tokens existed —
   // otherwise a family with no registered devices yet would get this same
@@ -322,6 +325,7 @@ async function pushAndMark(
     dueAt,
     medName,
     kind,
+    childName,
   )
   const tokenLists = await Promise.all(
     memberUids.map((uid) => listDocuments(accessToken, projectId, `users/${uid}/deviceTokens`)),
@@ -450,6 +454,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               medUpdateTime,
               due.fieldNotified,
               { booleanValue: true },
+              childName,
             )
             notificationsSent += result.sent
             medUpdateTime = result.updateTime
@@ -498,6 +503,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             medUpdateTime,
             'nextDoseNotifiedFor',
             { stringValue: lastDoseId },
+            childName,
           )
           notificationsSent += nextDoseResult.sent
         }

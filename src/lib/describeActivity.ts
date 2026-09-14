@@ -138,18 +138,29 @@ export function describeSleep(entry: SleepEntry): string {
 
 // The only describeX here with no "who" — these are server-fired (a course
 // starting/ending or a one-time alarm becoming due), not something a family
-// member did, so there's no actor to name.
+// member did, so there's no actor to name. `childName` is missing on alerts
+// created before that field existed — falls back to the un-personalized
+// phrasing rather than interpolating an empty name into the sentence.
 export function describeMedicationAlert(entry: MedicationAlertEntry): string {
+  const name = entry.medicationName
   if (entry.kind === 'courseStart') {
-    return t('notifications.courseStartReady', { name: entry.medicationName })
+    return entry.childName
+      ? t('notifications.courseStartReady', { childName: entry.childName, name })
+      : t('notifications.courseStartReadyGeneric', { name })
   }
   if (entry.kind === 'courseEnd') {
-    return t('notifications.courseEndReady', { name: entry.medicationName })
+    return entry.childName
+      ? t('notifications.courseEndReady', { childName: entry.childName, name })
+      : t('notifications.courseEndReadyGeneric', { name })
   }
   if (entry.kind === 'nextDose') {
-    return t('notifications.doseReady', { name: entry.medicationName })
+    return entry.childName
+      ? t('notifications.doseReady', { childName: entry.childName, name })
+      : t('notifications.doseReadyGeneric', { name })
   }
-  return t('notifications.reminderReady', { name: entry.medicationName })
+  return entry.childName
+    ? t('notifications.reminderReady', { childName: entry.childName, name })
+    : t('notifications.reminderReadyGeneric', { name })
 }
 
 // No actor either (see describeMedicationAlert above) — a feeding interval

@@ -1,6 +1,7 @@
 import { watch } from 'vue'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
+import { useChildrenStore } from '@/stores/children'
 import { t } from '@/i18n'
 import { createNotifyOnceTracker } from '@/lib/notifyOnce'
 import { useNow } from './useNow'
@@ -15,6 +16,7 @@ const notifyOnce = createNotifyOnceTracker('ates-olcer:notified-doses')
 export function useDoseReminders() {
   const store = useFeverLogStore()
   const medicationsStore = useMedicationsStore()
+  const childrenStore = useChildrenStore()
   const now = useNow(15_000)
 
   async function requestPermission(): Promise<NotificationPermission | 'unsupported'> {
@@ -28,6 +30,9 @@ export function useDoseReminders() {
   watch(now, (current) => {
     if (!('Notification' in window) || Notification.permission !== 'granted') return
 
+    const childName = childrenStore.children.find((c) => c.id === store.activeChildId)?.name
+    if (!childName) return
+
     medicationsStore.medications.forEach((med) => {
       // A one-time alarm, independent of dose history/course dates — fires
       // exactly once (keyed by the alarm's own value, so editing it to a
@@ -35,7 +40,7 @@ export function useDoseReminders() {
       if (med.reminderAt && current >= med.reminderAt) {
         notifyOnce(
           `${med.id}:reminder:${med.reminderAt}`,
-          t('notifications.reminderReady', { name: med.name }),
+          t('notifications.reminderReady', { childName, name: med.name }),
         )
       }
 
@@ -54,7 +59,7 @@ export function useDoseReminders() {
           const dayKey = new Date(current).toISOString().slice(0, 10)
           notifyOnce(
             `${med.id}:course-start:${dayKey}`,
-            t('notifications.courseStartReady', { name: med.name }),
+            t('notifications.courseStartReady', { childName, name: med.name }),
           )
         }
         return
@@ -64,7 +69,10 @@ export function useDoseReminders() {
       if (!safeAt) return
 
       if (safeAt <= current) {
-        notifyOnce(`${med.id}:${last.id}`, t('notifications.doseReady', { name: med.name }))
+        notifyOnce(
+          `${med.id}:${last.id}`,
+          t('notifications.doseReady', { childName, name: med.name }),
+        )
       }
     })
   })

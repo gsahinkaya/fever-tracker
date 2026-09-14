@@ -164,6 +164,7 @@ export interface MedicationAlertEntry {
   takenAt: number
   medicationName: string
   kind: MedicationAlertKind
+  childName: string
   createdBy?: string
   createdByEmail?: string
 }
