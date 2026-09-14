@@ -98,7 +98,9 @@ async function sendPush(
     body: JSON.stringify({
       message: {
         token,
-        webpush: { headers: { TTL: '43200' } },
+        // Urgency:high — see notify-family.ts's sendPush for why this
+        // matters alongside TTL for time-sensitive delivery.
+        webpush: { headers: { TTL: '43200', Urgency: 'high' } },
         data: { title, body, tag: 'calendar-event-reminder', link: '/calendar' },
       },
     }),

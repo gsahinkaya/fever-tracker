@@ -213,7 +213,11 @@ async function sendPush(
     body: JSON.stringify({
       message: {
         token,
-        webpush: { headers: { TTL: '3600' } },
+        // Urgency:high nudges the platform (particularly iOS's APNs bridge)
+        // to treat this as time-sensitive instead of coalescing it with
+        // other queued background pushes — see notify-family.ts's sendPush
+        // for the full "batched delivery" symptom this is meant to avoid.
+        webpush: { headers: { TTL: '3600', Urgency: 'high' } },
         data: {
           title,
           body,

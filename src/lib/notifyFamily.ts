@@ -35,21 +35,39 @@ export async function notifyFamily(
   const familyId = authStore.familyId
   if (!familyId) return
 
+  let idToken: string | undefined
   try {
-    const idToken = await auth.currentUser?.getIdToken()
-    if (!idToken) return
-    await fetch('/api/notify-family', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
-      body: JSON.stringify({
-        familyId,
-        title: title ?? message,
-        body: title ? message : '',
-        tag,
-        link: link ?? '/',
-      }),
-    })
+    idToken = await auth.currentUser?.getIdToken()
   } catch (err) {
     console.error('notifyFamily failed', err)
+    return
+  }
+  if (!idToken) return
+  const payload = JSON.stringify({
+    familyId,
+    title: title ?? message,
+    body: title ? message : '',
+    tag,
+    link: link ?? '/',
+  })
+
+  // One retry after a transient failure (a flaky mobile connection at the
+  // exact moment of the write is common — this is often fired right after
+  // a parent hits "save" on spotty wifi/cellular). Safe to retry blindly:
+  // the receiving side dedupes on `tag`, so a first attempt that actually
+  // landed just gets silently replaced by an identical second one.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch('/api/notify-family', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
+        body: payload,
+      })
+      if (res.ok) return
+      console.error('notifyFamily failed', res.status, await res.text().catch(() => ''))
+    } catch (err) {
+      console.error('notifyFamily failed', err)
+    }
+    if (attempt === 0) await new Promise((resolve) => setTimeout(resolve, 1500))
   }
 }

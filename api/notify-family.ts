@@ -133,15 +133,22 @@ async function sendPush(
     // fires and shows a second one — the same push landing twice in the
     // tray. Keeping everything in `data` forces exactly one display path.
     //
-    // An emergency alert delivered late is worse than useless — it reads as
-    // current ("X just hit the emergency button") long after the situation
-    // has moved on — so it gets a short TTL rather than the long default,
-    // unlike the other activity pushes this endpoint sends (a fever
-    // reading/dose logged an hour ago is still true whenever it arrives).
+    // Every push here gets a TTL and Urgency:high — without them, FCM/the
+    // browser's push service (especially iOS's, going through Apple's APNs
+    // bridge) can treat this as low-priority background traffic and coalesce
+    // it with other queued pushes, delivering the whole batch together once
+    // the device wakes up — sometimes an hour or more later, which is
+    // exactly the "arrived late, all at once" behavior this was built to
+    // avoid. An emergency alert is the most time-sensitive of all (stale
+    // past a few minutes is actively misleading), so it keeps its own
+    // shorter TTL; every other activity push gets the same hour-long budget
+    // used for the medication/feeding reminders below.
     body: JSON.stringify({
       message: {
         token,
-        ...(tag === 'emergency-alert' ? { webpush: { headers: { TTL: '900' } } } : {}),
+        webpush: {
+          headers: { TTL: tag === 'emergency-alert' ? '900' : '3600', Urgency: 'high' },
+        },
         data: { title, body, tag, link },
       },
     }),

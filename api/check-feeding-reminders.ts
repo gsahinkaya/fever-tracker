@@ -157,7 +157,9 @@ async function sendPush(
     body: JSON.stringify({
       message: {
         token,
-        webpush: { headers: { TTL: '3600' } },
+        // Urgency:high — see notify-family.ts's sendPush for why this
+        // matters alongside TTL for time-sensitive delivery.
+        webpush: { headers: { TTL: '3600', Urgency: 'high' } },
         data: { title, body: '', tag: 'feeding-reminder', link: '/feeding' },
       },
     }),
