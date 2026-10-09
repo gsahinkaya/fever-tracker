@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { deleteField } from 'firebase/firestore'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
 import { useGrowthLogStore } from '@/stores/growthLog'
@@ -47,19 +48,34 @@ function openEdit(child: Child) {
 
 async function save() {
   if (!name.value.trim() || !authStore.familyId) return
-  const data = {
-    name: name.value.trim(),
-    ...(birthDate.value ? { birthDate: birthDate.value } : {}),
-    ...(gender.value ? { gender: gender.value } : {}),
-    ...(heightCm.value ? { heightCm: heightCm.value } : {}),
-    ...(weightKg.value ? { weightKg: weightKg.value } : {}),
-    ...(headCircumferenceCm.value ? { headCircumferenceCm: headCircumferenceCm.value } : {}),
-  }
-  const childId = editingChild.value
-    ? editingChild.value.id
-    : await childrenStore.addChild(authStore.familyId, data)
+
+  let childId: string
   if (editingChild.value) {
-    await childrenStore.updateChild(authStore.familyId, childId, data)
+    childId = editingChild.value.id
+    const updateData = {
+      name: name.value.trim(),
+      birthDate: birthDate.value ? birthDate.value : deleteField(),
+      gender: gender.value ?? deleteField(),
+      heightCm: heightCm.value && heightCm.value > 0 ? heightCm.value : deleteField(),
+      weightKg: weightKg.value && weightKg.value > 0 ? weightKg.value : deleteField(),
+      headCircumferenceCm:
+        headCircumferenceCm.value && headCircumferenceCm.value > 0
+          ? headCircumferenceCm.value
+          : deleteField(),
+    }
+    await childrenStore.updateChild(authStore.familyId, childId, updateData)
+  } else {
+    const addData: Omit<Child, 'id'> = {
+      name: name.value.trim(),
+      ...(birthDate.value ? { birthDate: birthDate.value } : {}),
+      ...(gender.value ? { gender: gender.value } : {}),
+      ...(heightCm.value && heightCm.value > 0 ? { heightCm: heightCm.value } : {}),
+      ...(weightKg.value && weightKg.value > 0 ? { weightKg: weightKg.value } : {}),
+      ...(headCircumferenceCm.value && headCircumferenceCm.value > 0
+        ? { headCircumferenceCm: headCircumferenceCm.value }
+        : {}),
+    }
+    childId = await childrenStore.addChild(authStore.familyId, addData)
   }
   // Keep Büyüme in sync with whatever height/weight/head circumference was
   // entered here — on first creation (no history yet) and on every later
@@ -162,6 +178,8 @@ async function confirmDelete() {
             :label="t('children.dialog.birthDateLabel')"
             variant="outlined"
             density="comfortable"
+            clearable
+            @click:clear="birthDate = ''"
           />
           <v-radio-group v-model="gender" density="comfortable" inline hide-details class="mb-2">
             <template #label>

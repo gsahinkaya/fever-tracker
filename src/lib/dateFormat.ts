@@ -38,12 +38,25 @@ export function plainDate(ts: number | string): string {
   return new Date(ts).toLocaleDateString(localeTag())
 }
 
-// Today as a YYYY-MM-DD string, computed from local date parts (not
-// toISOString, which is UTC and can land on the wrong day depending on the
-// viewer's timezone) — matches the value a native <input type="date">
-// produces, since it's used to default/compare against those fields.
-export function todayDateString(): string {
-  const d = new Date()
+// Formats a timestamp or Date into a local YYYY-MM-DD string for <input type="date">,
+// computed from local date parts (not toISOString, which is UTC and can shift
+// the day depending on the viewer's timezone).
+export function toDateInputString(dateOrTs: number | Date): string {
+  const d = typeof dateOrTs === 'number' ? new Date(dateOrTs) : dateOrTs
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
+// Formats a timestamp or Date into a local YYYY-MM-DDTHH:mm string for
+// <input type="datetime-local">, preserving the viewer's local time.
+export function toDatetimeLocalString(dateOrTs: number | Date): string {
+  const d = typeof dateOrTs === 'number' ? new Date(dateOrTs) : dateOrTs
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${toDateInputString(d)}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+// Today as a YYYY-MM-DD string, computed from local date parts (matches the value
+// a native <input type="date"> produces).
+export function todayDateString(): string {
+  return toDateInputString(new Date())
 }

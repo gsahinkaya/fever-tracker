@@ -76,6 +76,8 @@ function save() {
           persistent-hint
           variant="outlined"
           density="comfortable"
+          clearable
+          @click:clear="time = ''"
         />
         <v-text-field
           v-model="note"

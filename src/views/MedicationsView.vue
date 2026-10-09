@@ -8,8 +8,9 @@ import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import type { Medication } from '@/types/health'
-import { plainDate, mediumDateTime as dateTimeLabel } from '@/lib/dateFormat'
+import { plainDate, mediumDateTime as dateTimeLabel, toDateInputString, toDatetimeLocalString } from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import type { MedicationUpdate } from '@/stores/medications'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -38,14 +39,10 @@ const confirmDeleteTarget = ref<Medication | null>(null)
 
 const DEFAULT_SHELF_LIFE_DAYS = 90
 
-// <input type="datetime-local"> wants/gives "YYYY-MM-DDTHH:mm" in the
-// user's own local time (no timezone suffix) — new Date(...) on that string
-// parses it as local time too, unlike a date-only string which parses as
-// UTC midnight, so this round-trips correctly through Timestamp math.
-function toDatetimeLocal(ts: number): string {
-  const d = new Date(ts)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+function parseTimestamp(val: string | null | undefined): number | null {
+  if (!val) return null
+  const ts = new Date(val).getTime()
+  return Number.isNaN(ts) ? null : ts
 }
 
 function openAdd() {
@@ -78,14 +75,12 @@ function openEdit(medication: Medication) {
   name.value = medication.name
   minIntervalHours.value = medication.minIntervalHours
   note.value = medication.note ?? ''
-  openedAt.value = medication.openedAt
-    ? new Date(medication.openedAt).toISOString().slice(0, 10)
-    : ''
+  openedAt.value = medication.openedAt ? toDateInputString(medication.openedAt) : ''
   expiryDate.value = medication.expiryDate ?? ''
   shelfLifeDaysAfterOpening.value = medication.shelfLifeDaysAfterOpening ?? null
-  courseStartAt.value = medication.courseStartAt ? toDatetimeLocal(medication.courseStartAt) : ''
-  courseEndAt.value = medication.courseEndAt ? toDatetimeLocal(medication.courseEndAt) : ''
-  reminderAt.value = medication.reminderAt ? toDatetimeLocal(medication.reminderAt) : ''
+  courseStartAt.value = medication.courseStartAt ? toDatetimeLocalString(medication.courseStartAt) : ''
+  courseEndAt.value = medication.courseEndAt ? toDatetimeLocalString(medication.courseEndAt) : ''
+  reminderAt.value = medication.reminderAt ? toDatetimeLocalString(medication.reminderAt) : ''
   showDialog.value = true
 }
 
@@ -105,11 +100,8 @@ function dateFieldWithNotifiedReset(
   notifiedKey: NotifiedFieldKey,
   oldValue: number | undefined,
 ): Record<string, number | boolean | ReturnType<typeof deleteField>> {
-  if (!inputValue) {
-    return { [fieldKey]: deleteField(), [notifiedKey]: deleteField() }
-  }
-  const at = new Date(inputValue).getTime()
-  if (Number.isNaN(at)) {
+  const at = parseTimestamp(inputValue)
+  if (at === null) {
     return { [fieldKey]: deleteField(), [notifiedKey]: deleteField() }
   }
   return { [fieldKey]: at, ...(at !== oldValue ? { [notifiedKey]: false } : {}) }
@@ -119,21 +111,20 @@ async function save() {
   if (!name.value.trim() || !minIntervalHours.value || minIntervalHours.value <= 0) return
   if (!authStore.familyId || !feverLogStore.activeChildId) return
 
-  const openedTs = openedAt.value ? new Date(openedAt.value).getTime() : NaN
-  const hasValidOpenedTs = !Number.isNaN(openedTs)
+  const openedTs = parseTimestamp(openedAt.value)
+  const shelfLife =
+    shelfLifeDaysAfterOpening.value && shelfLifeDaysAfterOpening.value > 0
+      ? shelfLifeDaysAfterOpening.value
+      : null
 
   if (editingMedication.value) {
-    const updateData = {
+    const updateData: MedicationUpdate = {
       name: name.value.trim(),
       minIntervalHours: minIntervalHours.value,
-      ...(note.value.trim() ? { note: note.value.trim() } : { note: deleteField() }),
-      ...(hasValidOpenedTs ? { openedAt: openedTs } : { openedAt: deleteField() }),
-      ...(expiryDate.value?.trim()
-        ? { expiryDate: expiryDate.value.trim() }
-        : { expiryDate: deleteField() }),
-      ...(shelfLifeDaysAfterOpening.value && shelfLifeDaysAfterOpening.value > 0
-        ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value }
-        : { shelfLifeDaysAfterOpening: deleteField() }),
+      note: note.value.trim() || deleteField(),
+      openedAt: openedTs ?? deleteField(),
+      expiryDate: expiryDate.value?.trim() || deleteField(),
+      shelfLifeDaysAfterOpening: shelfLife ?? deleteField(),
       ...dateFieldWithNotifiedReset(
         courseStartAt.value,
         'courseStartAt',
@@ -161,24 +152,20 @@ async function save() {
       updateData,
     )
   } else {
+    const courseStartTs = parseTimestamp(courseStartAt.value)
+    const courseEndTs = parseTimestamp(courseEndAt.value)
+    const reminderTs = parseTimestamp(reminderAt.value)
+
     const addData: Omit<Medication, 'id'> = {
       name: name.value.trim(),
       minIntervalHours: minIntervalHours.value,
       ...(note.value.trim() ? { note: note.value.trim() } : {}),
-      ...(hasValidOpenedTs ? { openedAt: openedTs } : {}),
+      ...(openedTs !== null ? { openedAt: openedTs } : {}),
       ...(expiryDate.value?.trim() ? { expiryDate: expiryDate.value.trim() } : {}),
-      ...(shelfLifeDaysAfterOpening.value && shelfLifeDaysAfterOpening.value > 0
-        ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value }
-        : {}),
-      ...(courseStartAt.value && !Number.isNaN(new Date(courseStartAt.value).getTime())
-        ? { courseStartAt: new Date(courseStartAt.value).getTime() }
-        : {}),
-      ...(courseEndAt.value && !Number.isNaN(new Date(courseEndAt.value).getTime())
-        ? { courseEndAt: new Date(courseEndAt.value).getTime() }
-        : {}),
-      ...(reminderAt.value && !Number.isNaN(new Date(reminderAt.value).getTime())
-        ? { reminderAt: new Date(reminderAt.value).getTime() }
-        : {}),
+      ...(shelfLife !== null ? { shelfLifeDaysAfterOpening: shelfLife } : {}),
+      ...(courseStartTs !== null ? { courseStartAt: courseStartTs } : {}),
+      ...(courseEndTs !== null ? { courseEndAt: courseEndTs } : {}),
+      ...(reminderTs !== null ? { reminderAt: reminderTs } : {}),
     }
 
     await medicationsStore.addMedication(authStore.familyId, feverLogStore.activeChildId, addData)

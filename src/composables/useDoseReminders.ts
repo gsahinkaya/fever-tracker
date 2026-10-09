@@ -3,6 +3,7 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useChildrenStore } from '@/stores/children'
 import { t } from '@/i18n'
+import { toDateInputString } from '@/lib/dateFormat'
 import { createNotifyOnceTracker } from '@/lib/notifyOnce'
 import { useNow } from './useNow'
 
@@ -56,7 +57,7 @@ export function useDoseReminders() {
         // course start time is set, prompt once per day from that moment
         // onward so the very first dose isn't the one that gets forgotten.
         if (med.courseStartAt && current >= med.courseStartAt) {
-          const dayKey = new Date(current).toISOString().slice(0, 10)
+          const dayKey = toDateInputString(current)
           notifyOnce(
             `${med.id}:course-start:${dayKey}`,
             t('notifications.courseStartReady', { childName, name: med.name }),
