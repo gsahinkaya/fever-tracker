@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia'
-import { addDoc, collection, doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore'
+import { addDoc, collection, doc, updateDoc, deleteDoc, Timestamp, type FieldValue } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useAuthStore } from '@/stores/auth'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
 import { currentWhoLabel, messageForMedicationAdded } from '@/lib/describeActivity'
 import { notifyFamily } from '@/lib/notifyFamily'
 import type { Medication } from '@/types/health'
+
+export type MedicationUpdate = { [K in keyof Omit<Medication, 'id'>]?: Medication[K] | FieldValue }
 
 function medicationsCollection(familyId: string, childId: string) {
   return collection(db, 'families', familyId, 'children', childId, 'medications')
@@ -57,7 +59,7 @@ export const useMedicationsStore = defineStore('medications', () => {
     familyId: string,
     childId: string,
     medicationId: string,
-    data: Partial<Omit<Medication, 'id'>>,
+    data: MedicationUpdate,
   ) {
     await updateDoc(doc(medicationsCollection(familyId, childId), medicationId), data)
   }

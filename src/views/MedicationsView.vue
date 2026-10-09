@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import { deleteField } from 'firebase/firestore'
 import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
@@ -27,12 +28,12 @@ const editingMedication = ref<Medication | null>(null)
 const name = ref('')
 const minIntervalHours = ref<number | null>(null)
 const note = ref('')
-const openedAt = ref('')
-const expiryDate = ref('')
+const openedAt = ref<string | null>('')
+const expiryDate = ref<string | null>('')
 const shelfLifeDaysAfterOpening = ref<number | null>(null)
-const courseStartAt = ref('')
-const courseEndAt = ref('')
-const reminderAt = ref('')
+const courseStartAt = ref<string | null>('')
+const courseEndAt = ref<string | null>('')
+const reminderAt = ref<string | null>('')
 const confirmDeleteTarget = ref<Medication | null>(null)
 
 const DEFAULT_SHELF_LIFE_DAYS = 90
@@ -96,61 +97,91 @@ type NotifiedFieldKey = 'courseStartNotified' | 'courseEndNotified' | 'reminderN
 // changes it to a new value — otherwise editing an unrelated field (say
 // the note) while an old, already-fired date is still set would wrongly
 // reset a flag that hasn't changed, and the cron would re-notify for
-// nothing new.
+// nothing new. When editing and the field is cleared, both the date and
+// its notification flag are deleted from Firestore via deleteField().
 function dateFieldWithNotifiedReset(
-  inputValue: string,
+  inputValue: string | null | undefined,
   fieldKey: CourseFieldKey,
   notifiedKey: NotifiedFieldKey,
   oldValue: number | undefined,
-): Partial<Medication> {
-  if (!inputValue) return {}
+): Record<string, number | boolean | ReturnType<typeof deleteField>> {
+  if (!inputValue) {
+    return { [fieldKey]: deleteField(), [notifiedKey]: deleteField() }
+  }
   const at = new Date(inputValue).getTime()
-  // fieldKey always gets a timestamp and notifiedKey always gets `false` —
-  // Partial<Record<...>> can't express that per-key split, so this cast
-  // just tells TS what's already true by construction.
-  return { [fieldKey]: at, ...(at !== oldValue ? { [notifiedKey]: false } : {}) } as Partial<Medication>
+  if (Number.isNaN(at)) {
+    return { [fieldKey]: deleteField(), [notifiedKey]: deleteField() }
+  }
+  return { [fieldKey]: at, ...(at !== oldValue ? { [notifiedKey]: false } : {}) }
 }
 
 async function save() {
   if (!name.value.trim() || !minIntervalHours.value || minIntervalHours.value <= 0) return
   if (!authStore.familyId || !feverLogStore.activeChildId) return
 
-  const data = {
-    name: name.value.trim(),
-    minIntervalHours: minIntervalHours.value,
-    ...(note.value.trim() ? { note: note.value.trim() } : {}),
-    ...(openedAt.value ? { openedAt: new Date(openedAt.value).getTime() } : {}),
-    ...(expiryDate.value ? { expiryDate: expiryDate.value } : {}),
-    ...(shelfLifeDaysAfterOpening.value ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value } : {}),
-    ...dateFieldWithNotifiedReset(
-      courseStartAt.value,
-      'courseStartAt',
-      'courseStartNotified',
-      editingMedication.value?.courseStartAt,
-    ),
-    ...dateFieldWithNotifiedReset(
-      courseEndAt.value,
-      'courseEndAt',
-      'courseEndNotified',
-      editingMedication.value?.courseEndAt,
-    ),
-    ...dateFieldWithNotifiedReset(
-      reminderAt.value,
-      'reminderAt',
-      'reminderNotified',
-      editingMedication.value?.reminderAt,
-    ),
-  }
+  const openedTs = openedAt.value ? new Date(openedAt.value).getTime() : NaN
+  const hasValidOpenedTs = !Number.isNaN(openedTs)
 
   if (editingMedication.value) {
+    const updateData = {
+      name: name.value.trim(),
+      minIntervalHours: minIntervalHours.value,
+      ...(note.value.trim() ? { note: note.value.trim() } : { note: deleteField() }),
+      ...(hasValidOpenedTs ? { openedAt: openedTs } : { openedAt: deleteField() }),
+      ...(expiryDate.value?.trim()
+        ? { expiryDate: expiryDate.value.trim() }
+        : { expiryDate: deleteField() }),
+      ...(shelfLifeDaysAfterOpening.value && shelfLifeDaysAfterOpening.value > 0
+        ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value }
+        : { shelfLifeDaysAfterOpening: deleteField() }),
+      ...dateFieldWithNotifiedReset(
+        courseStartAt.value,
+        'courseStartAt',
+        'courseStartNotified',
+        editingMedication.value.courseStartAt,
+      ),
+      ...dateFieldWithNotifiedReset(
+        courseEndAt.value,
+        'courseEndAt',
+        'courseEndNotified',
+        editingMedication.value.courseEndAt,
+      ),
+      ...dateFieldWithNotifiedReset(
+        reminderAt.value,
+        'reminderAt',
+        'reminderNotified',
+        editingMedication.value.reminderAt,
+      ),
+    }
+
     await medicationsStore.updateMedication(
       authStore.familyId,
       feverLogStore.activeChildId,
       editingMedication.value.id,
-      data,
+      updateData,
     )
   } else {
-    await medicationsStore.addMedication(authStore.familyId, feverLogStore.activeChildId, data)
+    const addData: Omit<Medication, 'id'> = {
+      name: name.value.trim(),
+      minIntervalHours: minIntervalHours.value,
+      ...(note.value.trim() ? { note: note.value.trim() } : {}),
+      ...(hasValidOpenedTs ? { openedAt: openedTs } : {}),
+      ...(expiryDate.value?.trim() ? { expiryDate: expiryDate.value.trim() } : {}),
+      ...(shelfLifeDaysAfterOpening.value && shelfLifeDaysAfterOpening.value > 0
+        ? { shelfLifeDaysAfterOpening: shelfLifeDaysAfterOpening.value }
+        : {}),
+      ...(courseStartAt.value && !Number.isNaN(new Date(courseStartAt.value).getTime())
+        ? { courseStartAt: new Date(courseStartAt.value).getTime() }
+        : {}),
+      ...(courseEndAt.value && !Number.isNaN(new Date(courseEndAt.value).getTime())
+        ? { courseEndAt: new Date(courseEndAt.value).getTime() }
+        : {}),
+      ...(reminderAt.value && !Number.isNaN(new Date(reminderAt.value).getTime())
+        ? { reminderAt: new Date(reminderAt.value).getTime() }
+        : {}),
+    }
+
+    await medicationsStore.addMedication(authStore.familyId, feverLogStore.activeChildId, addData)
   }
   showDialog.value = false
 }
@@ -358,6 +389,8 @@ async function confirmDelete() {
             :label="t('medications.dialog.reminderLabel')"
             variant="outlined"
             density="comfortable"
+            clearable
+            @click:clear="reminderAt = ''"
           />
           <v-divider class="mb-4" />
           <p class="text-caption text-medium-emphasis mb-2">
@@ -369,6 +402,8 @@ async function confirmDelete() {
             :label="t('medications.dialog.openedAtLabel')"
             variant="outlined"
             density="comfortable"
+            clearable
+            @click:clear="openedAt = ''"
           />
           <v-text-field
             v-model="expiryDate"
@@ -376,6 +411,8 @@ async function confirmDelete() {
             :label="t('medications.dialog.expiryDateLabel')"
             variant="outlined"
             density="comfortable"
+            clearable
+            @click:clear="expiryDate = ''"
           />
           <v-text-field
             v-model.number="shelfLifeDaysAfterOpening"
@@ -384,6 +421,8 @@ async function confirmDelete() {
             :placeholder="String(DEFAULT_SHELF_LIFE_DAYS)"
             variant="outlined"
             density="comfortable"
+            clearable
+            @click:clear="shelfLifeDaysAfterOpening = null"
           />
           <v-divider class="mb-4" />
           <p class="text-caption text-medium-emphasis mb-2">
@@ -395,6 +434,8 @@ async function confirmDelete() {
             :label="t('medications.dialog.courseStartLabel')"
             variant="outlined"
             density="comfortable"
+            clearable
+            @click:clear="courseStartAt = ''"
           />
           <v-text-field
             v-model="courseEndAt"
@@ -402,6 +443,8 @@ async function confirmDelete() {
             :label="t('medications.dialog.courseEndLabel')"
             variant="outlined"
             density="comfortable"
+            clearable
+            @click:clear="courseEndAt = ''"
           />
         </v-card-text>
         <v-card-actions>
