@@ -230,6 +230,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const lastFeedingAt = new Date(lastFeeding.fields!.takenAt!.timestampValue!).getTime()
         const dueAt = lastFeedingAt + intervalHours * 60 * 60 * 1000
         if (dueAt > now) continue
+        // Stale feeding reminders older than 24h should not push
+        if (now - dueAt > 24 * 60 * 60 * 1000) continue
         if (child.fields?.feedingReminderNotifiedFor?.stringValue === lastFeedingId) continue
         if (!child.updateTime) continue
 

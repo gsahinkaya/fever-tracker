@@ -36,7 +36,7 @@ export function useFeedingReminders() {
     if (!last) return
 
     const dueAt = last.takenAt + intervalHours * 60 * 60 * 1000
-    if (dueAt > current) return
+    if (dueAt > current || current - dueAt > 24 * 60 * 60 * 1000) return
 
     notifyOnce(
       `feeding:${childId}:${last.id}`,

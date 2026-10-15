@@ -22,7 +22,7 @@ import {
 } from '@/data/whoGrowthStandards'
 import { percentileForMeasurement } from '@/lib/growthPercentile'
 import { VACCINATION_SCHEDULE } from '@/data/vaccinationSchedule'
-import { localeTag, plainDate, shortDateTime as timeLabel } from '@/lib/dateFormat'
+import { localeTag, plainDate, shortDateTime as timeLabel, todayDateString } from '@/lib/dateFormat'
 import type { FeverReading, FeedingEntry, SymptomEntry, DiaperEntry } from '@/types/health'
 import TemperatureChart from '@/components/chart/TemperatureChart.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
@@ -220,7 +220,7 @@ async function createPdf() {
       heightLeft -= pageHeight - margin * 2
     }
 
-    const datePart = new Date().toISOString().slice(0, 10)
+    const datePart = todayDateString()
     const namePart = activeChildName.value ? `-${activeChildName.value}` : ''
     pdf.save(`alfred-ozet-raporu${namePart}-${datePart}.pdf`)
   } finally {
