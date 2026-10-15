@@ -22,10 +22,12 @@ export const useMedicationAlertsStore = defineStore('medicationAlerts', () => {
     lastRemote: lastRemoteEntry,
     watchChild,
     acknowledgeIncoming,
+    removeEntry,
   } = useWatermarkedFeed<MedicationAlertEntry>({
     storageKeyPrefix: 'ates-olcer:last-seen-medication-alerts',
     buildQuery: (familyId, childId) =>
       query(medicationAlertsCollection(familyId, childId), orderBy('takenAt', 'desc')),
+    collection: (familyId, childId) => medicationAlertsCollection(familyId, childId),
     // Written by the server as a plain millisecond number (Firestore's
     // integerValue over REST — see check-medication-courses.ts), the same
     // way courseStartAt/courseEndAt/reminderAt are, not a Timestamp — so
@@ -33,6 +35,18 @@ export const useMedicationAlertsStore = defineStore('medicationAlerts', () => {
     mapDoc: (id, data) => ({ ...data, id, takenAt: data.takenAt as number }) as MedicationAlertEntry,
     sortKey: (entry) => entry.takenAt,
   })
+
+  async function removeAlertsForMedication(medicationName: string, kind?: string) {
+    if (!activeChildId.value) return
+    const toDelete = entries.value.filter(
+      (entry) =>
+        entry.medicationName === medicationName &&
+        (!kind || entry.kind === kind),
+    )
+    for (const entry of toDelete) {
+      await removeEntry(entry.id)
+    }
+  }
 
   return {
     entries,
@@ -42,5 +56,7 @@ export const useMedicationAlertsStore = defineStore('medicationAlerts', () => {
     lastRemoteEntry,
     watchChild,
     acknowledgeIncoming,
+    removeEntry,
+    removeAlertsForMedication,
   }
 })

@@ -38,7 +38,12 @@ export function useDoseReminders() {
       // A one-time alarm, independent of dose history/course dates — fires
       // exactly once (keyed by the alarm's own value, so editing it to a
       // new time naturally re-arms without needing any reset elsewhere).
-      if (med.reminderAt && current >= med.reminderAt) {
+      // Older than 24h is ignored to prevent stale popups on reconnect/storage reset.
+      if (
+        med.reminderAt &&
+        current >= med.reminderAt &&
+        current - med.reminderAt <= 24 * 60 * 60 * 1000
+      ) {
         notifyOnce(
           `${med.id}:reminder:${med.reminderAt}`,
           t('notifications.reminderReady', { childName, name: med.name }),
@@ -69,7 +74,7 @@ export function useDoseReminders() {
       const safeAt = store.nextSafeDoseAt(med.id, med.minIntervalHours)
       if (!safeAt) return
 
-      if (safeAt <= current) {
+      if (safeAt <= current && current - safeAt <= 24 * 60 * 60 * 1000) {
         notifyOnce(
           `${med.id}:${last.id}`,
           t('notifications.doseReady', { childName, name: med.name }),

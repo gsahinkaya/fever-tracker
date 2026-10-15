@@ -192,6 +192,7 @@ const unreadKeys = computed(() => new Set(incomingItems.value.map((item) => item
 
 const bellMenuOpen = ref(false)
 function openNotification(item: NotificationItem) {
+  dismissBanner()
   bellMenuOpen.value = false
   router.push(item.route)
 }
@@ -209,19 +210,29 @@ const incomingBannerText = computed(() => {
 // but dismissing one must not silently clear the other — otherwise closing
 // the banner (a one-tap reflex) would wipe the bell's "did I miss anything"
 // record too, defeating the point of having a persistent fallback. So the
-// banner's close button only hides *itself* (bannerDismissed); only the
-// bell's "Tümünü gördüm" actually acknowledges the underlying entries. A
-// fresh event un-dismisses the banner so it reappears for new activity.
-const bannerDismissed = ref(false)
-watch(
-  () => incomingItems.value.length,
-  (count, previousCount) => {
-    if (count > previousCount) bannerDismissed.value = false
-  },
-)
-const showBanner = computed(
-  () => !isAuthPage.value && !!incomingBannerText.value && !bannerDismissed.value,
-)
+// banner's close button hides the banner for the currently visible event
+// (persisted by event key so reloading the tab doesn't re-show the same
+// dismissed banner); only the bell's "Tümünü gördüm" actually acknowledges
+// the underlying entries. A fresh incoming event naturally has a new key,
+// so the banner will reappear for new activity.
+const BANNER_DISMISSED_KEY = 'ates-olcer:banner-dismissed-key'
+const dismissedBannerKey = ref(localStorage.getItem(BANNER_DISMISSED_KEY) ?? '')
+
+function dismissBanner() {
+  const items = incomingItems.value
+  const latestKey = items.length ? items[items.length - 1]!.key : ''
+  dismissedBannerKey.value = latestKey
+  try {
+    localStorage.setItem(BANNER_DISMISSED_KEY, latestKey)
+  } catch {}
+}
+
+const showBanner = computed(() => {
+  if (isAuthPage.value || !incomingBannerText.value) return false
+  const items = incomingItems.value
+  const latestKey = items.length ? items[items.length - 1]!.key : ''
+  return latestKey !== '' && latestKey !== dismissedBannerKey.value
+})
 
 function acknowledgeIncoming() {
   feverLogStore.acknowledgeIncoming()
@@ -234,7 +245,7 @@ function acknowledgeIncoming() {
   calendarEventsStore.acknowledgeIncoming()
   medicationAlertsStore.acknowledgeIncoming()
   feedingRemindersStore.acknowledgeIncoming()
-  bannerDismissed.value = false
+  dismissBanner()
 }
 
 // Bell icon in the app bar: a persistent, always-visible fallback in case a
@@ -414,7 +425,7 @@ watch(
           icon="mdi-bell-alert"
           closable
           class="mx-3 mt-2 no-print"
-          @click:close="bannerDismissed = true"
+          @click:close="dismissBanner"
         >
           {{ incomingBannerText }}
         </v-alert>

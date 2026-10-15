@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useChildrenStore } from '@/stores/children'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
+import { useMedicationAlertsStore } from '@/stores/medicationAlerts'
 import type { Medication } from '@/types/health'
 import { plainDate, mediumDateTime as dateTimeLabel, toDateInputString, toDatetimeLocalString } from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
@@ -19,6 +20,7 @@ const authStore = useAuthStore()
 const childrenStore = useChildrenStore()
 const feverLogStore = useFeverLogStore()
 const medicationsStore = useMedicationsStore()
+const medicationAlertsStore = useMedicationAlertsStore()
 
 const activeChild = computed(
   () => childrenStore.children.find((c) => c.id === feverLogStore.activeChildId) ?? null,
@@ -118,6 +120,10 @@ async function save() {
       : null
 
   if (editingMedication.value) {
+    const reminderTs = parseTimestamp(reminderAt.value)
+    const wasReminderCleared = !!editingMedication.value.reminderAt && reminderTs === null
+    const medName = editingMedication.value.name
+
     const updateData: MedicationUpdate = {
       name: name.value.trim(),
       minIntervalHours: minIntervalHours.value,
@@ -151,6 +157,10 @@ async function save() {
       editingMedication.value.id,
       updateData,
     )
+
+    if (wasReminderCleared) {
+      await medicationAlertsStore.removeAlertsForMedication(medName, 'reminder')
+    }
   } else {
     const courseStartTs = parseTimestamp(courseStartAt.value)
     const courseEndTs = parseTimestamp(courseEndAt.value)
@@ -262,11 +272,13 @@ const deleteBody = computed(() =>
 
 async function confirmDelete() {
   if (confirmDeleteTarget.value && authStore.familyId && feverLogStore.activeChildId) {
+    const targetName = confirmDeleteTarget.value.name
     await medicationsStore.removeMedication(
       authStore.familyId,
       feverLogStore.activeChildId,
       confirmDeleteTarget.value.id,
     )
+    await medicationAlertsStore.removeAlertsForMedication(targetName)
   }
   confirmDeleteTarget.value = null
 }

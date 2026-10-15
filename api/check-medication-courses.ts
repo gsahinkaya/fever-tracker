@@ -274,7 +274,7 @@ const REMINDER: DueCheck = {
   fieldTs: 'reminderAt',
   fieldNotified: 'reminderNotified',
   kind: 'reminder',
-  message: (childName, medName) => `${childName} için ${medName} zamanı geldi`,
+  message: (childName, medName) => `${childName} için ${medName} hatırlatması`,
 }
 
 // Claims this exact moment first (a conditional write, so at most one
@@ -490,6 +490,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
           const safeAt = lastDoseTakenAt + minIntervalHours * 60 * 60 * 1000
           if (safeAt > now) continue
+          // A dose given days or weeks ago shouldn't fire a stale next-dose push
+          if (now - safeAt > 24 * 60 * 60 * 1000) continue
           if (med.fields?.nextDoseNotifiedFor?.stringValue === lastDoseId) continue
 
           const nextDoseResult = await pushAndMark(
@@ -502,7 +504,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             medName,
             docId(med),
             'nextDose',
-            `${childName} için ${medName} zamanı geldi`,
+            `${childName} için ${medName} doz zamanı geldi`,
             med.name,
             medUpdateTime,
             'nextDoseNotifiedFor',
