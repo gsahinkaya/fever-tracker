@@ -116,10 +116,22 @@ const router = createRouter({
       name: 'register',
       component: () => import('../views/RegisterView.vue'),
     },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import('../views/PrivacyView.vue'),
+    },
+    {
+      path: '/gizlilik',
+      redirect: '/privacy',
+    },
   ],
 })
 
-const PUBLIC_ROUTES = new Set(['/login', '/register'])
+// Routes accessible without authentication
+const PUBLIC_ROUTES = new Set(['/login', '/register', '/privacy', '/gizlilik'])
+// Routes intended ONLY for unauthenticated guests (redirects to '/' if logged in)
+const GUEST_ONLY_ROUTES = new Set(['/login', '/register'])
 
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
@@ -141,7 +153,7 @@ router.beforeEach(async (to) => {
   if (!authStore.isAuthenticated && !PUBLIC_ROUTES.has(to.path)) {
     return '/login'
   }
-  if (authStore.isAuthenticated && PUBLIC_ROUTES.has(to.path)) {
+  if (authStore.isAuthenticated && GUEST_ONLY_ROUTES.has(to.path)) {
     return '/'
   }
 })

@@ -153,6 +153,13 @@ async function submit() {
       <v-btn type="submit" block size="large" color="primary" :loading="loading" class="mt-2">{{
         t('auth.register.submit')
       }}</v-btn>
+
+      <p class="text-caption text-medium-emphasis text-center mt-3 mb-0">
+        {{ t('auth.register.privacyConsent') }}
+        <router-link to="/privacy" class="text-primary font-weight-bold" style="text-decoration: none">
+          {{ t('settings.privacyPolicy') }}
+        </router-link>
+      </p>
     </v-form>
 
     <div class="text-center mt-6">

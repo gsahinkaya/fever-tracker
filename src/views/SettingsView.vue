@@ -117,6 +117,37 @@ async function logout() {
   await authStore.logout()
   router.push('/login')
 }
+
+const showDeleteAccountDialog = ref(false)
+const deleteAccountPassword = ref('')
+const deleteAccountLoading = ref(false)
+const deleteAccountError = ref('')
+
+function openDeleteAccount() {
+  deleteAccountPassword.value = ''
+  deleteAccountError.value = ''
+  showDeleteAccountDialog.value = true
+}
+
+async function confirmDeleteAccount() {
+  if (!deleteAccountPassword.value) return
+  deleteAccountLoading.value = true
+  deleteAccountError.value = ''
+  try {
+    await authStore.deleteAccount(deleteAccountPassword.value)
+    showDeleteAccountDialog.value = false
+    router.push('/login')
+  } catch (err: unknown) {
+    const error = err as { code?: string; message?: string }
+    if (error?.code === 'auth/wrong-password' || error?.code === 'auth/invalid-credential') {
+      deleteAccountError.value = t('settings.deleteAccountError')
+    } else {
+      deleteAccountError.value = error?.message || t('settings.deleteAccountError')
+    }
+  } finally {
+    deleteAccountLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -196,10 +227,22 @@ async function logout() {
         </div>
         <div class="text-body-2 text-medium-emphasis">{{ authStore.profile?.email }}</div>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="flex-wrap">
         <v-btn variant="text" @click="openEditProfile">{{ t('settings.editProfile') }}</v-btn>
+        <v-btn variant="text" color="error" @click="openDeleteAccount">{{ t('settings.deleteAccount') }}</v-btn>
         <v-spacer />
         <v-btn variant="text" @click="logout">{{ t('settings.logout') }}</v-btn>
+      </v-card-actions>
+    </v-card>
+
+    <v-card variant="outlined" class="mb-6">
+      <v-card-title class="text-subtitle-1">{{ t('settings.privacyPolicy') }}</v-card-title>
+      <v-card-text class="text-body-2 text-medium-emphasis">
+        {{ t('settings.privacyPolicyDesc') }}
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn color="primary" variant="text" to="/privacy">{{ t('settings.manage') }}</v-btn>
       </v-card-actions>
     </v-card>
 
@@ -384,6 +427,58 @@ async function logout() {
           <v-btn color="error" variant="flat" @click="confirmEmergency">{{
             t('home.emergency.confirmAction')
           }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete account dialog (Apple App Store Guideline 5.1.1(v) Requirement) -->
+    <v-dialog v-model="showDeleteAccountDialog" max-width="420" persistent>
+      <v-card>
+        <v-card-title class="text-h6 text-error d-flex align-center">
+          <v-icon icon="mdi-alert-circle-outline" class="mr-2" color="error" />
+          {{ t('settings.deleteAccountConfirmTitle') }}
+        </v-card-title>
+        <v-card-text>
+          <p class="text-body-2 mb-4">
+            {{ t('settings.deleteAccountConfirmBody') }}
+          </p>
+          <v-text-field
+            v-model="deleteAccountPassword"
+            type="password"
+            :label="t('settings.deleteAccountPasswordLabel')"
+            variant="outlined"
+            density="comfortable"
+            autofocus
+            @keyup.enter="confirmDeleteAccount"
+          />
+          <v-alert
+            v-if="deleteAccountError"
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="mt-2"
+          >
+            {{ deleteAccountError }}
+          </v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            variant="text"
+            :disabled="deleteAccountLoading"
+            @click="showDeleteAccountDialog = false"
+          >
+            {{ t('common.cancel') }}
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="flat"
+            :loading="deleteAccountLoading"
+            :disabled="!deleteAccountPassword"
+            @click="confirmDeleteAccount"
+          >
+            {{ t('settings.deleteAccountConfirmButton') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

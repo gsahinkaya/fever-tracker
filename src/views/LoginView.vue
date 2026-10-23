@@ -70,5 +70,11 @@ async function submit() {
     <p class="text-body-2 text-medium-emphasis text-center mt-8">
       {{ t('auth.login.intro') }}
     </p>
+
+    <div class="text-center mt-4">
+      <v-btn variant="text" size="small" color="medium-emphasis" to="/privacy">
+        {{ t('settings.privacyPolicy') }}
+      </v-btn>
+    </div>
   </v-container>
 </template>

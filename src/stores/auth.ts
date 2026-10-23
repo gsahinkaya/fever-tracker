@@ -2,12 +2,25 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
+  EmailAuthProvider,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   type User,
 } from 'firebase/auth'
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import {
+  collection,
+  deleteDoc,
+  deleteField,
+  doc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import { auth, db } from '@/firebase'
 import type { UserProfile } from '@/types/family'
 import { t } from '@/i18n'
@@ -129,6 +142,92 @@ export const useAuthStore = defineStore('auth', () => {
     await firebaseSignOut(auth)
   }
 
+  // Apple & Google Store requirement: Users must be able to delete their account
+  // and all associated personal data from within the app.
+  async function deleteAccount(password: string) {
+    const currentUser = user.value
+    if (!currentUser || !currentUser.email) {
+      throw new Error(t('auth.login.error'))
+    }
+    const email = currentUser.email
+    const uid = currentUser.uid
+    const famId = profile.value?.familyId
+
+    // 1. Re-authenticate with password to satisfy Firebase Auth recent-login requirement
+    const credential = EmailAuthProvider.credential(email, password)
+    await reauthenticateWithCredential(currentUser, credential)
+
+    // 2. Remove user's registered device tokens
+    try {
+      const tokensRef = collection(db, 'users', uid, 'deviceTokens')
+      const tokensSnap = await getDocs(tokensRef)
+      for (const d of tokensSnap.docs) {
+        await deleteDoc(d.ref)
+      }
+    } catch (e) {
+      console.warn('Failed to delete device tokens during account deletion:', e)
+    }
+
+    // 3. Clean up family membership
+    if (famId) {
+      try {
+        const familyRef = doc(db, 'families', famId)
+        const famSnap = await getDoc(familyRef)
+        if (famSnap.exists()) {
+          const famData = famSnap.data()
+          const members = famData.members || {}
+          const otherMemberUids = Object.keys(members).filter((m) => m !== uid && members[m])
+
+          if (famData.ownerUid === uid) {
+            if (otherMemberUids.length === 0) {
+              // Sole member: delete the family document
+              await deleteDoc(familyRef)
+            } else {
+              // Pass ownership to first remaining member and remove self
+              const newOwnerUid = otherMemberUids[0]
+              await updateDoc(familyRef, {
+                ownerUid: newOwnerUid,
+                [`members.${uid}`]: deleteField(),
+              })
+            }
+          } else {
+            // Normal member: remove self from family
+            await updateDoc(familyRef, {
+              [`members.${uid}`]: deleteField(),
+            })
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to update family during account deletion:', e)
+      }
+    }
+
+    // 4. Delete user's profile document
+    try {
+      await deleteDoc(doc(db, 'users', uid))
+    } catch (e) {
+      console.warn('Failed to delete user profile document:', e)
+    }
+
+    // 5. Clean up local app cache & preferences
+    try {
+      const keysToRemove: string[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && (key.startsWith('ates-olcer:') || key.startsWith('alfred:'))) {
+          keysToRemove.push(key)
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k))
+    } catch {}
+
+    // 6. Delete Firebase Auth user
+    await deleteUser(currentUser)
+
+    user.value = null
+    profile.value = null
+  }
+
   return {
     user,
     profile,
@@ -138,6 +237,7 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     login,
     logout,
+    deleteAccount,
     markOnboardingSeen,
     updateProfile,
   }

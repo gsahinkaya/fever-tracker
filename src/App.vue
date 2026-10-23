@@ -53,7 +53,12 @@ useThemeStore()
 
 useEntryNotifications()
 
-const isAuthPage = computed(() => route.path === '/login' || route.path === '/register')
+const isAuthPage = computed(
+  () =>
+    route.path === '/login' ||
+    route.path === '/register' ||
+    (!authStore.isAuthenticated && (route.path === '/privacy' || route.path === '/gizlilik')),
+)
 
 interface NotificationItem {
   key: string
