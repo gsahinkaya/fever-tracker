@@ -6,6 +6,7 @@ import {
   EmailAuthProvider,
   onAuthStateChanged,
   reauthenticateWithCredential,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   type User,
@@ -112,6 +113,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function login(email: string, password: string) {
     await signInWithEmailAndPassword(auth, email, password)
+  }
+
+  async function resetPassword(email: string) {
+    await sendPasswordResetEmail(auth, email.trim())
   }
 
   async function markOnboardingSeen() {
@@ -236,6 +241,7 @@ export const useAuthStore = defineStore('auth', () => {
     familyId,
     register,
     login,
+    resetPassword,
     logout,
     deleteAccount,
     markOnboardingSeen,
