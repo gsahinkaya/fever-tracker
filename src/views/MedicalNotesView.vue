@@ -8,23 +8,27 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { use48hToggle } from '@/composables/use48hToggle'
 import { whoNameLabel } from '@/lib/describeActivity'
 import { shortDateTime as timeLabel } from '@/lib/dateFormat'
-import type { MedicalNoteCategory, MedicalNoteEntry } from '@/types/health'
+import { MEDICAL_NOTE_CATEGORY_ICONS } from '@/lib/medicalNotes'
+import type { MedicalNoteEntry } from '@/types/health'
 
 const { t } = useI18n()
 const store = useMedicalNotesStore()
 const familyMembersStore = useFamilyMembersStore()
 
 const showAddDialog = ref(false)
+const noteToEdit = ref<MedicalNoteEntry | null>(null)
 const confirmDeleteTarget = ref<MedicalNoteEntry | null>(null)
 
 const { showAll, sorted } = use48hToggle(store)
 
-const categoryIcons: Record<MedicalNoteCategory, string> = {
-  hospital: 'mdi-hospital-box-outline',
-  test: 'mdi-flask-outline',
-  medication: 'mdi-pill',
-  examination: 'mdi-doctor',
-  other: 'mdi-note-text-outline',
+function openAdd() {
+  noteToEdit.value = null
+  showAddDialog.value = true
+}
+
+function openEdit(entry: MedicalNoteEntry) {
+  noteToEdit.value = entry
+  showAddDialog.value = true
 }
 
 const deleteBody = computed(() =>
@@ -62,7 +66,7 @@ function confirmDelete() {
       variant="flat"
       rounded="lg"
       class="mb-6"
-      @click="showAddDialog = true"
+      @click="openAdd"
     >
       <div class="d-flex align-center w-100">
         <v-icon icon="mdi-notebook-edit-outline" size="26" class="mr-3" />
@@ -84,7 +88,7 @@ function confirmDelete() {
       <v-list-item v-for="entry in sorted" :key="entry.id" class="px-2">
         <template #prepend>
           <v-avatar color="note" variant="tonal">
-            <v-icon :icon="categoryIcons[entry.category] || 'mdi-note-text-outline'" />
+            <v-icon :icon="MEDICAL_NOTE_CATEGORY_ICONS[entry.category] || 'mdi-note-text-outline'" />
           </v-avatar>
         </template>
         <v-list-item-title class="font-weight-medium">
@@ -99,13 +103,22 @@ function confirmDelete() {
           {{ whoNameLabel(familyMembersStore.members, entry.createdBy, entry.createdByEmail) }}
         </v-list-item-subtitle>
         <template #append>
-          <v-btn
-            icon="mdi-delete-outline"
-            variant="text"
-            size="small"
-            :aria-label="t('medicalNotes.deleteAria')"
-            @click="confirmDeleteTarget = entry"
-          />
+          <div class="d-flex align-center">
+            <v-btn
+              icon="mdi-pencil-outline"
+              variant="text"
+              size="small"
+              :aria-label="t('medicalNotes.editAria')"
+              @click="openEdit(entry)"
+            />
+            <v-btn
+              icon="mdi-delete-outline"
+              variant="text"
+              size="small"
+              :aria-label="t('medicalNotes.deleteAria')"
+              @click="confirmDeleteTarget = entry"
+            />
+          </div>
         </template>
       </v-list-item>
     </v-list>
@@ -113,7 +126,7 @@ function confirmDelete() {
       {{ showAll ? t('medicalNotes.empty') : t('medicalNotes.emptyWindow') }}
     </div>
 
-    <AddMedicalNoteDialog v-model="showAddDialog" />
+    <AddMedicalNoteDialog v-model="showAddDialog" :note-to-edit="noteToEdit" />
 
     <ConfirmDialog
       :model-value="!!confirmDeleteTarget"

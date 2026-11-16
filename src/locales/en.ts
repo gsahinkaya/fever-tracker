@@ -343,10 +343,12 @@ export default {
     empty: 'No health notes logged yet.',
     emptyWindow: 'No health notes logged in the last 48 hours.',
     deleteAria: 'Delete note',
+    editAria: 'Edit note',
     deleteConfirmTitle: 'Delete Note',
     deleteConfirmBody: 'Are you sure you want to delete the note "{title}" from {time}?',
     dialog: {
       title: 'Add Health Note',
+      editTitle: 'Edit Health Note',
       categoryLabel: 'Category',
       titleLabel: 'Title (optional)',
       titlePlaceholder: 'E.g. Emergency Room, Flu Test',

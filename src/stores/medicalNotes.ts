@@ -1,5 +1,14 @@
 import { defineStore } from 'pinia'
-import { addDoc, collection, orderBy, query, Timestamp } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  deleteField,
+  doc,
+  orderBy,
+  query,
+  Timestamp,
+  updateDoc,
+} from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useWatermarkedFeed } from '@/composables/useWatermarkedFeed'
 import { currentWhoLabel, messageForMedicalNote } from '@/lib/describeActivity'
@@ -57,6 +66,22 @@ export const useMedicalNotesStore = defineStore('medicalNotes', () => {
     )
   }
 
+  async function updateNote(
+    id: string,
+    category: MedicalNoteCategory,
+    content: string,
+    title?: string,
+    takenAt?: Date,
+  ) {
+    const { familyId, childId } = requireContext()
+    await updateDoc(doc(notesCollection(familyId, childId), id), {
+      category,
+      content,
+      title: title ? title : deleteField(),
+      ...(takenAt ? { takenAt: Timestamp.fromDate(takenAt) } : {}),
+    })
+  }
+
   return {
     entries,
     activeChildId,
@@ -66,6 +91,7 @@ export const useMedicalNotesStore = defineStore('medicalNotes', () => {
     watchChild,
     acknowledgeIncoming,
     addNote,
+    updateNote,
     removeEntry,
     clearAllEntries,
     recentEntries,

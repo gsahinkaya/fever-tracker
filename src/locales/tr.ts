@@ -345,10 +345,12 @@ export default {
     empty: 'Henüz sağlık notu eklenmedi.',
     emptyWindow: 'Son 48 saatte sağlık notu bulunmuyor.',
     deleteAria: 'Notu sil',
+    editAria: 'Notu düzenle',
     deleteConfirmTitle: 'Notu Sil',
     deleteConfirmBody: '{time} tarihli "{title}" notunu silmek istediğine emin misin?',
     dialog: {
       title: 'Sağlık Notu Ekle',
+      editTitle: 'Sağlık Notunu Düzenle',
       categoryLabel: 'Kategori',
       titleLabel: 'Başlık (opsiyonel)',
       titlePlaceholder: 'Örn: Acil Servis, İnfluenza Testi',

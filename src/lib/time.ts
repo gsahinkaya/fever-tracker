@@ -8,6 +8,12 @@ export function currentTimeString(): string {
   return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
 }
 
+export function toTimeInputString(dateOrTs: number | Date): string {
+  const d = typeof dateOrTs === 'number' ? new Date(dateOrTs) : dateOrTs
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 // For the common "log it now" case (date/time fields left at their defaults)
 // this returns a precise `new Date()` instead of resolving through the
 // fields, which only carry minute precision. That precision matters: two

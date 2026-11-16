@@ -12,6 +12,7 @@ import { useFamilyMembersStore } from '@/stores/familyMembers'
 import { feedingEntryTitle } from '@/lib/entryTitles'
 import { formatDuration, whoNameLabel } from '@/lib/describeActivity'
 import { shortDateTime as timeLabel } from '@/lib/dateFormat'
+import { MEDICAL_NOTE_CATEGORY_ICONS } from '@/lib/medicalNotes'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 type CombinedEntry = LogEntry | FeedingEntry | SymptomEntry | SleepEntry | DiaperEntry | MedicalNoteEntry
@@ -65,7 +66,7 @@ const colors: Record<string, string> = {
 }
 
 function iconFor(entry: CombinedEntry): string {
-  if (isMedicalNote(entry)) return 'mdi-notebook-edit-outline'
+  if (isMedicalNote(entry)) return MEDICAL_NOTE_CATEGORY_ICONS[entry.category] || 'mdi-notebook-edit-outline'
   if (isSymptom(entry)) return 'mdi-emoticon-sick-outline'
   if (isDiaper(entry)) return 'mdi-diaper-outline'
   if (isSleep(entry)) return 'mdi-sleep'

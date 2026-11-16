@@ -1,27 +1,26 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMedicalNotesStore } from '@/stores/medicalNotes'
-import { currentTimeString, resolveTakenAtOn } from '@/lib/time'
-import { todayDateString } from '@/lib/dateFormat'
-import type { MedicalNoteCategory } from '@/types/health'
+import { currentTimeString, resolveTakenAtOn, toTimeInputString } from '@/lib/time'
+import { toDateInputString, todayDateString } from '@/lib/dateFormat'
+import { MEDICAL_NOTE_CATEGORIES } from '@/lib/medicalNotes'
+import type { MedicalNoteCategory, MedicalNoteEntry } from '@/types/health'
 
 const { t } = useI18n()
 const model = defineModel<boolean>({ default: false })
+const props = withDefaults(
+  defineProps<{
+    noteToEdit?: MedicalNoteEntry | null
+  }>(),
+  {
+    noteToEdit: null,
+  },
+)
+
 const store = useMedicalNotesStore()
 
-interface CategoryOption {
-  value: MedicalNoteCategory
-  icon: string
-}
-
-const CATEGORIES: CategoryOption[] = [
-  { value: 'hospital', icon: 'mdi-hospital-box-outline' },
-  { value: 'test', icon: 'mdi-flask-outline' },
-  { value: 'medication', icon: 'mdi-pill' },
-  { value: 'examination', icon: 'mdi-doctor' },
-  { value: 'other', icon: 'mdi-note-text-outline' },
-]
+const isEditing = computed(() => !!props.noteToEdit)
 
 const category = ref<MedicalNoteCategory>('hospital')
 const title = ref('')
@@ -32,11 +31,19 @@ const saving = ref(false)
 
 watch(model, (open) => {
   if (open) {
-    category.value = 'hospital'
-    title.value = ''
-    content.value = ''
-    date.value = todayDateString()
-    time.value = currentTimeString()
+    if (props.noteToEdit) {
+      category.value = props.noteToEdit.category
+      title.value = props.noteToEdit.title ?? ''
+      content.value = props.noteToEdit.content
+      date.value = toDateInputString(props.noteToEdit.takenAt)
+      time.value = toTimeInputString(props.noteToEdit.takenAt)
+    } else {
+      category.value = 'hospital'
+      title.value = ''
+      content.value = ''
+      date.value = todayDateString()
+      time.value = currentTimeString()
+    }
   }
 })
 
@@ -44,12 +51,23 @@ async function save() {
   if (!content.value.trim()) return
   saving.value = true
   try {
-    await store.addNote(
-      category.value,
-      content.value.trim(),
-      title.value.trim() || undefined,
-      resolveTakenAtOn(date.value, time.value),
-    )
+    const takenAt = resolveTakenAtOn(date.value, time.value)
+    if (props.noteToEdit) {
+      await store.updateNote(
+        props.noteToEdit.id,
+        category.value,
+        content.value.trim(),
+        title.value.trim() || undefined,
+        takenAt,
+      )
+    } else {
+      await store.addNote(
+        category.value,
+        content.value.trim(),
+        title.value.trim() || undefined,
+        takenAt,
+      )
+    }
     model.value = false
   } finally {
     saving.value = false
@@ -60,19 +78,21 @@ async function save() {
 <template>
   <v-dialog v-model="model" max-width="480">
     <v-card>
-      <v-card-title class="text-h6 pt-4 px-4">{{ t('medicalNotes.dialog.title') }}</v-card-title>
+      <v-card-title class="text-h6 pt-4 px-4">
+        {{ isEditing ? t('medicalNotes.dialog.editTitle') : t('medicalNotes.dialog.title') }}
+      </v-card-title>
       <v-card-text class="px-4 pt-2">
         <label class="text-caption text-medium-emphasis mb-1 d-block">
           {{ t('medicalNotes.dialog.categoryLabel') }}
         </label>
         <v-chip-group
           v-model="category"
-          selected-class="text-primary font-weight-bold"
+          selected-class="text-note font-weight-bold"
           mandatory
           class="mb-3"
         >
           <v-chip
-            v-for="cat in CATEGORIES"
+            v-for="cat in MEDICAL_NOTE_CATEGORIES"
             :key="cat.value"
             :value="cat.value"
             filter
@@ -128,7 +148,7 @@ async function save() {
           {{ t('common.cancel') }}
         </v-btn>
         <v-btn
-          color="primary"
+          color="note"
           variant="flat"
           size="large"
           :loading="saving"
