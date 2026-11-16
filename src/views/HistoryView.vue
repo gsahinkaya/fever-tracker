@@ -26,11 +26,21 @@ const selectedFilter = ref<FilterType>('all')
 
 const SYMPTOM_TYPES = new Set(['cough', 'vomiting', 'diarrhea', 'rash', 'runnyNose', 'other'])
 function isSymptom(e: unknown): boolean {
-  return typeof e === 'object' && e !== null && 'type' in e && SYMPTOM_TYPES.has((e as { type: string }).type)
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    'type' in e &&
+    SYMPTOM_TYPES.has((e as { type: string }).type)
+  )
 }
 const DIAPER_TYPES = new Set(['pee', 'poop', 'both'])
 function isDiaper(e: unknown): boolean {
-  return typeof e === 'object' && e !== null && 'type' in e && DIAPER_TYPES.has((e as { type: string }).type)
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    'type' in e &&
+    DIAPER_TYPES.has((e as { type: string }).type)
+  )
 }
 function isFeeding(e: unknown): boolean {
   return (
@@ -92,21 +102,63 @@ const counts = computed(() => {
 })
 
 const filterOptions = computed(() => [
-  { value: 'all' as const, label: t('history.filter.all'), icon: 'mdi-view-headline', count: counts.value.all },
-  { value: 'reading' as const, label: t('history.filter.fever'), icon: 'mdi-thermometer', count: counts.value.reading },
-  { value: 'dose' as const, label: t('history.filter.medication'), icon: 'mdi-pill', count: counts.value.dose },
-  { value: 'note' as const, label: t('history.filter.note'), icon: 'mdi-notebook-edit-outline', count: counts.value.note },
-  { value: 'symptom' as const, label: t('history.filter.symptom'), icon: 'mdi-emoticon-sick-outline', count: counts.value.symptom },
-  { value: 'feeding' as const, label: t('history.filter.feeding'), icon: 'mdi-baby-bottle-outline', count: counts.value.feeding },
-  { value: 'sleep' as const, label: t('history.filter.sleep'), icon: 'mdi-sleep', count: counts.value.sleep },
-  { value: 'diaper' as const, label: t('history.filter.diaper'), icon: 'mdi-diaper-outline', count: counts.value.diaper },
+  {
+    value: 'all' as const,
+    label: t('history.filter.all'),
+    icon: 'mdi-view-headline',
+    count: counts.value.all,
+  },
+  {
+    value: 'reading' as const,
+    label: t('history.filter.fever'),
+    icon: 'mdi-thermometer',
+    count: counts.value.reading,
+  },
+  {
+    value: 'dose' as const,
+    label: t('history.filter.medication'),
+    icon: 'mdi-pill',
+    count: counts.value.dose,
+  },
+  {
+    value: 'note' as const,
+    label: t('history.filter.note'),
+    icon: 'mdi-notebook-edit-outline',
+    count: counts.value.note,
+  },
+  {
+    value: 'symptom' as const,
+    label: t('history.filter.symptom'),
+    icon: 'mdi-emoticon-sick-outline',
+    count: counts.value.symptom,
+  },
+  {
+    value: 'feeding' as const,
+    label: t('history.filter.feeding'),
+    icon: 'mdi-baby-bottle-outline',
+    count: counts.value.feeding,
+  },
+  {
+    value: 'sleep' as const,
+    label: t('history.filter.sleep'),
+    icon: 'mdi-sleep',
+    count: counts.value.sleep,
+  },
+  {
+    value: 'diaper' as const,
+    label: t('history.filter.diaper'),
+    icon: 'mdi-diaper-outline',
+    count: counts.value.diaper,
+  },
 ])
 
 const filteredActivity = computed(() => {
   if (selectedFilter.value === 'all') return activity.value
   return activity.value.filter((e) => {
-    if (selectedFilter.value === 'reading') return 'type' in e && (e as { type: string }).type === 'reading'
-    if (selectedFilter.value === 'dose') return 'type' in e && (e as { type: string }).type === 'dose'
+    if (selectedFilter.value === 'reading')
+      return 'type' in e && (e as { type: string }).type === 'reading'
+    if (selectedFilter.value === 'dose')
+      return 'type' in e && (e as { type: string }).type === 'dose'
     if (selectedFilter.value === 'feeding') return isFeeding(e)
     if (selectedFilter.value === 'symptom') return isSymptom(e)
     if (selectedFilter.value === 'sleep') return isSleep(e)
