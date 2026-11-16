@@ -65,6 +65,7 @@ export const useChildrenStore = defineStore('children', () => {
       'symptoms',
       'sleep',
       'diapers',
+      'medicalNotes',
       'calendarEvents',
     ]
     const snapshots = await Promise.all(

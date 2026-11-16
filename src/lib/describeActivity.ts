@@ -7,6 +7,7 @@ import type {
   FeedingReminderEntry,
   GrowthEntry,
   LogEntry,
+  MedicalNoteEntry,
   Medication,
   MedicationAlertEntry,
   SleepEntry,
@@ -70,6 +71,22 @@ export function messageForDiaper(who: string, type: string): string {
 }
 export function messageForCalendarEvent(who: string, title: string): string {
   return t('notifications.addedCalendarEvent', { who, title })
+}
+
+export function messageForMedicalNote(who: string, category: string, title: string): string {
+  return t('notifications.addedMedicalNote', {
+    who,
+    category: t(`medicalNotes.categories.${category}`),
+    title,
+  })
+}
+
+export function describeMedicalNote(entry: MedicalNoteEntry): string {
+  return messageForMedicalNote(
+    whoLabel(entry.createdByEmail),
+    entry.category,
+    entry.title || entry.content,
+  )
 }
 export function messageForSleepStart(who: string): string {
   return t('notifications.startedSleep', { who })

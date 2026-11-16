@@ -107,6 +107,11 @@ const router = createRouter({
       component: () => import('../views/DiaperView.vue'),
     },
     {
+      path: '/notes',
+      name: 'notes',
+      component: () => import('../views/MedicalNotesView.vue'),
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),

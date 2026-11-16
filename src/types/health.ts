@@ -224,3 +224,15 @@ export interface SleepEntry {
   createdBy?: string
   createdByEmail?: string
 }
+
+export type MedicalNoteCategory = 'hospital' | 'examination' | 'test' | 'medication' | 'other'
+
+export interface MedicalNoteEntry {
+  id: string
+  takenAt: number
+  category: MedicalNoteCategory
+  title?: string
+  content: string
+  createdBy?: string
+  createdByEmail?: string
+}

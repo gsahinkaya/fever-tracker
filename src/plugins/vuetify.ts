@@ -70,6 +70,8 @@ export default createVuetify({
           // tile hue (including "success" and "medication", the closest
           // green/teal neighbors).
           calendar: '#0F766E',
+          // Medical notes tile/actions — sky/teal slate, distinct from hospital and info.
+          note: '#0284C7',
           // Nearby-hospitals tile/actions — a plain medical blue, kept out
           // of "error" red (a hospital tile reading as an error state would
           // be actively confusing) and distinct enough from "pharmacy"
@@ -106,6 +108,7 @@ export default createVuetify({
           sleep: '#7DD3FC',
           diaper: '#FB7185',
           calendar: '#2DD4BF',
+          note: '#38BDF8',
           hospital: '#60A5FA',
           error: '#F97066',
           success: '#32D583',

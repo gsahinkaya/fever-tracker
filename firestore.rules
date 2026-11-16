@@ -118,6 +118,10 @@ service cloud.firestore {
       allow read, write: if isMember(familyId);
     }
 
+    match /families/{familyId}/children/{childId}/medicalNotes/{noteId} {
+      allow read, write: if isMember(familyId);
+    }
+
     match /families/{familyId}/children/{childId}/calendarEvents/{eventId} {
       allow read, write: if isMember(familyId);
     }

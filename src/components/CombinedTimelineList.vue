@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { LogEntry, FeedingEntry, SymptomEntry, SleepEntry, DiaperEntry } from '@/types/health'
+import type { LogEntry, FeedingEntry, SymptomEntry, SleepEntry, DiaperEntry, MedicalNoteEntry } from '@/types/health'
 import { useFeverLogStore } from '@/stores/feverLog'
 import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
+import { useMedicalNotesStore } from '@/stores/medicalNotes'
 import { useFamilyMembersStore } from '@/stores/familyMembers'
 import { feedingEntryTitle } from '@/lib/entryTitles'
 import { formatDuration, whoNameLabel } from '@/lib/describeActivity'
 import { shortDateTime as timeLabel } from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
-type CombinedEntry = LogEntry | FeedingEntry | SymptomEntry | SleepEntry | DiaperEntry
+type CombinedEntry = LogEntry | FeedingEntry | SymptomEntry | SleepEntry | DiaperEntry | MedicalNoteEntry
 
 const { t } = useI18n()
 defineProps<{ entries: CombinedEntry[] }>()
@@ -22,10 +23,14 @@ const feedingLogStore = useFeedingLogStore()
 const symptomLogStore = useSymptomLogStore()
 const sleepLogStore = useSleepLogStore()
 const diaperLogStore = useDiaperLogStore()
+const medicalNotesStore = useMedicalNotesStore()
 const familyMembersStore = useFamilyMembersStore()
 
 const confirmTarget = ref<CombinedEntry | null>(null)
 
+function isMedicalNote(entry: CombinedEntry): entry is MedicalNoteEntry {
+  return 'category' in entry && 'content' in entry
+}
 const SYMPTOM_TYPES = new Set(['cough', 'vomiting', 'diarrhea', 'rash', 'runnyNose', 'other'])
 function isSymptom(entry: CombinedEntry): entry is SymptomEntry {
   return 'type' in entry && SYMPTOM_TYPES.has(entry.type)
@@ -60,12 +65,14 @@ const colors: Record<string, string> = {
 }
 
 function iconFor(entry: CombinedEntry): string {
+  if (isMedicalNote(entry)) return 'mdi-notebook-edit-outline'
   if (isSymptom(entry)) return 'mdi-emoticon-sick-outline'
   if (isDiaper(entry)) return 'mdi-diaper-outline'
   if (isSleep(entry)) return 'mdi-sleep'
   return icons[entry.type]!
 }
 function colorFor(entry: CombinedEntry): string {
+  if (isMedicalNote(entry)) return 'note'
   if (isSymptom(entry)) return 'symptom'
   if (isDiaper(entry)) return 'diaper'
   if (isSleep(entry)) return 'sleep'
@@ -73,6 +80,11 @@ function colorFor(entry: CombinedEntry): string {
 }
 
 function title(entry: CombinedEntry): string {
+  if (isMedicalNote(entry)) {
+    const categoryName = t(`medicalNotes.categories.${entry.category}`)
+    const titlePart = entry.title ? `${entry.title} · ` : ''
+    return `${categoryName}: ${titlePart}${entry.content}`
+  }
   if (isSymptom(entry)) {
     return t(`symptoms.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
   }
@@ -100,7 +112,9 @@ const deleteBody = computed(() =>
 
 function confirmDelete() {
   if (!confirmTarget.value) return
-  if (isSymptom(confirmTarget.value)) {
+  if (isMedicalNote(confirmTarget.value)) {
+    medicalNotesStore.removeEntry(confirmTarget.value.id)
+  } else if (isSymptom(confirmTarget.value)) {
     symptomLogStore.removeEntry(confirmTarget.value.id)
   } else if (isDiaper(confirmTarget.value)) {
     diaperLogStore.removeEntry(confirmTarget.value.id)

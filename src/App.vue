@@ -15,6 +15,7 @@ import { useDiaperLogStore } from '@/stores/diaperLog'
 import { useCalendarEventsStore } from '@/stores/calendarEvents'
 import { useMedicationAlertsStore } from '@/stores/medicationAlerts'
 import { useFeedingRemindersStore } from '@/stores/feedingReminders'
+import { useMedicalNotesStore } from '@/stores/medicalNotes'
 import { useThemeStore } from '@/stores/theme'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
@@ -26,6 +27,7 @@ import {
   describeFeeding,
   describeFeedingReminder,
   describeGrowth,
+  describeMedicalNote,
   describeMedication,
   describeMedicationAlert,
   describeSleep,
@@ -49,6 +51,7 @@ const diaperLogStore = useDiaperLogStore()
 const calendarEventsStore = useCalendarEventsStore()
 const medicationAlertsStore = useMedicationAlertsStore()
 const feedingRemindersStore = useFeedingRemindersStore()
+const medicalNotesStore = useMedicalNotesStore()
 useThemeStore()
 
 useEntryNotifications()
@@ -144,6 +147,14 @@ const notificationSources = computed(() => [
     (entry) => entry.takenAt,
     describeDiaper,
     '/diaper',
+  ),
+  notificationSource(
+    'note',
+    medicalNotesStore.incomingEntries,
+    medicalNotesStore.allRemoteEntries,
+    (entry) => entry.takenAt,
+    describeMedicalNote,
+    '/notes',
   ),
   notificationSource(
     'calendar',
@@ -247,6 +258,7 @@ function acknowledgeIncoming() {
   symptomLogStore.acknowledgeIncoming()
   sleepLogStore.acknowledgeIncoming()
   diaperLogStore.acknowledgeIncoming()
+  medicalNotesStore.acknowledgeIncoming()
   calendarEventsStore.acknowledgeIncoming()
   medicationAlertsStore.acknowledgeIncoming()
   feedingRemindersStore.acknowledgeIncoming()
@@ -298,6 +310,7 @@ watch(
     symptomLogStore.watchChild(childId)
     sleepLogStore.watchChild(childId)
     diaperLogStore.watchChild(childId)
+    medicalNotesStore.watchChild(childId)
     calendarEventsStore.watchChild(childId)
     medicationAlertsStore.watchChild(childId)
     feedingRemindersStore.watchChild(childId)

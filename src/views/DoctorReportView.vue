@@ -8,6 +8,7 @@ import { useFeedingLogStore } from '@/stores/feedingLog'
 import { useGrowthLogStore } from '@/stores/growthLog'
 import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
+import { useMedicalNotesStore } from '@/stores/medicalNotes'
 import { useMedicationsStore } from '@/stores/medications'
 import { useChildrenStore } from '@/stores/children'
 import { ageInMonths, ageLabel } from '@/lib/age'
@@ -23,7 +24,7 @@ import {
 import { percentileForMeasurement } from '@/lib/growthPercentile'
 import { VACCINATION_SCHEDULE } from '@/data/vaccinationSchedule'
 import { localeTag, plainDate, shortDateTime as timeLabel, todayDateString } from '@/lib/dateFormat'
-import type { FeverReading, FeedingEntry, SymptomEntry, DiaperEntry } from '@/types/health'
+import type { FeverReading, FeedingEntry, SymptomEntry, DiaperEntry, MedicalNoteEntry } from '@/types/health'
 import TemperatureChart from '@/components/chart/TemperatureChart.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
@@ -33,6 +34,7 @@ const feedingLogStore = useFeedingLogStore()
 const growthLogStore = useGrowthLogStore()
 const symptomLogStore = useSymptomLogStore()
 const diaperLogStore = useDiaperLogStore()
+const medicalNotesStore = useMedicalNotesStore()
 const medicationsStore = useMedicationsStore()
 const childrenStore = useChildrenStore()
 
@@ -46,12 +48,17 @@ const readings = computed(() => recent.value.filter((e) => e.type === 'reading')
 const recentFeedings = computed(() => feedingLogStore.recentEntries(WINDOW_HOURS))
 const recentSymptoms = computed(() => symptomLogStore.recentEntries(WINDOW_HOURS))
 const recentDiapers = computed(() => diaperLogStore.recentEntries(WINDOW_HOURS))
-type CombinedRow = (typeof recent.value)[number] | FeedingEntry | SymptomEntry | DiaperEntry
+const recentNotes = computed(() => medicalNotesStore.recentEntries(WINDOW_HOURS))
+type CombinedRow = (typeof recent.value)[number] | FeedingEntry | SymptomEntry | DiaperEntry | MedicalNoteEntry
 const combinedRecent = computed<CombinedRow[]>(() =>
-  [...recent.value, ...recentFeedings.value, ...recentSymptoms.value, ...recentDiapers.value].sort(
+  [...recent.value, ...recentFeedings.value, ...recentSymptoms.value, ...recentDiapers.value, ...recentNotes.value].sort(
     (a, b) => b.takenAt - a.takenAt,
   ),
 )
+
+function isMedicalNote(entry: CombinedRow): entry is MedicalNoteEntry {
+  return 'category' in entry && 'content' in entry
+}
 
 const SYMPTOM_TYPES = new Set(['cough', 'vomiting', 'diarrhea', 'rash', 'runnyNose', 'other'])
 function isSymptom(entry: CombinedRow): entry is SymptomEntry {
@@ -114,6 +121,7 @@ function feedingRowLabel(entry: FeedingEntry): string {
 }
 
 function rowTypeLabel(entry: CombinedRow): string {
+  if (isMedicalNote(entry)) return t('doctorReport.typeNote')
   if (entry.type === 'reading') return t('doctorReport.typeFever')
   if (entry.type === 'dose') return t('doctorReport.typeMedication')
   if (isSymptom(entry)) return t('doctorReport.typeSymptom')
@@ -122,6 +130,11 @@ function rowTypeLabel(entry: CombinedRow): string {
 }
 
 function rowValueLabel(entry: CombinedRow): string {
+  if (isMedicalNote(entry)) {
+    const categoryName = t(`medicalNotes.categories.${entry.category}`)
+    const titlePart = entry.title ? `${entry.title} — ` : ''
+    return `${categoryName}: ${titlePart}${entry.content}`
+  }
   if (entry.type === 'reading') return `${entry.temperature.toFixed(1)} °C`
   if (entry.type === 'dose') return entry.medicationName
   if (isSymptom(entry)) return t(`symptoms.types.${entry.type}`) + (entry.note ? ` · ${entry.note}` : '')
@@ -143,7 +156,9 @@ const deleteBody = computed(() =>
 function confirmDelete() {
   const entry = confirmDeleteTarget.value
   if (!entry) return
-  if (entry.type === 'reading' || entry.type === 'dose') {
+  if (isMedicalNote(entry)) {
+    medicalNotesStore.removeEntry(entry.id)
+  } else if (entry.type === 'reading' || entry.type === 'dose') {
     store.removeEntry(entry.id)
   } else if (isSymptom(entry)) {
     symptomLogStore.removeEntry(entry.id)
@@ -310,6 +325,20 @@ async function createPdf() {
         >
           {{ med.name }} — {{ t('medications.perSafe', { hours: med.minIntervalHours })
           }}<span v-if="med.note"> ({{ med.note }})</span>
+        </div>
+      </v-card>
+
+      <v-card v-if="recentNotes.length" variant="outlined" class="mb-4 pa-4">
+        <div class="text-subtitle-2 mb-2">{{ t('doctorReport.medicalNotesTitle') }}</div>
+        <div
+          v-for="note in recentNotes"
+          :key="note.id"
+          class="text-body-2 mb-2"
+        >
+          <span class="font-weight-medium">
+            {{ timeLabel(note.takenAt) }} — {{ t(`medicalNotes.categories.${note.category}`) }}<template v-if="note.title"> ({{ note.title }})</template>:
+          </span>
+          <span class="text-medium-emphasis"> {{ note.content }}</span>
         </div>
       </v-card>
 

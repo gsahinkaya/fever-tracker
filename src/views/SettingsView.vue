@@ -13,6 +13,7 @@ import { useSymptomLogStore } from '@/stores/symptomLog'
 import { useSleepLogStore } from '@/stores/sleepLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
 import { useCalendarEventsStore } from '@/stores/calendarEvents'
+import { useMedicalNotesStore } from '@/stores/medicalNotes'
 import { useChildrenStore } from '@/stores/children'
 import { useMedicationsStore } from '@/stores/medications'
 import { useThemeStore } from '@/stores/theme'
@@ -28,6 +29,7 @@ const symptomLogStore = useSymptomLogStore()
 const sleepLogStore = useSleepLogStore()
 const diaperLogStore = useDiaperLogStore()
 const calendarEventsStore = useCalendarEventsStore()
+const medicalNotesStore = useMedicalNotesStore()
 const childrenStore = useChildrenStore()
 const medicationsStore = useMedicationsStore()
 const themeStore = useThemeStore()
@@ -108,6 +110,7 @@ async function clearAll() {
     symptomLogStore.clearAllEntries(),
     sleepLogStore.clearAllEntries(),
     diaperLogStore.clearAllEntries(),
+    medicalNotesStore.clearAllEntries(),
     calendarEventsStore.clearAllEntries(),
   ])
   showClearConfirm.value = false
