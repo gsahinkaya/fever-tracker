@@ -180,7 +180,7 @@ export default {
       symptoms: 'Semptomlar',
       sleep: 'Uyku',
       diaper: 'Bez Değişimi',
-      notes: 'Sağlık Notları',
+      notes: 'Not Ekle',
       calendar: 'Takvim',
       milestones: 'Gelişim Kilometre Taşları',
     },

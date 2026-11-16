@@ -78,8 +78,18 @@ async function save() {
 <template>
   <v-dialog v-model="model" max-width="480">
     <v-card>
-      <v-card-title class="text-h6 pt-4 px-4">
-        {{ isEditing ? t('medicalNotes.dialog.editTitle') : t('medicalNotes.dialog.title') }}
+      <v-card-title class="text-h6 pt-4 px-4 d-flex align-center justify-space-between">
+        <span>{{ isEditing ? t('medicalNotes.dialog.editTitle') : t('medicalNotes.dialog.title') }}</span>
+        <v-btn
+          v-if="!isEditing"
+          variant="text"
+          size="small"
+          color="note"
+          to="/notes"
+          @click="model = false"
+        >
+          {{ t('medicalNotes.viewAll') }}
+        </v-btn>
       </v-card-title>
       <v-card-text class="px-4 pt-2">
         <label class="text-caption text-medium-emphasis mb-1 d-block">

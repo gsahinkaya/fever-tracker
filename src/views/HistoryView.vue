@@ -8,7 +8,6 @@ import { useSleepLogStore } from '@/stores/sleepLog'
 import { useDiaperLogStore } from '@/stores/diaperLog'
 import { useMedicalNotesStore } from '@/stores/medicalNotes'
 import CombinedTimelineList from '@/components/CombinedTimelineList.vue'
-import AddMedicalNoteDialog from '@/components/AddMedicalNoteDialog.vue'
 
 const { t } = useI18n()
 const feverLogStore = useFeverLogStore()
@@ -19,7 +18,6 @@ const diaperLogStore = useDiaperLogStore()
 const medicalNotesStore = useMedicalNotesStore()
 
 const showAll = ref(false)
-const showAddNoteDialog = ref(false)
 
 type FilterType = 'all' | 'reading' | 'dose' | 'feeding' | 'symptom' | 'sleep' | 'diaper' | 'note'
 const selectedFilter = ref<FilterType>('all')
@@ -181,16 +179,6 @@ const filteredActivity = computed(() => {
       />
       <span class="text-h6 ml-2">{{ showAll ? t('history.title') : t('history.last48h') }}</span>
       <v-spacer />
-      <v-btn
-        variant="tonal"
-        size="small"
-        color="note"
-        prepend-icon="mdi-plus"
-        class="mr-2"
-        @click="showAddNoteDialog = true"
-      >
-        {{ t('history.addNote') }}
-      </v-btn>
       <v-btn v-if="!showAll" variant="text" size="small" color="primary" @click="showAll = true">{{
         t('history.viewAll')
       }}</v-btn>
@@ -224,7 +212,5 @@ const filteredActivity = computed(() => {
     <div v-else class="text-center text-medium-emphasis py-8 px-4">
       {{ t('history.noFilteredRecords') }}
     </div>
-
-    <AddMedicalNoteDialog v-model="showAddNoteDialog" />
   </v-container>
 </template>

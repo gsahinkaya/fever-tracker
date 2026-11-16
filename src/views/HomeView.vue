@@ -8,6 +8,7 @@ import { useFeedingReminders } from '@/composables/useFeedingReminders'
 import { registerDeviceForPush } from '@/composables/usePushNotifications'
 import AddReadingDialog from '@/components/AddReadingDialog.vue'
 import AddDoseDialog from '@/components/AddDoseDialog.vue'
+import AddMedicalNoteDialog from '@/components/AddMedicalNoteDialog.vue'
 import OnboardingWizard from '@/components/OnboardingWizard.vue'
 
 const { t } = useI18n()
@@ -18,6 +19,7 @@ useFeedingReminders()
 
 const showReadingDialog = ref(false)
 const showDoseDialog = ref(false)
+const showNoteDialog = ref(false)
 const showOnboarding = computed({
   get: () => !!authStore.profile && !authStore.profile.hasSeenOnboarding,
   set: (value) => {
@@ -95,7 +97,14 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.symptoms') }}</span>
           </div>
         </v-btn>
-        <v-btn block height="64" color="note" variant="flat" rounded="lg" to="/notes">
+        <v-btn
+          block
+          height="64"
+          color="note"
+          variant="flat"
+          rounded="lg"
+          @click="showNoteDialog = true"
+        >
           <div class="d-flex align-center w-100">
             <v-icon icon="mdi-notebook-edit-outline" size="26" class="mr-3" />
             <span class="text-body-1 font-weight-bold">{{ t('home.tiles.notes') }}</span>
@@ -190,6 +199,7 @@ const hasChildren = computed(() => childrenStore.children.length > 0)
 
       <AddReadingDialog v-model="showReadingDialog" />
       <AddDoseDialog v-model="showDoseDialog" />
+      <AddMedicalNoteDialog v-model="showNoteDialog" />
       <OnboardingWizard v-model="showOnboarding" />
     </template>
   </v-container>

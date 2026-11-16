@@ -178,7 +178,7 @@ export default {
       symptoms: 'Symptoms',
       sleep: 'Sleep',
       diaper: 'Diaper Change',
-      notes: 'Health Notes',
+      notes: 'Add Note',
       calendar: 'Calendar',
       milestones: 'Milestones',
     },
