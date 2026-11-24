@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 
-// The one confirm-delete dialog shape used everywhere in the app (Semptom,
-// Uyku, Bez Değişimi, Büyüme, Beslenme, the combined timeline, Doktor
-// Raporu, İlaçlarım, Aşılar, Çocuklarım) — title + body text + Vazgeç/Sil.
-// The caller owns *what* is being deleted (the confirm target, its id) and
-// just supplies the already-formatted title/body strings; this only owns
-// the dialog chrome and the confirm/cancel wiring.
-defineProps<{ title: string; body: string }>()
+withDefaults(
+  defineProps<{
+    title: string
+    body: string
+    confirmLabel?: string
+    confirmColor?: string
+  }>(),
+  {
+    confirmLabel: undefined,
+    confirmColor: 'error',
+  },
+)
 const model = defineModel<boolean>({ default: false })
 const emit = defineEmits<{ confirm: [] }>()
 
@@ -27,7 +32,9 @@ function confirm() {
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" @click="model = false">{{ t('common.cancel') }}</v-btn>
-        <v-btn color="error" variant="flat" @click="confirm">{{ t('common.delete') }}</v-btn>
+        <v-btn :color="confirmColor" variant="flat" @click="confirm">
+          {{ confirmLabel || t('common.delete') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

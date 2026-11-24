@@ -58,7 +58,8 @@ const dismissedMedications = computed(() =>
     </div>
 
     <!-- Dismissed cards section -->
-    <div v-if="dismissedMedications.length" class="mt-6 pt-4 border-t">
+    <div v-if="dismissedMedications.length" class="mt-4">
+      <v-divider class="mb-4" />
       <div class="d-flex align-center justify-space-between mb-3">
         <span class="text-caption text-medium-emphasis">
           {{ t('nextDoseCard.dismissedSectionTitle') }}
