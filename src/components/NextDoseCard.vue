@@ -42,7 +42,7 @@ const lastDoseLabel = computed(() => {
 
 <template>
   <v-card
-    :color="status === 'ready' ? 'error' : status === 'waiting' ? 'medication' : undefined"
+    :color="status === 'ready' ? 'success' : status === 'waiting' ? 'error' : undefined"
     :variant="status === 'none' ? 'outlined' : 'tonal'"
   >
     <v-card-item>
@@ -54,16 +54,20 @@ const lastDoseLabel = computed(() => {
         t('nextDoseCard.noRecord')
       }}</span>
       <template v-else-if="status === 'ready'">
-        <div class="text-h6 text-error">{{ t('nextDoseCard.readyNow') }}</div>
-        <div class="text-caption text-medium-emphasis">
+        <div class="text-h6 font-weight-bold text-success d-flex align-center">
+          <v-icon icon="mdi-check-circle" size="20" class="mr-1" />
+          {{ t('nextDoseCard.readyNow') }}
+        </div>
+        <div class="text-caption text-medium-emphasis mt-1">
           {{ t('nextDoseCard.lastDose', { time: lastDoseLabel }) }}
         </div>
       </template>
       <template v-else>
-        <div class="text-h5 font-weight-bold">
+        <div class="text-h5 font-weight-bold text-error d-flex align-center">
+          <v-icon icon="mdi-clock-alert-outline" size="22" class="mr-1" />
           {{ t('nextDoseCard.remaining', { time: remainingLabel }) }}
         </div>
-        <div class="text-caption text-medium-emphasis">
+        <div class="text-caption text-medium-emphasis mt-1">
           {{ t('nextDoseCard.lastDoseInline', { time: lastDoseLabel }) }}
         </div>
       </template>
