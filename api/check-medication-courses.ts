@@ -488,6 +488,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const lastDoseId = docId(lastDoseDoc)
           const lastDoseTakenAt = new Date(lastDoseDoc.fields!.takenAt!.timestampValue!).getTime()
 
+          const nextDoseDismissedAt = numberField(med.fields?.nextDoseDismissedAt)
+          if (nextDoseDismissedAt != null && nextDoseDismissedAt >= lastDoseTakenAt) continue
+
           const safeAt = lastDoseTakenAt + minIntervalHours * 60 * 60 * 1000
           if (safeAt > now) continue
           // A dose given days or weeks ago shouldn't fire a stale next-dose push

@@ -44,6 +44,9 @@ export interface Medication {
   // it was last sent for, so a newly-logged dose (a new id) naturally
   // re-arms it for the next interval.
   nextDoseNotifiedFor?: string
+  // Timestamp when the parent dismissed the next-safe-dose card for this
+  // medication — hides the card from NextDoseView until a newer dose is logged.
+  nextDoseDismissedAt?: number
   // Who added this medication and when, so the other parent can be
   // notified — including catching up after reopening the app, which needs
   // a timestamp to compare against a "last seen" watermark. Optional

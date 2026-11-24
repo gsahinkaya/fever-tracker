@@ -264,6 +264,15 @@ function reminderLabel(med: Medication): string | null {
   return t('medications.reminderLabel', { date: dateTimeLabel(med.reminderAt) })
 }
 
+async function quickRemoveReminder(med: Medication) {
+  if (!authStore.familyId || !feverLogStore.activeChildId) return
+  await medicationsStore.updateMedication(authStore.familyId, feverLogStore.activeChildId, med.id, {
+    reminderAt: deleteField(),
+    reminderNotified: deleteField(),
+  })
+  await medicationAlertsStore.removeAlertsForMedication(med.name, 'reminder')
+}
+
 const deleteBody = computed(() =>
   confirmDeleteTarget.value
     ? t('medications.deleteConfirm.body', { name: confirmDeleteTarget.value.name })
@@ -314,8 +323,17 @@ async function confirmDelete() {
           <div v-if="courseLabel(med)" class="text-medium-emphasis mt-1">
             {{ courseLabel(med) }}
           </div>
-          <div v-if="reminderLabel(med)" class="text-medium-emphasis mt-1">
-            {{ reminderLabel(med) }}
+          <div v-if="reminderLabel(med)" class="d-flex align-center text-medium-emphasis mt-1">
+            <span>{{ reminderLabel(med) }}</span>
+            <v-btn
+              icon="mdi-bell-off-outline"
+              variant="text"
+              size="x-small"
+              color="error"
+              class="ml-1"
+              :aria-label="t('nextDoseCard.removeReminderAria')"
+              @click.stop="quickRemoveReminder(med)"
+            />
           </div>
           <div
             v-if="inventoryWarning(med)"

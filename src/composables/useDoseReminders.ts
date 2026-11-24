@@ -71,6 +71,10 @@ export function useDoseReminders() {
         return
       }
 
+      // If the parent dismissed this dose's next-safe-dose card, silence
+      // interval reminders until a newer dose is logged.
+      if (med.nextDoseDismissedAt && med.nextDoseDismissedAt >= last.takenAt) return
+
       const safeAt = store.nextSafeDoseAt(med.id, med.minIntervalHours)
       if (!safeAt) return
 
