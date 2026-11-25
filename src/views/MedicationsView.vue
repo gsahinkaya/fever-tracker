@@ -9,8 +9,15 @@ import { useFeverLogStore } from '@/stores/feverLog'
 import { useMedicationsStore } from '@/stores/medications'
 import { useMedicationAlertsStore } from '@/stores/medicationAlerts'
 import type { Medication } from '@/types/health'
-import { plainDate, mediumDateTime as dateTimeLabel, toDateInputString, toDatetimeLocalString } from '@/lib/dateFormat'
+import {
+  plainDate,
+  mediumDateTime as dateTimeLabel,
+  toDateInputString,
+  toDatetimeLocalString,
+} from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import ManageReminderDialog from '@/components/ManageReminderDialog.vue'
+import { useNow } from '@/composables/useNow'
 import type { MedicationUpdate } from '@/stores/medications'
 
 const { t } = useI18n()
@@ -26,7 +33,16 @@ const activeChild = computed(
   () => childrenStore.children.find((c) => c.id === feverLogStore.activeChildId) ?? null,
 )
 
+const now = useNow()
 const showDialog = ref(false)
+const showManageReminder = ref(false)
+const selectedMedForReminder = ref<Medication | null>(null)
+
+function openManageReminder(med: Medication) {
+  selectedMedForReminder.value = med
+  showManageReminder.value = true
+}
+
 const editingMedication = ref<Medication | null>(null)
 const name = ref('')
 const minIntervalHours = ref<number | null>(null)
@@ -80,7 +96,9 @@ function openEdit(medication: Medication) {
   openedAt.value = medication.openedAt ? toDateInputString(medication.openedAt) : ''
   expiryDate.value = medication.expiryDate ?? ''
   shelfLifeDaysAfterOpening.value = medication.shelfLifeDaysAfterOpening ?? null
-  courseStartAt.value = medication.courseStartAt ? toDatetimeLocalString(medication.courseStartAt) : ''
+  courseStartAt.value = medication.courseStartAt
+    ? toDatetimeLocalString(medication.courseStartAt)
+    : ''
   courseEndAt.value = medication.courseEndAt ? toDatetimeLocalString(medication.courseEndAt) : ''
   reminderAt.value = medication.reminderAt ? toDatetimeLocalString(medication.reminderAt) : ''
   showDialog.value = true
@@ -255,13 +273,9 @@ function courseLabel(med: Medication): string | null {
       end: dateTimeLabel(med.courseEndAt),
     })
   }
-  if (med.courseEndAt) return t('medications.course.activeUntil', { date: dateTimeLabel(med.courseEndAt) })
+  if (med.courseEndAt)
+    return t('medications.course.activeUntil', { date: dateTimeLabel(med.courseEndAt) })
   return t('medications.course.activeSince', { date: dateTimeLabel(med.courseStartAt!) })
-}
-
-function reminderLabel(med: Medication): string | null {
-  if (!med.reminderAt) return null
-  return t('medications.reminderLabel', { date: dateTimeLabel(med.reminderAt) })
 }
 
 async function quickRemoveReminder(med: Medication) {
@@ -323,17 +337,51 @@ async function confirmDelete() {
           <div v-if="courseLabel(med)" class="text-medium-emphasis mt-1">
             {{ courseLabel(med) }}
           </div>
-          <div v-if="reminderLabel(med)" class="d-flex align-center text-medium-emphasis mt-1">
-            <span>{{ reminderLabel(med) }}</span>
+          <div v-if="med.reminderAt" class="d-flex align-center flex-wrap mt-1">
+            <span
+              class="d-flex align-center font-weight-medium"
+              :class="med.reminderAt > now ? 'text-primary' : 'text-warning'"
+            >
+              <v-icon
+                :icon="med.reminderAt > now ? 'mdi-bell-ring-outline' : 'mdi-bell-alert-outline'"
+                size="16"
+                class="mr-1"
+              />
+              {{
+                med.reminderAt > now
+                  ? t('reminders.activeBadge', { time: dateTimeLabel(med.reminderAt) })
+                  : t('reminders.pastBadge', { time: dateTimeLabel(med.reminderAt) })
+              }}
+            </span>
+            <v-btn
+              variant="text"
+              size="x-small"
+              color="primary"
+              class="ml-2 px-1 font-weight-medium"
+              @click.stop="openManageReminder(med)"
+            >
+              {{ t('reminders.rescheduleReminder') }}
+            </v-btn>
             <v-btn
               icon="mdi-bell-off-outline"
               variant="text"
               size="x-small"
               color="error"
-              class="ml-1"
               :aria-label="t('nextDoseCard.removeReminderAria')"
               @click.stop="quickRemoveReminder(med)"
             />
+          </div>
+          <div v-else class="mt-1">
+            <v-btn
+              variant="text"
+              size="x-small"
+              color="primary"
+              prepend-icon="mdi-bell-plus-outline"
+              class="px-0 font-weight-medium"
+              @click.stop="openManageReminder(med)"
+            >
+              {{ t('nextDoseCard.setReminder') }}
+            </v-btn>
           </div>
           <div
             v-if="inventoryWarning(med)"
@@ -486,5 +534,7 @@ async function confirmDelete() {
       :body="deleteBody"
       @confirm="confirmDelete"
     />
+
+    <ManageReminderDialog v-model="showManageReminder" :medication="selectedMedForReminder" />
   </v-container>
 </template>

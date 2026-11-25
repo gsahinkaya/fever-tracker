@@ -23,16 +23,16 @@ export default {
     next: 'Next',
     back: 'Back',
     skip: 'Skip',
-    finish: 'Got it, let\'s start',
+    finish: "Got it, let's start",
     stepLabel: '{current} / {total}',
     steps: [
       {
         title: 'Welcome to Alfred!',
-        body: 'We make it easy for the whole family to track fever, medication and feeding together. Let\'s quickly show you how it works.',
+        body: "We make it easy for the whole family to track fever, medication and feeding together. Let's quickly show you how it works.",
       },
       {
         title: 'Fever',
-        body: 'Tap this button to log your child\'s temperature. You can also mark that a dose of medication was given at the same time.',
+        body: "Tap this button to log your child's temperature. You can also mark that a dose of medication was given at the same time.",
       },
       {
         title: 'Symptoms',
@@ -40,7 +40,7 @@ export default {
       },
       {
         title: 'Medication',
-        body: 'Log it here whenever you give a dose. Alfred calculates the next safe dose time for you and shows it on the home screen. In My Medications you can also track a syrup\'s opening and expiry date, and get warned before it runs out. For medications that run for a fixed period, like antibiotics, you can also set a course start/end date and time, and get reminders throughout the course and when it ends.',
+        body: "Log it here whenever you give a dose. Alfred calculates the next safe dose time for you and shows it on the home screen. In My Medications you can also track a syrup's opening and expiry date, and get warned before it runs out. For medications that run for a fixed period, like antibiotics, you can also set a course start/end date and time, and get reminders throughout the course and when it ends.",
       },
       {
         title: 'Feeding',
@@ -68,7 +68,7 @@ export default {
       },
       {
         title: 'Ask Alfred',
-        body: 'You can ask Alfred anything you\'re wondering about fever, medication or feeding.',
+        body: "You can ask Alfred anything you're wondering about fever, medication or feeding.",
       },
       {
         title: 'On-Duty Pharmacy',
@@ -88,7 +88,7 @@ export default {
       },
       {
         title: 'Notifications',
-        body: 'When your partner or another family member logs something, you\'ll see it in the bell icon at the top right — no one is left out of the loop. Tap the bell to see past notifications too, delete ones you don\'t need, or tap one to jump straight to that screen.',
+        body: "When your partner or another family member logs something, you'll see it in the bell icon at the top right — no one is left out of the loop. Tap the bell to see past notifications too, delete ones you don't need, or tap one to jump straight to that screen.",
       },
       {
         title: 'Invite a Family Member',
@@ -100,7 +100,7 @@ export default {
       },
       {
         title: 'Emergency',
-        body: "Tap the red Emergency button in Settings (after a confirmation step) to call 112 and send your family an emergency alert with your location.",
+        body: 'Tap the red Emergency button in Settings (after a confirmation step) to call 112 and send your family an emergency alert with your location.',
       },
     ],
   },
@@ -111,9 +111,11 @@ export default {
       submit: 'Log In',
       forgotPasswordLink: 'Forgot password?',
       forgotPasswordTitle: 'Reset Password',
-      forgotPasswordDesc: 'Enter your registered email address and we will send you a password reset link.',
+      forgotPasswordDesc:
+        'Enter your registered email address and we will send you a password reset link.',
       forgotPasswordSubmit: 'Send Reset Link',
-      forgotPasswordSuccess: 'Password reset link sent to your email. Please check your inbox and spam folder.',
+      forgotPasswordSuccess:
+        'Password reset link sent to your email. Please check your inbox and spam folder.',
       forgotPasswordError: 'Failed to send password reset link. Please check your email address.',
       noAccount: "Don't have an account?",
       registerLink: 'Sign up',
@@ -130,10 +132,10 @@ export default {
         father: 'Father',
         grandmother: 'Grandmother',
         grandfather: 'Grandfather',
-        maternalAunt: 'Aunt (mother\'s side)',
-        paternalAunt: 'Aunt (father\'s side)',
-        maternalUncle: 'Uncle (mother\'s side)',
-        paternalUncle: 'Uncle (father\'s side)',
+        maternalAunt: "Aunt (mother's side)",
+        paternalAunt: "Aunt (father's side)",
+        maternalUncle: "Uncle (mother's side)",
+        paternalUncle: "Uncle (father's side)",
         caregiver: 'Caregiver',
         other: 'Other',
       },
@@ -153,7 +155,7 @@ export default {
         weakPassword: 'Password must be at least 6 characters.',
         invalidEmail: 'Enter a valid email.',
         generic: 'Something went wrong during sign-up, please try again.',
-        passwordMismatch: 'Passwords don\'t match.',
+        passwordMismatch: "Passwords don't match.",
         inviteCodeCreateFailed: 'Could not create an invite code, please try again.',
         inviteCodeNotFound: 'Invite code not found. Check the code and try again.',
       },
@@ -187,7 +189,7 @@ export default {
       button: 'Emergency',
       confirmTitle: 'Emergency',
       confirmBody:
-        "This will call 112 and send an emergency alert with your location to your family members. Continue?",
+        'This will call 112 and send an emergency alert with your location to your family members. Continue?',
       confirmAction: 'Yes, Call 112',
       locationLabel: 'Location',
       notificationTitle: '🚨 Emergency',
@@ -222,7 +224,8 @@ export default {
     callAria: 'Call the pharmacy',
     mapAria: 'Show on map',
     errors: {
-      permission: 'Location permission is needed to show on-duty pharmacies. Allow it in your browser settings and try again.',
+      permission:
+        'Location permission is needed to show on-duty pharmacies. Allow it in your browser settings and try again.',
       location: 'Could not get your location. Make sure location services are turned on.',
       geocode: 'Could not determine your city/district.',
       fetch: 'Could not load pharmacy info, please try again.',
@@ -231,13 +234,15 @@ export default {
   nearbyActivities: {
     title: 'Nearby Activity Venues',
     loading: 'Searching for nearby places, this may take a few seconds...',
-    sourceHint: 'Places like cinemas, theaters, museums, zoos, aquariums, amusement parks, water parks and playgrounds are listed from OpenStreetMap community data; some places may be missing or outdated.',
+    sourceHint:
+      'Places like cinemas, theaters, museums, zoos, aquariums, amusement parks, water parks and playgrounds are listed from OpenStreetMap community data; some places may be missing or outdated.',
     empty: 'No listed activity venue found in this area.',
     retry: 'Try Again',
     callAria: 'Call',
     mapAria: 'Show on map',
     errors: {
-      permission: 'Location permission is needed to show nearby places. Allow it in your browser settings and try again.',
+      permission:
+        'Location permission is needed to show nearby places. Allow it in your browser settings and try again.',
       location: 'Could not get your location. Make sure location services are turned on.',
       fetch: 'Could not load place info, please try again.',
     },
@@ -256,14 +261,16 @@ export default {
   nearbyHospitals: {
     title: 'Nearby Hospitals',
     loading: 'Searching for nearby hospitals, this may take a few seconds...',
-    sourceHint: "Hospitals are listed from OpenStreetMap community data; some places may be missing or outdated. In an emergency, call 112.",
+    sourceHint:
+      'Hospitals are listed from OpenStreetMap community data; some places may be missing or outdated. In an emergency, call 112.',
     empty: 'No listed hospital found in this area.',
     emergency: 'Emergency Room',
     retry: 'Try Again',
     callAria: 'Call',
     mapAria: 'Show on map',
     errors: {
-      permission: 'Location permission is needed to show nearby hospitals. Allow it in your browser settings and try again.',
+      permission:
+        'Location permission is needed to show nearby hospitals. Allow it in your browser settings and try again.',
       location: 'Could not get your location. Make sure location services are turned on.',
       fetch: 'Could not load hospital info, please try again.',
     },
@@ -271,8 +278,9 @@ export default {
   vaccinations: {
     title: 'Vaccination Schedule',
     disclaimer:
-      'A general guide based on the Turkish Ministry of Health national vaccination schedule; follow it together with your child\'s doctor/pediatrician.',
-    needsBirthDate: "Add your child's birth date first so the vaccination schedule can be calculated.",
+      "A general guide based on the Turkish Ministry of Health national vaccination schedule; follow it together with your child's doctor/pediatrician.",
+    needsBirthDate:
+      "Add your child's birth date first so the vaccination schedule can be calculated.",
     goToChildren: 'Go to Child Info',
     status: {
       done: 'Done · {date}',
@@ -296,7 +304,8 @@ export default {
   },
   milestones: {
     title: 'Developmental Milestones',
-    disclaimer: 'A general developmental guide; every child develops at their own pace. Share any concerns with your pediatrician.',
+    disclaimer:
+      'A general developmental guide; every child develops at their own pace. Share any concerns with your pediatrician.',
     needsBirthDate: "Add your child's birth date first to show milestones by age.",
     goToChildren: 'Go to Child Info',
     ageGroupLabel: '{months} Months',
@@ -353,7 +362,8 @@ export default {
       titleLabel: 'Title (optional)',
       titlePlaceholder: 'E.g. Emergency Room, Flu Test',
       contentLabel: 'Note Description',
-      contentPlaceholder: 'E.g. Went to ER, flu test positive. IV fluids and antipyretic administered.',
+      contentPlaceholder:
+        'E.g. Went to ER, flu test positive. IV fluids and antipyretic administered.',
       dateLabel: 'Date',
       timeLabel: 'Time',
     },
@@ -426,7 +436,7 @@ export default {
     deleteConfirmBody: 'Delete the {title} · {date} event?',
     deleteConfirmBodyRepeating: 'Delete {title} (and all future occurrences, including {date})?',
     addToPhoneCalendar: 'Add to phone calendar',
-    reminderNote: "A reminder notification is sent one day before the event.",
+    reminderNote: 'A reminder notification is sent one day before the event.',
     repeat: {
       none: 'No repeat',
       daily: 'Daily',
@@ -491,7 +501,8 @@ export default {
     dangerZoneBody:
       'Permanently delete all fever, feeding, growth, symptom, sleep and diaper-change records for {name}. This cannot be undone.',
     deleteRecordsButton: "Reset {name}'s data",
-    footer: 'Alfred stores all your data offline on your device and syncs it once you\'re back online.',
+    footer:
+      "Alfred stores all your data offline on your device and syncs it once you're back online.",
     confirmDialog: {
       title: 'Are you sure?',
       body: 'All records for {name} will be permanently deleted.',
@@ -522,7 +533,7 @@ export default {
   medications: {
     title: 'My Medications',
     description:
-      'Medications defined for {name}. You set each medication\'s name and the interval required between two doses.',
+      "Medications defined for {name}. You set each medication's name and the interval required between two doses.",
     perSafe: 'Safe every {hours} hours',
     empty: 'No medications added yet.',
     addButton: 'Add Medication',
@@ -542,7 +553,7 @@ export default {
       expiryDateLabel: 'Expiry date (optional)',
       shelfLifeLabel: 'How many days after opening? (default 90)',
       courseSectionHint:
-        'For medications that need to be taken for a fixed period, like antibiotics, enter the course start and end date/time — you\'ll get dose reminders throughout the course, and we\'ll let you know when it ends too (all optional).',
+        "For medications that need to be taken for a fixed period, like antibiotics, enter the course start and end date/time — you'll get dose reminders throughout the course, and we'll let you know when it ends too (all optional).",
       courseStartLabel: 'Course start (optional)',
       courseEndLabel: 'Course end (optional)',
       reminderSectionHint:
@@ -554,7 +565,7 @@ export default {
       expiringSoon: '{days} days left until the expiry date, plan to get a new one.',
       openedTooLong: "It's been {months} months since opening, you should get a new one.",
       openedExpiringSoon:
-        '{days} days left before it\'s no longer safe to use since opening — plan to get a new one.',
+        "{days} days left before it's no longer safe to use since opening — plan to get a new one.",
     },
     course: {
       upcoming: 'Course will start on {date}',
@@ -566,7 +577,7 @@ export default {
     reminderLabel: 'Reminder: {date}',
     deleteConfirm: {
       title: 'Delete medication',
-      body: '{name} will be deleted. Past records are unaffected, this medication just won\'t be selectable for new dose entries.',
+      body: "{name} will be deleted. Past records are unaffected, this medication just won't be selectable for new dose entries.",
     },
   },
   feeding: {
@@ -579,7 +590,7 @@ export default {
     last48h: 'Last 48 Hours',
     reminderLabel: 'Feeding reminder (hours)',
     reminderHint:
-      "Remind this many hours after the last breastfeeding/bottle. Leave blank to turn off.",
+      'Remind this many hours after the last breastfeeding/bottle. Leave blank to turn off.',
   },
   temperatureChart: {
     ariaLabel: 'Last 48 hours fever chart',
@@ -645,9 +656,10 @@ export default {
   },
   askAlfred: {
     title: 'Ask Alfred',
-    emptyBody: 'You can ask Alfred anything you\'re wondering about fever, medication or feeding.',
+    emptyBody: "You can ask Alfred anything you're wondering about fever, medication or feeding.",
     inputLabel: 'Ask something...',
-    disclaimer: 'Alfred is not a substitute for a doctor; always consult a physician in serious situations.',
+    disclaimer:
+      'Alfred is not a substitute for a doctor; always consult a physician in serious situations.',
     genericError: 'Could not get a response, please try again.',
   },
   quickDose: {
@@ -658,7 +670,8 @@ export default {
     fallbackMedName: 'Medication',
   },
   feverTriage: {
-    emergency: 'This fever may need urgent medical attention. Call emergency services now or go to the nearest ER.',
+    emergency:
+      'This fever may need urgent medical attention. Call emergency services now or go to the nearest ER.',
     doctor: 'We recommend consulting a family doctor or pediatrician today.',
     monitor:
       'This can usually be monitored at home: plenty of fluids, light clothing, and a fever reducer if your doctor has recommended one. Keep watching how it develops.',
@@ -680,9 +693,11 @@ export default {
     addDose: {
       title: 'Medication Given',
       tooEarly:
-        'Not enough time has passed since the last dose. {remaining} left until it\'s safe. You can still log it, but check with a doctor/pharmacist.',
-      beforeCourseStart: "This medication's course starts on {date} — the time you picked is before it begins.",
-      afterCourseEnd: "This medication's course ended on {date} — the time you picked is after it finished.",
+        "Not enough time has passed since the last dose. {remaining} left until it's safe. You can still log it, but check with a doctor/pharmacist.",
+      beforeCourseStart:
+        "This medication's course starts on {date} — the time you picked is before it begins.",
+      afterCourseEnd:
+        "This medication's course ended on {date} — the time you picked is after it finished.",
       dateLabel: 'Date',
       timeLabel: 'Time',
       noMedTitle: 'No medication added yet',
@@ -747,7 +762,8 @@ export default {
     noWaitingDoses: 'No doses waiting right now.',
     dismissAria: 'Dismiss card',
     dismissConfirmTitle: 'Dismiss Card',
-    dismissConfirmBody: 'Are you sure you want to dismiss {name} from Next Safe Dose? It will reappear when a new dose is given.',
+    dismissConfirmBody:
+      'Are you sure you want to dismiss {name} from Next Safe Dose? It will reappear when a new dose is given.',
     dismissAction: 'Dismiss',
     dismissedSectionTitle: 'Dismissed Medications',
     showDismissed: 'Show Dismissed Medications ({count})',
@@ -765,13 +781,13 @@ export default {
   },
   notifications: {
     someone: 'A family member',
-    doseReady: 'Time for {childName}\'s next dose of {name}.',
+    doseReady: "Time for {childName}'s next dose of {name}.",
     doseReadyGeneric: 'Time for the next dose of {name}.',
-    courseStartReady: '{childName}\'s {name} course is starting.',
-    courseStartReadyGeneric: 'It\'s time to start the {name} course.',
-    courseEndReady: '{childName}\'s {name} course has ended.',
+    courseStartReady: "{childName}'s {name} course is starting.",
+    courseStartReadyGeneric: "It's time to start the {name} course.",
+    courseEndReady: "{childName}'s {name} course has ended.",
     courseEndReadyGeneric: 'The {name} course has ended.',
-    reminderReady: 'Reminder: {childName}\'s {name}.',
+    reminderReady: "Reminder: {childName}'s {name}.",
     reminderReadyGeneric: 'Reminder for {name}.',
     feedingReminderReady: "It's time to feed {name}.",
     addedReading: '{who} added a {temp}° reading',
@@ -805,5 +821,20 @@ export default {
   age: {
     monthsOld: '{n} months old',
     yearsOld: '{n} years old',
+  },
+  reminders: {
+    manageTitle: 'Dose Reminder',
+    activeBadge: 'Reminder: {time}',
+    pastBadge: 'Reminder passed: {time}',
+    noActiveReminder: 'No active reminder.',
+    quickPresets: 'Quick Options',
+    inHours: 'In {hours} hours',
+    nextSafeDoseTime: 'Next safe dose ({time})',
+    customTime: 'Custom Date & Time',
+    saveReminder: 'Save Reminder',
+    removeReminder: 'Remove Reminder',
+    rescheduleReminder: 'Remind Again',
+    reminderAdded: 'Reminder set.',
+    reminderRemoved: 'Reminder removed.',
   },
 }

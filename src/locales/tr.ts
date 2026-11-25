@@ -113,10 +113,13 @@ export default {
       submit: 'Giriş Yap',
       forgotPasswordLink: 'Şifremi unuttum',
       forgotPasswordTitle: 'Şifre Sıfırlama',
-      forgotPasswordDesc: 'Hesabınıza kayıtlı e-posta adresini girin, şifre sıfırlama bağlantısını e-postanıza gönderelim.',
+      forgotPasswordDesc:
+        'Hesabınıza kayıtlı e-posta adresini girin, şifre sıfırlama bağlantısını e-postanıza gönderelim.',
       forgotPasswordSubmit: 'Sıfırlama Bağlantısı Gönder',
-      forgotPasswordSuccess: 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen gelen kutunuzu ve spam klasörünüzü kontrol edin.',
-      forgotPasswordError: 'Şifre sıfırlama bağlantısı gönderilemedi. Lütfen e-posta adresinizi kontrol edin.',
+      forgotPasswordSuccess:
+        'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen gelen kutunuzu ve spam klasörünüzü kontrol edin.',
+      forgotPasswordError:
+        'Şifre sıfırlama bağlantısı gönderilemedi. Lütfen e-posta adresinizi kontrol edin.',
       noAccount: 'Hesabın yok mu?',
       registerLink: 'Kayıt ol',
       error: 'E-posta veya şifre hatalı.',
@@ -147,7 +150,7 @@ export default {
       inviteCodeLabel: 'Davet kodu (varsa)',
       inviteCodeHint: 'Bir aile üyesi seni davet ettiyse buraya kodu gir',
       submit: 'Kayıt Ol',
-      privacyConsent: 'Kayıt olarak Gizlilik Politikası\'nı kabul etmiş olursunuz.',
+      privacyConsent: "Kayıt olarak Gizlilik Politikası'nı kabul etmiş olursunuz.",
       haveAccount: 'Zaten hesabın var mı?',
       loginLink: 'Giriş yap',
       errors: {
@@ -190,10 +193,10 @@ export default {
       confirmTitle: 'Acil Durum',
       confirmBody:
         '112 aranacak ve aile üyelerine konumunla birlikte acil durum bildirimi gönderilecek. Devam edilsin mi?',
-      confirmAction: 'Evet, 112\'yi Ara',
+      confirmAction: "Evet, 112'yi Ara",
       locationLabel: 'Konum',
       notificationTitle: '🚨 Acil Durum',
-      notificationBody: '{who} acil durum butonuna bastı ve 112\'yi arıyor!',
+      notificationBody: "{who} acil durum butonuna bastı ve 112'yi arıyor!",
       historyFever: 'Son ateş: {temp}°C ({time})',
       historyDose: 'Son ilaç: {med} ({time})',
     },
@@ -224,7 +227,8 @@ export default {
     callAria: 'Eczaneyi ara',
     mapAria: 'Haritada göster',
     errors: {
-      permission: 'Nöbetçi eczaneleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
+      permission:
+        'Nöbetçi eczaneleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
       location: 'Konumun alınamadı. Konum servislerinin açık olduğundan emin ol.',
       geocode: 'Bulunduğun il/ilçe belirlenemedi.',
       fetch: 'Eczane bilgisi alınamadı, tekrar dene.',
@@ -233,13 +237,15 @@ export default {
   nearbyActivities: {
     title: 'Yakındaki Etkinlik Alanları',
     loading: 'Yakındaki yerler aranıyor, birkaç saniye sürebilir...',
-    sourceHint: 'Sinema, tiyatro, müze, hayvanat bahçesi, akvaryum, lunapark, su parkı, oyun alanı gibi yerler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir.',
+    sourceHint:
+      'Sinema, tiyatro, müze, hayvanat bahçesi, akvaryum, lunapark, su parkı, oyun alanı gibi yerler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir.',
     empty: 'Bu bölgede kayıtlı bir etkinlik yeri bulunamadı.',
     retry: 'Tekrar Dene',
     callAria: 'Ara',
     mapAria: 'Haritada göster',
     errors: {
-      permission: 'Yakındaki yerleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
+      permission:
+        'Yakındaki yerleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
       location: 'Konumun alınamadı. Konum servislerinin açık olduğundan emin ol.',
       fetch: 'Yer bilgisi alınamadı, tekrar dene.',
     },
@@ -258,14 +264,16 @@ export default {
   nearbyHospitals: {
     title: 'Yakındaki Hastaneler',
     loading: 'Yakındaki hastaneler aranıyor, birkaç saniye sürebilir...',
-    sourceHint: 'Hastaneler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir. Acil bir durumda 112\'yi aramayı unutma.',
+    sourceHint:
+      "Hastaneler OpenStreetMap topluluk verisinden listelenir; bazı yerler eksik veya güncel olmayabilir. Acil bir durumda 112'yi aramayı unutma.",
     empty: 'Bu bölgede kayıtlı bir hastane bulunamadı.',
     emergency: 'Acil Servis',
     retry: 'Tekrar Dene',
     callAria: 'Ara',
     mapAria: 'Haritada göster',
     errors: {
-      permission: 'Yakındaki hastaneleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
+      permission:
+        'Yakındaki hastaneleri gösterebilmek için konum izni gerekiyor. Tarayıcı ayarlarından izin verip tekrar dene.',
       location: 'Konumun alınamadı. Konum servislerinin açık olduğundan emin ol.',
       fetch: 'Hastane bilgisi alınamadı, tekrar dene.',
     },
@@ -298,8 +306,10 @@ export default {
   },
   milestones: {
     title: 'Gelişim Kilometre Taşları',
-    disclaimer: 'Genel bir gelişim rehberidir; her çocuk kendi hızında gelişir. Endişelerini çocuk doktoruyla paylaş.',
-    needsBirthDate: 'Yaşa göre kilometre taşlarını gösterebilmek için önce çocuğunun doğum tarihini ekle.',
+    disclaimer:
+      'Genel bir gelişim rehberidir; her çocuk kendi hızında gelişir. Endişelerini çocuk doktoruyla paylaş.',
+    needsBirthDate:
+      'Yaşa göre kilometre taşlarını gösterebilmek için önce çocuğunun doğum tarihini ekle.',
     goToChildren: 'Çocuk Bilgilerine Git',
     ageGroupLabel: '{months} Aylık',
     category: {
@@ -355,7 +365,8 @@ export default {
       titleLabel: 'Başlık (opsiyonel)',
       titlePlaceholder: 'Örn: Acil Servis, İnfluenza Testi',
       contentLabel: 'Not Açıklaması',
-      contentPlaceholder: 'Örn: Acile gittik, influenza testi pozitif çıktı. Serum ve ateş düşürücü uygulandı.',
+      contentPlaceholder:
+        'Örn: Acile gittik, influenza testi pozitif çıktı. Serum ve ateş düşürücü uygulandı.',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
     },
@@ -426,7 +437,8 @@ export default {
     deleteAria: 'Etkinliği sil',
     deleteConfirmTitle: 'Etkinliği sil',
     deleteConfirmBody: '{title} · {date} etkinliği silinsin mi?',
-    deleteConfirmBodyRepeating: '{title} etkinliği (ve tüm gelecek tekrarları, {date} dahil) silinsin mi?',
+    deleteConfirmBodyRepeating:
+      '{title} etkinliği (ve tüm gelecek tekrarları, {date} dahil) silinsin mi?',
     addToPhoneCalendar: 'Telefon takvimine ekle',
     reminderNote: 'Etkinlik gününden bir gün önce hatırlatma bildirimi gönderilir.',
     repeat: {
@@ -470,7 +482,8 @@ export default {
     deleteAccountPasswordLabel: 'Şifreniz',
     deleteAccountConfirmButton: 'Hesabımı Kalıcı Olarak Sil',
     deleteAccountSuccess: 'Hesabınız başarıyla silindi.',
-    deleteAccountError: 'Hesap silinirken bir hata oluştu. Lütfen şifrenizi doğru girdiğinizden emin olun.',
+    deleteAccountError:
+      'Hesap silinirken bir hata oluştu. Lütfen şifrenizi doğru girdiğinizden emin olun.',
     childrenTitle: 'Çocuklarım',
     childrenCount: '{count} çocuk kayıtlı',
     manage: 'Yönet',
@@ -493,7 +506,8 @@ export default {
     dangerZoneBody:
       '{name} için ateş, beslenme, büyüme, semptom, uyku ve bez değişimi kayıtlarının tümünü kalıcı olarak sil. Bu işlem geri alınamaz.',
     deleteRecordsButton: '{name} bilgileri sıfırla',
-    footer: 'Alfred, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.',
+    footer:
+      'Alfred, tüm verilerini cihazında offline saklar ve bağlantı geldiğinde senkronize eder.',
     confirmDialog: {
       title: 'Emin misin?',
       body: '{name} için tüm kayıtlar kalıcı olarak silinecek.',
@@ -660,12 +674,13 @@ export default {
     fallbackMedName: 'İlaç',
   },
   feverTriage: {
-    emergency: 'Bu ateş acil tıbbi değerlendirme gerektirebilir. Hemen 112\'yi ara ya da en yakın acil servise git.',
+    emergency:
+      "Bu ateş acil tıbbi değerlendirme gerektirebilir. Hemen 112'yi ara ya da en yakın acil servise git.",
     doctor: 'Bugün içinde bir aile hekimine ya da çocuk doktoruna danışmanı öneririz.',
     monitor:
       'Genellikle evde takip edilebilir: bol sıvı, hafif giysi ve gerekirse doktorunun önerdiği ateş düşürücü. Durumu izlemeye devam et.',
     disclaimer:
-      'Nefes darlığı, boyun tutulması, basmakla solmayan döküntü, bilinç bulanıklığı ya da nöbet gibi belirtiler varsa ateşin derecesine bakılmaksızın hemen 112\'yi ara. Bu bilgi tıbbi tanı yerine geçmez.',
+      "Nefes darlığı, boyun tutulması, basmakla solmayan döküntü, bilinç bulanıklığı ya da nöbet gibi belirtiler varsa ateşin derecesine bakılmaksızın hemen 112'yi ara. Bu bilgi tıbbi tanı yerine geçmez.",
   },
   dialogs: {
     addReading: {
@@ -683,8 +698,10 @@ export default {
       title: 'İlaç Verildi',
       tooEarly:
         'Son dozdan bu yana yeterli süre geçmedi. Güvenli zamana {remaining} kaldı. Yine de kaydedebilirsin, ama doktor/eczacına danış.',
-      beforeCourseStart: 'Bu ilacın kürü {date} tarihinde başlıyor, seçtiğin saat kür başlamadan önce.',
-      afterCourseEnd: 'Bu ilacın kürü {date} tarihinde sona erdi, seçtiğin saat kür bittikten sonra.',
+      beforeCourseStart:
+        'Bu ilacın kürü {date} tarihinde başlıyor, seçtiğin saat kür başlamadan önce.',
+      afterCourseEnd:
+        'Bu ilacın kürü {date} tarihinde sona erdi, seçtiğin saat kür bittikten sonra.',
       dateLabel: 'Tarih',
       timeLabel: 'Saat',
       noMedTitle: 'Henüz ilaç eklenmedi',
@@ -749,7 +766,8 @@ export default {
     noWaitingDoses: 'Şu an bekleyen bir doz yok.',
     dismissAria: 'Kartı kaldır',
     dismissConfirmTitle: 'Kartı Kaldır',
-    dismissConfirmBody: '{name} ilacını Sonraki Güvenli Doz listesinden kaldırmak istediğinize emin misiniz? Yeni bir doz verildiğinde tekrar görünecektir.',
+    dismissConfirmBody:
+      '{name} ilacını Sonraki Güvenli Doz listesinden kaldırmak istediğinize emin misiniz? Yeni bir doz verildiğinde tekrar görünecektir.',
     dismissAction: 'Kaldır',
     dismissedSectionTitle: 'Kaldırılan İlaçlar',
     showDismissed: 'Kaldırılan İlaçları Göster ({count})',
@@ -807,5 +825,20 @@ export default {
   age: {
     monthsOld: '{n} aylık',
     yearsOld: '{n} yaşında',
+  },
+  reminders: {
+    manageTitle: 'Doz Hatırlatıcısı',
+    activeBadge: 'Hatırlatıcı: {time}',
+    pastBadge: 'Hatırlatma geçti: {time}',
+    noActiveReminder: 'Aktif hatırlatma bulunmuyor.',
+    quickPresets: 'Hızlı Seçenekler',
+    inHours: '{hours} saat sonra',
+    nextSafeDoseTime: 'Sonraki güvenli doz ({time})',
+    customTime: 'Özel Tarih ve Saat',
+    saveReminder: 'Hatırlatıcıyı Kaydet',
+    removeReminder: 'Hatırlatmayı Kaldır',
+    rescheduleReminder: 'Tekrar Hatırlat',
+    reminderAdded: 'Hatırlatıcı ayarlandı.',
+    reminderRemoved: 'Hatırlatıcı kaldırıldı.',
   },
 }

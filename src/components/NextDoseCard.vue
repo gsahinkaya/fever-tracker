@@ -8,8 +8,9 @@ import { useMedicationAlertsStore } from '@/stores/medicationAlerts'
 import { useAuthStore } from '@/stores/auth'
 import type { Medication } from '@/types/health'
 import { useNow } from '@/composables/useNow'
-import { mediumDateTime, toDatetimeLocalString } from '@/lib/dateFormat'
+import { mediumDateTime } from '@/lib/dateFormat'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import ManageReminderDialog from '@/components/ManageReminderDialog.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -30,8 +31,11 @@ const now = useNow()
 
 const showDismissConfirm = ref(false)
 const showReminderDialog = ref(false)
-const reminderDateTime = ref('')
-const savingReminder = ref(false)
+
+const isReminderActive = computed(() => {
+  if (!props.medication.reminderAt) return false
+  return props.medication.reminderAt > now.value
+})
 
 const last = computed(() => store.lastDose(props.medication.id))
 const safeAt = computed(() =>
@@ -59,71 +63,56 @@ const lastDoseLabel = computed(() => {
 
 async function dismissCard() {
   if (!authStore.familyId || !store.activeChildId) return
-  await medicationsStore.updateMedication(authStore.familyId, store.activeChildId, props.medication.id, {
-    nextDoseDismissedAt: Date.now(),
-  })
+  await medicationsStore.updateMedication(
+    authStore.familyId,
+    store.activeChildId,
+    props.medication.id,
+    {
+      nextDoseDismissedAt: Date.now(),
+    },
+  )
   await medicationAlertsStore.removeAlertsForMedication(props.medication.name, 'nextDose')
   showDismissConfirm.value = false
 }
 
 async function restoreCard() {
   if (!authStore.familyId || !store.activeChildId) return
-  await medicationsStore.updateMedication(authStore.familyId, store.activeChildId, props.medication.id, {
-    nextDoseDismissedAt: deleteField(),
-  })
-}
-
-function openReminderDialog() {
-  if (props.medication.reminderAt) {
-    reminderDateTime.value = toDatetimeLocalString(props.medication.reminderAt)
-  } else if (safeAt.value && safeAt.value > now.value) {
-    reminderDateTime.value = toDatetimeLocalString(safeAt.value)
-  } else {
-    reminderDateTime.value = toDatetimeLocalString(now.value + props.medication.minIntervalHours * 3_600_000)
-  }
-  showReminderDialog.value = true
-}
-
-function useSafeDoseShortcut() {
-  if (safeAt.value) {
-    reminderDateTime.value = toDatetimeLocalString(safeAt.value)
-  }
-}
-
-async function saveReminder() {
-  if (!reminderDateTime.value || !authStore.familyId || !store.activeChildId) return
-  savingReminder.value = true
-  try {
-    const ts = new Date(reminderDateTime.value).getTime()
-    await medicationsStore.updateMedication(authStore.familyId, store.activeChildId, props.medication.id, {
-      reminderAt: ts,
-      reminderNotified: false,
-    })
-    showReminderDialog.value = false
-  } finally {
-    savingReminder.value = false
-  }
+  await medicationsStore.updateMedication(
+    authStore.familyId,
+    store.activeChildId,
+    props.medication.id,
+    {
+      nextDoseDismissedAt: deleteField(),
+    },
+  )
 }
 
 async function removeReminder() {
   if (!authStore.familyId || !store.activeChildId) return
-  savingReminder.value = true
-  try {
-    await medicationsStore.updateMedication(authStore.familyId, store.activeChildId, props.medication.id, {
+  await medicationsStore.updateMedication(
+    authStore.familyId,
+    store.activeChildId,
+    props.medication.id,
+    {
       reminderAt: deleteField(),
       reminderNotified: deleteField(),
-    })
-    await medicationAlertsStore.removeAlertsForMedication(props.medication.name, 'reminder')
-    showReminderDialog.value = false
-  } finally {
-    savingReminder.value = false
-  }
+    },
+  )
+  await medicationAlertsStore.removeAlertsForMedication(props.medication.name, 'reminder')
 }
 </script>
 
 <template>
   <v-card
-    :color="isDismissed ? undefined : status === 'ready' ? 'success' : status === 'waiting' ? 'error' : undefined"
+    :color="
+      isDismissed
+        ? undefined
+        : status === 'ready'
+          ? 'success'
+          : status === 'waiting'
+            ? 'error'
+            : undefined
+    "
     :variant="isDismissed || status === 'none' ? 'outlined' : 'tonal'"
   >
     <v-card-item>
@@ -185,19 +174,30 @@ async function removeReminder() {
         class="d-flex align-center justify-space-between mt-3 pt-2"
         style="border-top: 1px dashed rgba(var(--v-border-color), 0.25)"
       >
-        <div class="d-flex align-center text-caption font-weight-medium text-primary">
-          <v-icon icon="mdi-bell-ring-outline" size="18" class="mr-1" />
-          <span>{{ t('nextDoseCard.reminderBadge', { time: mediumDateTime(medication.reminderAt) }) }}</span>
+        <div
+          class="d-flex align-center text-caption font-weight-medium"
+          :class="isReminderActive ? 'text-primary' : 'text-warning'"
+        >
+          <v-icon
+            :icon="isReminderActive ? 'mdi-bell-ring-outline' : 'mdi-bell-alert-outline'"
+            size="18"
+            class="mr-1"
+          />
+          <span>{{
+            isReminderActive
+              ? t('reminders.activeBadge', { time: mediumDateTime(medication.reminderAt) })
+              : t('reminders.pastBadge', { time: mediumDateTime(medication.reminderAt) })
+          }}</span>
         </div>
         <div class="d-flex align-center">
           <v-btn
             variant="text"
             size="x-small"
             color="primary"
-            class="px-1"
-            @click="openReminderDialog"
+            class="px-1 font-weight-medium"
+            @click="showReminderDialog = true"
           >
-            {{ t('nextDoseCard.changeReminder') }}
+            {{ t('reminders.rescheduleReminder') }}
           </v-btn>
           <v-btn
             icon="mdi-bell-off-outline"
@@ -221,7 +221,7 @@ async function removeReminder() {
           prepend-icon="mdi-bell-plus-outline"
           color="primary"
           class="px-0 text-caption font-weight-medium"
-          @click="openReminderDialog"
+          @click="showReminderDialog = true"
         >
           {{ t('nextDoseCard.setReminder') }}
         </v-btn>
@@ -239,68 +239,6 @@ async function removeReminder() {
     />
 
     <!-- Set / Edit Reminder Dialog -->
-    <v-dialog v-model="showReminderDialog" max-width="400">
-      <v-card>
-        <v-card-title class="text-h6 pt-4 px-4">
-          {{ t('nextDoseCard.reminderDialogTitle') }}
-        </v-card-title>
-        <v-card-subtitle class="px-4">
-          {{ medication.name }}
-        </v-card-subtitle>
-        <v-card-text class="px-4 pt-2">
-          <p class="text-caption text-medium-emphasis mb-3">
-            {{ t('nextDoseCard.reminderDialogHint', { name: medication.name }) }}
-          </p>
-
-          <v-btn
-            v-if="safeAt && safeAt > now"
-            variant="tonal"
-            size="small"
-            color="primary"
-            prepend-icon="mdi-clock-check-outline"
-            class="mb-3 w-100"
-            @click="useSafeDoseShortcut"
-          >
-            {{ t('nextDoseCard.useSafeDoseTime', { time: mediumDateTime(safeAt) }) }}
-          </v-btn>
-
-          <v-text-field
-            v-model="reminderDateTime"
-            type="datetime-local"
-            :label="t('nextDoseCard.reminderSectionTitle')"
-            variant="outlined"
-            density="comfortable"
-          />
-        </v-card-text>
-        <v-card-actions class="px-4 pb-4">
-          <v-btn
-            v-if="medication.reminderAt"
-            variant="text"
-            color="error"
-            :disabled="savingReminder"
-            @click="removeReminder"
-          >
-            {{ t('nextDoseCard.removeReminder') }}
-          </v-btn>
-          <v-spacer />
-          <v-btn
-            variant="text"
-            :disabled="savingReminder"
-            @click="showReminderDialog = false"
-          >
-            {{ t('common.cancel') }}
-          </v-btn>
-          <v-btn
-            color="primary"
-            variant="flat"
-            :disabled="!reminderDateTime"
-            :loading="savingReminder"
-            @click="saveReminder"
-          >
-            {{ t('common.save') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <ManageReminderDialog v-model="showReminderDialog" :medication="medication" />
   </v-card>
 </template>

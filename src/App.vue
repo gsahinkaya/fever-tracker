@@ -19,6 +19,9 @@ import { useMedicalNotesStore } from '@/stores/medicalNotes'
 import { useThemeStore } from '@/stores/theme'
 import { useEntryNotifications } from '@/composables/useEntryNotifications'
 import { useNow } from '@/composables/useNow'
+import { deleteField } from 'firebase/firestore'
+import type { Medication, MedicationAlertEntry } from '@/types/health'
+import ManageReminderDialog from '@/components/ManageReminderDialog.vue'
 import { dismissNotification, isDismissed } from '@/lib/notificationHistory'
 import {
   describeCalendarEvent,
@@ -68,6 +71,8 @@ interface NotificationItem {
   at: number
   text: string
   route: string
+  sourceType: string
+  payload?: unknown
 }
 
 // One declarative line per store instead of writing the same {key, at,
@@ -87,6 +92,8 @@ function notificationSource<T extends { id: string }>(
     at: at(item),
     text: describe(item),
     route,
+    sourceType: keyPrefix,
+    payload: item,
   })
   return { incoming: incoming.map(toItem), allRemote: allRemote.map(toItem) }
 }
@@ -207,6 +214,43 @@ const notificationHistoryItems = computed(() =>
 const unreadKeys = computed(() => new Set(incomingItems.value.map((item) => item.key)))
 
 const bellMenuOpen = ref(false)
+const selectedMedicationForReminder = ref<Medication | null>(null)
+const showReminderDialog = ref(false)
+
+function getMedicationForItem(item: NotificationItem): Medication | null {
+  if (item.sourceType !== 'alert') return null
+  const alert = item.payload as MedicationAlertEntry | undefined
+  if (!alert) return null
+  return medicationsStore.medications.find((m) => m.name === alert.medicationName) ?? null
+}
+
+const latestIncomingItem = computed(() => {
+  const items = incomingItems.value
+  return items.length ? items[items.length - 1] : null
+})
+
+const latestMedicationForAlert = computed(() => {
+  if (!latestIncomingItem.value) return null
+  return getMedicationForItem(latestIncomingItem.value)
+})
+
+function openReminderForMed(med: Medication) {
+  selectedMedicationForReminder.value = med
+  showReminderDialog.value = true
+  bellMenuOpen.value = false
+  dismissBanner()
+}
+
+async function quickRemoveAlertReminder(med: Medication) {
+  if (!authStore.familyId || !feverLogStore.activeChildId) return
+  await medicationsStore.updateMedication(authStore.familyId, feverLogStore.activeChildId, med.id, {
+    reminderAt: deleteField(),
+    reminderNotified: deleteField(),
+  })
+  await medicationAlertsStore.removeAlertsForMedication(med.name, 'reminder')
+  dismissBanner()
+}
+
 function openNotification(item: NotificationItem) {
   dismissBanner()
   bellMenuOpen.value = false
@@ -376,6 +420,15 @@ watch(
                 <v-list-item-subtitle>{{ relativeTime(item.at) }}</v-list-item-subtitle>
                 <template #append>
                   <v-btn
+                    v-if="getMedicationForItem(item)"
+                    icon="mdi-bell-cog-outline"
+                    variant="text"
+                    size="small"
+                    color="primary"
+                    :aria-label="t('reminders.manageTitle')"
+                    @click.stop="openReminderForMed(getMedicationForItem(item)!)"
+                  />
+                  <v-btn
                     icon="mdi-close"
                     variant="text"
                     size="small"
@@ -445,11 +498,43 @@ watch(
           class="mx-3 mt-2 no-print"
           @click:close="dismissBanner"
         >
-          {{ incomingBannerText }}
+          <div
+            class="d-flex flex-column flex-sm-row align-sm-center justify-space-between"
+            style="gap: 8px"
+          >
+            <div>{{ incomingBannerText }}</div>
+            <div
+              v-if="latestMedicationForAlert"
+              class="d-flex align-center flex-shrink-0"
+              style="gap: 6px"
+            >
+              <v-btn
+                size="x-small"
+                variant="tonal"
+                color="error"
+                @click="quickRemoveAlertReminder(latestMedicationForAlert)"
+              >
+                {{ t('reminders.removeReminder') }}
+              </v-btn>
+              <v-btn
+                size="x-small"
+                variant="flat"
+                color="primary"
+                @click="openReminderForMed(latestMedicationForAlert)"
+              >
+                {{ t('reminders.rescheduleReminder') }}
+              </v-btn>
+            </div>
+          </div>
         </v-alert>
       </v-slide-y-transition>
 
       <RouterView />
+
+      <ManageReminderDialog
+        v-model="showReminderDialog"
+        :medication="selectedMedicationForReminder"
+      />
     </v-main>
   </v-app>
 </template>
